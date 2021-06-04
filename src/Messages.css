@@ -1,0 +1,12 @@
+body {
+    font-family: Helvetica;
+}
+header {
+    background-color: mediumturquoise;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    width: 100%;
+    position: absolute;
+    top:0%;
+    left:0%;
+}
