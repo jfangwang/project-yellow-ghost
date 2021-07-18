@@ -11,5 +11,11 @@
     bottom: 10%;
 }
 .webcam{
-    display:none;
+    display: flex;
+    justify-content: center;
+}
+.cam-tab{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Webcam from "react-webcam";
 import { v4 as uuid } from "uuid";
 import './Camera.css';
+import {storage, db} from './Firebase.js';
 import firebase from 'firebase/app';
 
 
@@ -25,9 +26,42 @@ class Camera extends Component {
     };
 
     send = () => {
+        const user = firebase.auth().currentUser;
         const id = uuid();
-        var user = firebase.auth().currentUser;
-        // const uploadTask = storage.ref(`posts/${id}`).putString(this.image, 'data_url');
+        var email = "GUEST";
+        var name = "GUEST";
+        var avatarURL = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png";
+				var to_users = [name]
+        if (user) {
+
+        }
+        const uploadTask = storage.ref(`posts/${id}`).putString(this.state.image, 'data_url');
+          uploadTask.on(
+          "state_changed",
+          snapshot => {},
+          error => {
+            console.log(error);
+          },
+          () => {
+            storage
+              .ref("posts")
+              .child(id)
+              .getDownloadURL()
+              .then(url => {
+                db.collection('posts').doc(id).set({
+                  imageURL: url,
+                  id: id,
+                  email: email,
+                  name: name,
+                  avatarURL: avatarURL,
+                  read: false,
+                  timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                  to: to_users,
+                })
+								console.log("Photo Sent");
+								this.setState({ image: null })
+              })
+          })
     }
 
     close = () => {
@@ -37,7 +71,6 @@ class Camera extends Component {
     capture = () => {
         const img = this.webcam.getScreenshot();
         this.setState({ image: img })
-        console.log(img);
     }
 
     setRef = (webcam) => {
@@ -46,21 +79,14 @@ class Camera extends Component {
 
     render() {
         return (
-            <div>
-                <Webcam
-                    ref={this.setRef}
-                    videoConstraints={{facingMode: this.state.faceMode, width: this.state.width, height: this.state.height}}
-                    screenshotFormat="image/jpeg"
-                    audio={false}
-                    mirrored={true}
-                    className="webcam"
-                />
+            <div className="cam-tab">
                 { this.state.image ? <img src={this.state.image} alt="asdf"/> : <Webcam
                     ref={this.setRef}
                     videoConstraints={{facingMode: this.state.faceMode, width: this.state.width, height: this.state.height}}
                     screenshotFormat="image/jpeg"
                     audio={false}
                     mirrored={true}
+                    className="webcam"
                 />}
                 { this.state.image ? <button className="capture" onClick={this.close}>Close</button> : <button className="capture" onClick={this.capture}>Capture</button> }
                 { this.state.image ? <button className="send" onClick={this.send}>Send</button> : null}

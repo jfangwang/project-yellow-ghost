@@ -8,13 +8,13 @@ import 'firebase/functions';   // for cloud functions
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyCd54FSEQiit25ckDbJC7F9j6QzxhmY40Q",
-  authDomain: "project-yellow-ghost.firebaseapp.com",
-  projectId: "project-yellow-ghost",
-  storageBucket: "project-yellow-ghost.appspot.com",
-  messagingSenderId: "318355821093",
-  appId: "1:318355821093:web:32f328a2f1ad5ba2a225cc",
-  measurementId: "G-VTVC3F31F5"
+  apiKey: "AIzaSyAzNigqy7stltnVUU8cAollxCxvW0CNBTE",
+  authDomain: "ghost-f8b34.firebaseapp.com",
+  projectId: "ghost-f8b34",
+  storageBucket: "ghost-f8b34.appspot.com",
+  messagingSenderId: "838623299070",
+  appId: "1:838623299070:web:b73429fee525b7c01cacaf",
+  measurementId: "G-85ZG5FVKQ4"
 };
 
 const firebaseApp = firebase.initializeApp(firebaseConfig);
