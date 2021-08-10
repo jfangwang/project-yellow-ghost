@@ -19,27 +19,50 @@ export default function Message(props) {
 
     const [status, setStatus] = useState("Received");
     const [time, setTime] = useState(0);
+    const [imgArr, setImgArr] = useState([]);
 
     const update_messages = () => {
-        db.collection('posts').doc(props.user_email).collection("Received").orderBy("timeStamp", "desc").limit(1).get().then((doc) => {
-            if (!doc.empty){
-                console.log("There is mail")
-                doc.forEach((x) => {
-                    if (x.exists) {
-                        setStatus("New Snap");               
-                        setTime(x.data()["timeStamp"].toDate().toUTCString())
-                    } else {
-                        console.log("doc does not exist"); 
+        db.collection('posts')
+        .doc(props.user_email)
+        .collection("Received")
+        .orderBy("timeStamp", "desc")
+        .onSnapshot((snapshot) => {
+            if (snapshot.docs.length > 0) {
+                setStatus("New Snap");
+                if (snapshot.docs[0].data() != null){
+                    try {
+                        console.log(snapshot.docs[0].data()["timeStamp"].toDate().toUTCString());
+                        setTime(snapshot.docs[0].data()["timeStamp"].toDate().toUTCString());
+                    } catch (error){
+                        console.log("error");
                     }
-                })
+                    
+                }
+                
+                // setTime(snapshot.docs[0].data()["timeStamp"])
             } else {
-                console.log("there is no mail")
-                setStatus("Received");  
+                setStatus("Received");
             }
-            
-        }).catch((error) => {
-            console.log("User does not exist: ", error)
         })
+        // .limit(1).get().then((doc) => {
+        //     if (!doc.empty){
+        //         console.log("There is mail")
+        //         doc.forEach((x) => {
+        //             if (x.exists) {
+        //                 setStatus("New Snap");               
+        //                 setTime(x.data()["timeStamp"].toDate().toUTCString())
+        //             } else {
+        //                 console.log("doc does not exist"); 
+        //             }
+        //         })
+        //     } else {
+        //         console.log("there is no mail")
+        //         setStatus("Received");  
+        //     }
+            
+        // }).catch((error) => {
+        //     console.log("User does not exist: ", error)
+        // })
     }
 
     var status_output = <p>{status}</p>;
@@ -68,7 +91,7 @@ export default function Message(props) {
             snapshot.forEach((doc) => {
                 if (!doc.empty) {
                     setStatus("New Snap");
-                    console.log("img", doc.data()["imageURL"]);
+                    // console.log("img", doc.data()["imageURL"]);
                     setImg(doc.data()["imageURL"]);
                     setImgid(doc.data()["id"]);
                 } else {
@@ -85,15 +108,11 @@ export default function Message(props) {
         const img = db.collection('posts').doc(props.user_email).collection("Received").doc(imgid);
         img.delete().then(() => {
             console.log("Document deleted");
-            this.update_messages();
         }).catch((error) => {
             console.log("Error removing document: ", error);
         })
-    }
-        useEffect(() => {
         update_messages();
-        get_sender_info();
-    })
+    }
 
     const [profile_url, setURL] = useState("https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png");
     const [sender_name, setName] = useState("Guest (Me)");
@@ -110,6 +129,11 @@ export default function Message(props) {
             }
         });
     }
+
+    useEffect(() => {
+        update_messages();
+        get_sender_info();
+    })
     
     return (
         <>
