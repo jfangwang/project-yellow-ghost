@@ -36,7 +36,6 @@ class Messages extends Component {
                         photoURL: result.user.photoURL,
                         streak_emoji: this.state.streak_image,
                         friends: [result.user.email],
-                        friends_data: [result.user.email : {"streak" : 0}],
                     }, this.get_friends_list())
                     .catch((error) => {
                         console.log("Couldn't write user to DB, error: ", error);
@@ -56,6 +55,7 @@ class Messages extends Component {
         this.setState({
             user_name: "Guest",
             user_email: "Guest",
+            user_friends: ["Guest (Me)"],
             user_pic: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png",
         })
     }
@@ -103,7 +103,7 @@ class Messages extends Component {
                 </div>
             </div>
             <ul className="messages-list">
-            {newArr.map((x) => (<Message sender_name={x} streak_image={this.state.streak_image} />))}
+            {newArr.map((x) => (<Message sender_email={x} user_email={this.state.user_email} streak_image={this.state.streak_image} />))}
             </ul>
         </div>
         );

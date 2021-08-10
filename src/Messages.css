@@ -71,6 +71,7 @@ a:hover {
 .message-avatar {
     height: 2.5rem;
     width:2.5rem;
+    border-radius: 100%;
 }
 .message-new {
     height: 0.95rem;
@@ -79,8 +80,8 @@ a:hover {
     border-radius: 0.2rem;
 }
 .message-received {
-    height: 0.75rem;
-    width: 0.75rem;
+    height: 0.6rem;
+    width: 0.6rem;
     background-color: none;
     border: 0.17rem solid red;
     border-radius: 0.2rem;
@@ -105,9 +106,22 @@ a:hover {
 .profile-pic {
     height: 2rem;
     width: 2rem;
-    border-radius: 1rem;
+    border-radius: 100%;
 }
 .profile-pic:hover {
     cursor: pointer;
     opacity: 70%;
+}
+.image-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+.image {
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
 }

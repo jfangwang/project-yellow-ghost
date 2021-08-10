@@ -28,10 +28,10 @@ class Camera extends Component {
     send = () => {
         const user = firebase.auth().currentUser;
         const id = uuid();
-        var email = "GUEST";
-        var name = "GUEST";
+        var email = user.email;
+        var name = user.displayName;
         var avatarURL = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png";
-				var to_users = [name]
+				var to_users = [email]
         if (user) {
 
         }
@@ -43,12 +43,16 @@ class Camera extends Component {
             console.log(error);
           },
           () => {
-            storage
+            var i = 0;
+            for(i=0; i<to_users.length; i++) {
+              console.log(typeof(to_users[i]), to_users[i]);
+              var name = to_users[i];
+              storage
               .ref("posts")
               .child(id)
               .getDownloadURL()
               .then(url => {
-                db.collection('posts').doc(id).set({
+                db.collection('posts').doc(name).collection("Received").doc(id).set({
                   imageURL: url,
                   id: id,
                   email: email,
@@ -61,6 +65,7 @@ class Camera extends Component {
 								console.log("Photo Sent");
 								this.setState({ image: null })
               })
+            }
           })
     }
 
