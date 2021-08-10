@@ -20,13 +20,16 @@ export default function Message(props) {
     const [status, setStatus] = useState("Received");
     const [time, setTime] = useState(0);
     db.collection('posts').doc(props.user_email).collection("Received").orderBy("timeStamp").limit(1).get().then((doc) => {
-        if (!doc.empty) {
-            console.log("Timestamp: ", doc.data()["timeStamp"])
-            setStatus("New Snap");
-            setTime(doc.data()["timeStamp"].toDate().toUTCString())
-        } else {
-            console.log("doc does not exist");
-        }
+        doc.forEach((x) => {
+            if (x.exists) {
+                console.log("Timestamp: ", x.data());
+                setStatus("New Snap");
+                setTime(x.data()["timeStamp"].toDate().toUTCString())
+            } else {
+                console.log("doc does not exist");
+            }
+        })
+
     }).catch((error) => {
         console.log("User does not exist: ", error)
     })
