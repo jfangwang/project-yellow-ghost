@@ -46,13 +46,13 @@ class Camera extends Component {
             var i = 0;
             for(i=0; i<to_users.length; i++) {
               console.log(typeof(to_users[i]), to_users[i]);
-              var name = to_users[i];
+              var mailList = to_users[i];
               storage
               .ref("posts")
               .child(id)
               .getDownloadURL()
               .then(url => {
-                db.collection('posts').doc(name).collection("Received").doc(id).set({
+                db.collection('posts').doc(mailList).collection("Received").doc(id).set({
                   imageURL: url,
                   id: id,
                   email: email,
@@ -66,6 +66,12 @@ class Camera extends Component {
 								this.setState({ image: null })
               })
             }
+            db.collection('posts').doc(email).collection("Sent").doc(id).set({
+              id: id,
+              email: email,
+              timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+              to: to_users,
+            })
           })
     }
 

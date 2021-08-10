@@ -26,6 +26,7 @@ export default function Message(props) {
         .doc(props.user_email)
         .collection("Received")
         .orderBy("timeStamp", "desc")
+        // .where("email", "==", "qbs1864@gmail.com")
         .onSnapshot((snapshot) => {
             if (snapshot.docs.length > 0) {
                 setStatus("New Snap");
@@ -102,6 +103,21 @@ export default function Message(props) {
         })
     }
 
+    const delete_photo = () => {
+        storage.ref(`posts/${imgid}`).delete()
+        .then((url) => {
+            console.log("Deleted from storage: ", imgid);
+        })
+        .catch((error) => {
+            console.log("TRIED DELETING: ", imgid)
+        });
+        db.collection('posts').doc(imgid).delete().then(() => {
+          console.log("Deleted from firestore");
+        }).catch((error) => {
+          console.error("Error removing document: ", error);
+        });
+      }
+
     const close = () => {
         setImg(null);
         console.log("opening snap", props.user_email);
@@ -112,6 +128,19 @@ export default function Message(props) {
             console.log("Error removing document: ", error);
         })
         update_messages();
+        const sender = db.collection('posts').doc(props.sender_email).collection("Sent").doc(imgid);
+        sender.get().then((doc) => {
+            if (doc.data()["to"].length == 1) {
+                sender.delete().then(() => {
+                    console.log("sender document deleted, everyone saw the pic");
+                }).catch((error) => {
+                    console.log("Could not delete sender's document");
+                })
+                delete_photo();
+            } else {
+                console.log("working on it");
+            }
+        })
     }
 
     const [profile_url, setURL] = useState("https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png");
