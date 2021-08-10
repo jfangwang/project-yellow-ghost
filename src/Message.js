@@ -14,43 +14,39 @@ import './Messages.css';
 
 export default function Message(props) {
 
-    var user = null;
-
-    // Get the current user
-    user = firebase.auth().currentUser;
-    if (user === null) {
-        user = "Guest";
-    }
 
 
-
-    const status = props.message_status;
+    var status = "New Snap"
     // const test1 = document.getElementById('icon');
     // console.log("test", test1);
     var icon = <div className="message-received"/>;
 
     if (status === "New Snap"){
-        icon = <>
-        <div className="message-new" />
-        <p className="red"><b>{props.message_status}</b></p>
-        </>
+        icon = <div className="message-new" />
+        status = <p className="red"><b>{status}</b></p>
+    } else if (status === "Received") {
+        icon = <div className="message-received"/>
+    } else if (status === "Sent") {
+        icon = <div className="message-sent"/>
+    } else if (status === "Opened") {
+        icon = <div className="message-opened"/>
     }
-    if (status === "Received") {
-        icon = <>
-        <div className="message-received"/>
-        <p>{props.message_status}</p>
-        </>
+    status = <p>{status}</p>;
+
+    const open = () => {
+        console.log("opening snap");
     }
 
     return (
         <>
-        <li className="message-content">
+        <li className="message-content" onClick={open}>
             <img className="message-avatar" src={props.sender_image} alt="Avatar"/>
             <ul className="message-info">
                 <h3>{props.sender_name}</h3>
                 <div className="message-sub-info">
                     {icon}
-                    <p>{props.time_sent} ago</p>
+                    {status}
+                    <p>Time ago</p>
                     {props.streak_num > 0 ? <p>{props.streak_num}{props.streak_image}</p> : null}
                 </div>
             </ul>

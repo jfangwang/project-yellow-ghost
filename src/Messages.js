@@ -10,14 +10,10 @@ class Messages extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            sender_image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png",
-            sender_name: "Guest",
-            message_status: "New Snap",
-            time_sent: '2 mins',
-            streak_num: 0,
             streak_image: "\u{1F525}",
             user_name: "Guest",
             user_email: "Guest",
+            user_friends: ["Guest (Me)"],
             user_pic: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png",
         }
     }
@@ -26,12 +22,31 @@ class Messages extends Component {
         auth.signInWithPopup(provider)
         .then((result) => {
             this.setState({
-                user_name: "Jonny",
+                user_name: result.user.displayName,
                 user_email: result.user.email,
                 user_pic: result.user.photoURL,
-            },
-            console.log(this.state.user_name)
-            )
+            })
+            // Creates a new entry in db if user is signing up
+            const userdb = db.collection("users").doc(result.user.email);
+            userdb.get().then((doc) => {
+                if (!doc.exists) {
+                    db.collection("users").doc(result.user.email).set({
+                        email: result.user.email,
+                        name: result.user.displayName,
+                        photoURL: result.user.photoURL,
+                        streak_emoji: this.state.streak_image,
+                        friends: [result.user.email],
+                        friends_data: [result.user.email : {"streak" : 0}],
+                    }, this.get_friends_list())
+                    .catch((error) => {
+                        console.log("Couldn't write user to DB, error: ", error);
+                    });
+                } else {
+                    this.get_friends_list();
+                }
+            }).catch((error) => {
+                console.log("Error getting document:", error);
+            });
         })
         .catch((error) => console.log(error.message));
     }
@@ -42,16 +57,27 @@ class Messages extends Component {
             user_name: "Guest",
             user_email: "Guest",
             user_pic: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png",
-        },
-        console.log(this.state.user_name)
-        )
+        })
     }
 
-    load_user = () => {
-
+    get_friends_list = () => {
+        const friends = db.collection("users").doc(this.state.user_email);
+        friends.get().then((doc) => {
+            this.setState({
+                user_friends: doc.data()["friends"]
+            });
+        });
     }
 
     render() {
+        const arr = this.state.user_friends;
+        var i = 0;
+        var newArr = [];
+        for (i=0; i<arr.length; i= i + 1) {
+            newArr[i] = arr[i];
+        }
+
+
         return ( 
         <div className="messages-screen">
             <div className="navbar">
@@ -77,13 +103,7 @@ class Messages extends Component {
                 </div>
             </div>
             <ul className="messages-list">
-                <Message sender_image={this.state.sender_image}
-                    sender_name={this.state.sender_name}
-                    message_status={this.state.message_status}
-                    time_sent={this.state.time_sent}
-                    streak_num={this.state.streak_num}
-                    streak_image={this.state.streak_image}
-                />
+            {newArr.map((x) => (<Message sender_name={x} streak_image={this.state.streak_image} />))}
             </ul>
         </div>
         );

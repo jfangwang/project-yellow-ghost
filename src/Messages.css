@@ -85,6 +85,20 @@ a:hover {
     border: 0.17rem solid red;
     border-radius: 0.2rem;
 }
+.message-opened {
+    width: 0;
+	height: 0;
+	border-top: 0.5rem solid transparent;
+	border-left: 1rem solid #555;
+	border-bottom: 0.5rem solid transparent;
+}
+.message-sent {
+    width: 0;
+	height: 0;
+	border-top: 0.5rem solid transparent;
+	border-left: 1rem solid #664db1;
+	border-bottom: 0.5rem solid transparent;
+}
 .red {
     color: red;
 }
