@@ -101,6 +101,7 @@ class Camera extends Component {
                 />}
                 { this.state.image ? <button className="capture" onClick={this.close}>Close</button> : <button className="capture" onClick={this.capture}>Capture</button> }
                 { this.state.image ? <button className="send" onClick={this.send}>Send</button> : null}
+                {  }
             </div>
         );
     }

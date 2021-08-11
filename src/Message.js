@@ -26,44 +26,22 @@ export default function Message(props) {
         .doc(props.user_email)
         .collection("Received")
         .orderBy("timeStamp", "desc")
-        // .where("email", "==", "qbs1864@gmail.com")
         .onSnapshot((snapshot) => {
-            if (snapshot.docs.length > 0) {
-                setStatus("New Snap");
-                if (snapshot.docs[0].data() != null){
-                    try {
-                        console.log(snapshot.docs[0].data()["timeStamp"].toDate().toUTCString());
-                        setTime(snapshot.docs[0].data()["timeStamp"].toDate().toUTCString());
-                    } catch (error){
-                        console.log("error");
+            var i = 0;
+            while (i < snapshot.docs.length && snapshot.docs[i].data()["email"] != props.sender_email) { i = i + 1; }
+            if (i < snapshot.docs.length) {
+                if (snapshot.docs[i].data()["email"] == props.sender_email) {
+                    setStatus("New Snap");
+                    if (snapshot.docs[i].data()["timeStamp"] != null) {
+                        setTime(snapshot.docs[i].data()["timeStamp"].toDate().toUTCString());
                     }
-                    
+                } else {
+                    setStatus("Received");
                 }
-                
-                // setTime(snapshot.docs[0].data()["timeStamp"])
             } else {
                 setStatus("Received");
             }
         })
-        // .limit(1).get().then((doc) => {
-        //     if (!doc.empty){
-        //         console.log("There is mail")
-        //         doc.forEach((x) => {
-        //             if (x.exists) {
-        //                 setStatus("New Snap");               
-        //                 setTime(x.data()["timeStamp"].toDate().toUTCString())
-        //             } else {
-        //                 console.log("doc does not exist"); 
-        //             }
-        //         })
-        //     } else {
-        //         console.log("there is no mail")
-        //         setStatus("Received");  
-        //     }
-            
-        // }).catch((error) => {
-        //     console.log("User does not exist: ", error)
-        // })
     }
 
     var status_output = <p>{status}</p>;
@@ -87,19 +65,25 @@ export default function Message(props) {
 
     const open = () => {
         console.log("opening snap", props.user_email);
-        const received = db.collection('posts').doc(props.user_email).collection("Received").orderBy("timeStamp", "desc").limit(1);
-        received.get().then((snapshot) => {
-            snapshot.forEach((doc) => {
-                if (!doc.empty) {
-                    setStatus("New Snap");
-                    // console.log("img", doc.data()["imageURL"]);
-                    setImg(doc.data()["imageURL"]);
-                    setImgid(doc.data()["id"]);
+        db.collection('posts')
+        .doc(props.user_email)
+        .collection("Received")
+        .orderBy("timeStamp", "desc")
+        .get().then((snapshot) => {
+            var i = 0;
+            while (i < snapshot.docs.length && snapshot.docs[i].data()["email"] != props.sender_email) { i = i + 1; }
+            if (i < snapshot.docs.length) {
+                if (snapshot.docs[i].data()["email"] == props.sender_email) {
+                    if (snapshot.docs[i].data() != null) {
+                        setImg(snapshot.docs[i].data()["imageURL"]);
+                        setImgid(snapshot.docs[i].data()["id"]);
+                    }
                 } else {
-                    console.log("doc does not exist");
+                    setStatus("Received");
                 }
-            })
-            
+            } else {
+                setStatus("Received");
+            }
         })
     }
 
@@ -138,7 +122,19 @@ export default function Message(props) {
                 })
                 delete_photo();
             } else {
-                console.log("working on it");
+                // Update list if there are other peole who have to see the post
+                var i = 0;
+                var arr = []
+                for (i=0; i<doc.data()["to"].length; i=i+1) {
+                    if (doc.data()["to"][i] != props.user_email){
+                        arr[i] = doc.data()["to"][i];
+                    }
+                }
+                sender.update({to: arr}).then(() => {
+                    console.log("Updated sender's list");
+                }).catch((error) => {
+                    console.log("could not update list: ", error);
+                })
             }
         })
     }
