@@ -12,7 +12,9 @@ class Camera extends Component {
         this.state = {
             width: window.innerWidth,
             height: window.innerHeight,
-            image: null
+            image: null,
+            screen: 'camera',
+
         }
         window.addEventListener("resize", this.update);
     }
@@ -63,7 +65,7 @@ class Camera extends Component {
                   to: to_users,
                 })
 								console.log("Photo Sent");
-								this.setState({ image: null })
+								this.setState({ image: null, screen: 'camera' })
               })
             }
             db.collection('posts').doc(email).collection("Sent").doc(id).set({
@@ -76,12 +78,16 @@ class Camera extends Component {
     }
 
     close = () => {
-        this.setState({ image: null })
+        this.setState({ image: null, screen: "camera" })
+    }
+
+    send_to = () => {
+      this.setState({screen: "send_to"})
     }
 
     capture = () => {
         const img = this.webcam.getScreenshot();
-        this.setState({ image: img })
+        this.setState({ image: img, screen: "captured" })
     }
 
     setRef = (webcam) => {
@@ -90,8 +96,8 @@ class Camera extends Component {
 
     render() {
         return (
-            <div className="cam-tab">
-                { this.state.image ? <img src={this.state.image} alt="asdf"/> : <Webcam
+            <>
+                {/* { this.state.image ? <img src={this.state.image} alt="asdf"/> : <Webcam
                     ref={this.setRef}
                     videoConstraints={{facingMode: this.state.faceMode, width: this.state.width, height: this.state.height}}
                     screenshotFormat="image/jpeg"
@@ -99,10 +105,39 @@ class Camera extends Component {
                     mirrored={true}
                     className="webcam"
                 />}
-                { this.state.image ? <button className="capture" onClick={this.close}>Close</button> : <button className="capture" onClick={this.capture}>Capture</button> }
-                { this.state.image ? <button className="send" onClick={this.send}>Send</button> : null}
-                {  }
-            </div>
+
+                { this.state.image || this.state.show_send_list ? <button className="capture" onClick={this.close}>Close</button> : <button className="capture" onClick={this.capture}>Capture</button> }
+                { this.state.image? <button className="send">Send to...</button> : null }
+                { this.state.show_send_list ? <button className="send" onClick={this.send}>Send</button> : null} */}
+              {this.state.screen ==="camera" ? 
+              <div className="cam-tab">
+                <Webcam
+                  ref={this.setRef}
+                  videoConstraints={{facingMode: this.state.faceMode, width: this.state.width, height: this.state.height}}
+                  screenshotFormat="image/jpeg"
+                  audio={false}
+                  mirrored={true}
+                  className="webcam"
+                />
+                <button className="capture" onClick={this.capture}>Capture</button>
+              </div> : null
+              }
+              {this.state.screen ==="captured" && this.state.image ? 
+              <div className="cam-tab">
+                <img src={this.state.image}></img>
+                <button className="capture" onClick={this.send_to}>Send to</button>
+                <button className="send" onClick={this.close}>Close</button>
+              </div> : null
+              }
+              {this.state.screen ==="send_to" && this.state.image  ? 
+                <div className="user-list">
+                
+                <button className="send" onClick={this.send}>Send</button>
+                <button className="capture" onClick={this.close}>Close</button>
+              </div> : null
+              }
+            
+            </>
         );
     }
 }

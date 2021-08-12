@@ -2,9 +2,11 @@ import React from 'react';
 import Helmet from 'react-helmet';
 import SwipeableViews from 'react-swipeable-views';
 import { bindKeyboard } from 'react-swipeable-views-utils';
+// import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
 import Messages from './Messages.js';
 import Camera from './Camera.js';
+
 
 const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
 

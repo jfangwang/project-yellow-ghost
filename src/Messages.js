@@ -4,7 +4,11 @@ import firebase from 'firebase/app';
 import './Messages.css';
 import MessagesNavbar from './MessagesNavbar';
 import Message from './Message';
+import SwipeableViews from 'react-swipeable-views';
 import { bindKeyboard } from 'react-swipeable-views-utils';
+
+const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
+var friends_list = [];
 
 class Messages extends Component {
     constructor(props) {
@@ -18,6 +22,23 @@ class Messages extends Component {
         }
     }
 
+    componentDidMount() {
+        this.test();
+    }
+
+    test = () => {
+        firebase.auth().onAuthStateChanged(function(user) {
+            if (user) {
+                this.setState({
+                    user_name: user.displayName,
+                    user_email: user.email,
+                    user_pic: user.photoURL,
+                })
+            }
+            
+        }.bind(this))
+    }
+
     login = () => {
         auth.signInWithPopup(provider)
         .then((result) => {
@@ -27,6 +48,7 @@ class Messages extends Component {
                 user_pic: result.user.photoURL,
             })
             // Creates a new entry in db if user is signing up
+            this.get_friends_list()
             const userdb = db.collection("users").doc(result.user.email);
             userdb.get().then((doc) => {
                 if (!doc.exists) {
@@ -35,13 +57,11 @@ class Messages extends Component {
                         name: result.user.displayName,
                         photoURL: result.user.photoURL,
                         streak_emoji: this.state.streak_image,
-                        friends: [result.user.email],
-                    }, this.get_friends_list())
+                        friends: friends_list,
+                    })
                     .catch((error) => {
                         console.log("Couldn't write user to DB, error: ", error);
                     });
-                } else {
-                    this.get_friends_list();
                 }
             }).catch((error) => {
                 console.log("Error getting document:", error);
@@ -66,6 +86,7 @@ class Messages extends Component {
             this.setState({
                 user_friends: doc.data()["friends"]
             });
+            friends_list = doc.data()["friends"];
         });
     }
 
@@ -78,30 +99,9 @@ class Messages extends Component {
         }
 
 
-        return ( 
+        return (
         <div className="messages-screen">
-            <div className="navbar">
-                <div className="nav-box-1">
-                    <ul>
-                        <li>
-                            {this.state.user_name == "Guest" ?
-                            <a onClick={this.login}>Sign In</a> :
-                            <img class="profile-pic" src={this.state.user_pic} onClick={this.logout} alt="Profile Picture" />
-                            }
-                        </li>
-                        <li><a>Search</a></li>
-                    </ul>
-                </div>
-                <div className="nav-box-2">
-                    <h1>Chat</h1>
-                </div>
-                <div className="nav-box-3">
-                    <ul>
-                        <li><a>Add Friend</a></li>
-                        <li><a>New Chat</a></li>
-                    </ul>
-                </div>
-            </div>
+            <MessagesNavbar user_name={this.state.user_name} user_pic={this.state.user_pic} login={this.login} logout={this.logout} />
             <ul className="messages-list">
             {newArr.map((x) => (<Message sender_email={x} user_email={this.state.user_email} streak_image={this.state.streak_image} />))}
             </ul>
