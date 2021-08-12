@@ -13,6 +13,7 @@ export default function MessagesNavbar(props) {
 	}
 	const hide_friends_button = ()=> {
 		setShow_Friends(false);
+		props.get_friends_list();
 	}
 
 	return (
@@ -52,15 +53,37 @@ export default function MessagesNavbar(props) {
 				<div className="search-bar"><input type="search" placeholder="Find Friends"></input></div>
 				<div className="add-title-navbar"><h3 className="quick-add">Quick Add ({props.user_strangers.length})</h3></div>
 				<ul className="add-list list-container">
-				{props.user_strangers.map((x) => (<Strangers stranger_pic={x.photoURL} stranger_name={x.name} stranger_username={x.email} friends_list={props.friends_list} get_messages={props.get_messages}/>))}
+				{props.user_strangers.map((x) => (
+					<Strangers 
+						stranger_pic={x.photoURL} 
+						stranger_name={x.name}
+						stranger_username={x.email}  
+						friends_list={props.friends_list} 
+						user_email={props.user_email}
+						get_friends_list={props.get_friends_list}
+					/>))
+				}
 				</ul>
 				<div className="add-title-navbar"><h3 className="quick-add">Friends ({props.user_friends.length})</h3></div>
 				<ul className="add-list list-container">
-				{props.user_friends.map((x) => (<Friends stranger_pic={x.photoURL} stranger_name={x.name} stranger_username={x.email} user_email={props.user_email} friends_list={props.friends_list} get_friends_list={props.get_friends_list()}/>))}
+				{props.user_friends.map((x) => (
+					<Friends 
+						friend_pic={x.photoURL} 
+						friend_name={x.name} 
+						friend_username={x.email} 
+						friends_list={props.friends_list}
+						user_email={props.user_email}  
+						get_friends_list={props.get_friends_list}
+					/>))
+				}
 				</ul>
 				<div className="add-title-navbar"><h3 className="quick-add">Everyone ({props.everyone.length})</h3></div>
 				<ul className="add-list list-container">
-				{props.everyone.map((x) => (<Everyone stranger_pic={x.photoURL} stranger_name={x.name} stranger_username={x.email} />))}
+				{props.everyone.map((x) => (
+					<Everyone stranger_pic={x.photoURL}
+						stranger_name={x.name} 
+						stranger_username={x.email} 
+					/>))}
 				</ul>
 				<div className="add-footer">
 

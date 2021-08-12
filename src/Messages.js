@@ -22,7 +22,6 @@ class Messages extends Component {
             user_strangers: null,
             everyone: [dummy_dict],
             user_pic: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png",
-            friends_list: []
         }
     }
 
@@ -84,18 +83,15 @@ class Messages extends Component {
     }
 
     get_friends_list = () => {
+        console.log("Get friends!!!!!");
         const friends = db.collection("users").doc(this.state.user_email);
         friends.get().then((doc) => {
             if (!doc.data().hasOwnProperty('friends')) {
                 friends_list = [this.state.user_email];
-                this.setState({
-                    friends_list: [this.state.user_email]
-                }, this.get_messages)
+                this.get_messages();
             } else {
                 friends_list = doc.data()["friends"];
-                this.setState({
-                    friends_list: [doc.data()["friends"]]
-                }, this.get_messages)
+                this.get_messages();
             }
 
         });
@@ -111,7 +107,7 @@ class Messages extends Component {
         var everyone_idx = 0;
         sender.get().then((doc) => {
             for (var i=0;i<doc.docs.length;i++) {
-                if (this.state.friends_list.includes(doc.docs[i].data()['email']) || friends_list.includes(doc.docs[i].data()['email'])) {
+                if (friends_list.includes(doc.docs[i].data()['email'])) {
                     friends_meta[meta_idx] = doc.docs[i].data()
                     meta_idx = meta_idx + 1;
                 } else {
@@ -140,6 +136,7 @@ class Messages extends Component {
         return (
         <div className="messages-screen">
             <MessagesNavbar
+                user_email={this.state.user_email}
                 user_name={this.state.user_name}
                 user_pic={this.state.user_pic}
                 login={this.login} logout={this.logout}
@@ -147,7 +144,7 @@ class Messages extends Component {
                 user_strangers={this.state.user_strangers}
                 everyone={this.state.everyone}
                 get_friends_list={this.get_friends_list.bind(this)}
-                friends_list={this.state.friends_list}
+                friends_list={friends_list}
             />
             <ul className="messages-list">
             {this.state.user_friends.map((x) => (<Message sender_email={x.email} profile_url={x.photoURL} sender_name={x.name} user_email={this.state.user_email} streak_image={this.state.streak_image} />))}

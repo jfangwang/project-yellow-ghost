@@ -139,9 +139,8 @@ ul[class*="messages-list"] li, ul[class*="add-list"] li {
 ul[class*="add-list"] li:not(:last-child) {
     border-bottom: 1px rgb(170, 170, 170) solid;
 }
-ul[class*="messages-list"], ul[class*="add-list"] {
+ul[class*="messages-list"] li, ul[class*="add-list"] {
     border-bottom: 1px rgb(170, 170, 170) solid;
-    width: 100%;
 }
 li {
     text-decoration: none;
