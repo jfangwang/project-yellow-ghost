@@ -158,6 +158,12 @@ class Messages extends Component {
                 logged_in={this.state.logged_in}
             />
             <ul className="messages-list">
+            {this.state.logged_in ? null : 
+            <li className="welcome-statement">Welcome to Project Yellow Ghost, a web app version of SnapChat. This was a project developed by Jonathan Wang
+                and this was his final project for school. Right now, you are currently not signed in but here is a local guest
+                account for you to demo. Feel free to sign in at the top if you want to start using this product. Happy Snapping!
+            </li>
+            }
             {this.state.user_friends.map((x) => (
                 <Message 
                     sender_email={x.email} 
