@@ -28,6 +28,7 @@ export default function Message(props) {
         .orderBy("timeStamp", "desc")
         .onSnapshot((snapshot) => {
             var i = 0;
+            // Filters out all the photos sent by the sender
             while (i < snapshot.docs.length && snapshot.docs[i].data()["email"] != props.sender_email) { i = i + 1; }
             if (i < snapshot.docs.length) {
                 if (snapshot.docs[i].data()["email"] == props.sender_email) {
@@ -139,38 +140,21 @@ export default function Message(props) {
         })
     }
 
-    const [profile_url, setURL] = useState("https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png");
-    const [sender_name, setName] = useState("Guest (Me)");
-
-    const get_sender_info = () => {
-        const sender = db.collection("users").doc(props.sender_email);
-        sender.get().then((doc) => {
-            if (doc.exists) {
-                setURL(doc.data()["photoURL"]);
-                setName(doc.data()["name"]);
-            } else {
-                setURL("https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png");
-                setName("Guest (Me)");
-            }
-        });
-    }
-
     useEffect(() => {
         update_messages();
-        get_sender_info();
     })
     
     return (
         <>
         {img ? <div className="image-background" onClick={close}><img className="image" src={img} /></div> :
             <li className="message-content" onClick={open}>
-                <img className="message-avatar" src={profile_url} alt="Avatar"/>
+                <img className="message-avatar" src={props.profile_url} alt="Avatar"/>
                 <ul className="message-info">
-                    <h3>{sender_name}</h3>
+                    <h3>{props.sender_name}</h3>
                     <div className="message-sub-info">
                         {icon}
                         {status_output}
-                        <p><ReactTimeAgo date={time} locale="en-US"/></p>
+                        {time != 0 ? <p><ReactTimeAgo date={time} locale="en-US"/></p> : null }
                         {props.streak_num > 0 ? <p>{props.streak_num}{props.streak_image}</p> : null}
                     </div>
                 </ul>
