@@ -81,6 +81,7 @@ class Messages extends Component {
                     user_name: user.displayName,
                     user_email: user.email,
                     user_pic: user.photoURL,
+                    logged_in: true,
                 },
                 this.get_friends_list,
                 )
@@ -160,8 +161,8 @@ class Messages extends Component {
             <ul className="messages-list">
             {this.state.logged_in ? null : 
             <li className="welcome-statement">Welcome to Project Yellow Ghost, a web app version of SnapChat. This was a project developed by Jonathan Wang
-                and this was his final project for school. Right now, you are currently not signed in but here is a local guest
-                account for you to demo. Feel free to sign in at the top if you want to start using this product. Happy Snapping!
+                and this was his final project for school. Right now, you are on a local guest account for you to try out. Feel free to sign in at the top if 
+                you want to start using this product. Happy Snapping!
             </li>
             }
             {this.state.user_friends.map((x) => (

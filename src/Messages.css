@@ -44,12 +44,13 @@
     justify-content: center;
 }
 .quick-add {
-    padding: 1rem;
+    width:96%;
 }
 .add-navbar {
     /* position: absolute; */
+
     top: 0;
-    width: 100%;
+    width:100%;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -64,7 +65,7 @@
     align-items: center;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
-    justify-content: space-between;
+    justify-content: center;
 }
 .add-body {
     width: 100%;
@@ -113,11 +114,12 @@ button:hover {
     border: none;
     background-color: white;
 }
-input[type="search"] {
+input[type="search"], input[type="search"]:focus {
     margin: 0.5rem;
     padding: 1rem 1.5rem 1rem 1.5rem;
     border-radius: 10rem;
     border: none;
+    outline: none;
     width: 98%;
     background-color: lightgrey;
     font-size: 1rem;

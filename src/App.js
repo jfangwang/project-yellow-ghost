@@ -31,7 +31,7 @@ class App extends React.Component {
   render() {
     return (
       <BindKeyboardSwipeableViews enableMouseEvents style={Object.assign({width: this.state.width, height: this.state.height, position: 'absolute', top: '0%', left: '0%'})}>
-        <div style={Object.assign({backgroundColor: 'mediumseagreen', height: '100%', width: '100%'})}>
+        <div style={Object.assign({backgroundColor: 'white', minHeight: '100vh', width: '100%'})}>
           <Helmet>
             <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"></meta>
           </Helmet>
