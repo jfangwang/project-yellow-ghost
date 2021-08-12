@@ -9,12 +9,13 @@ import { bindKeyboard } from 'react-swipeable-views-utils';
 
 const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
 var friends_list = [];
+var dummy_dict = {name:"Guest (me)", email: "Guest@project-yellow-ghost.com", friends: ['Guest@project-yellow-ghost.com'], streak_emoji:"\u{1F525}",photoURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png"}
 
 class Messages extends Component {
     constructor(props) {
         super(props);
-        var dummy_dict = {name:"Guest (me)", email: "Guest@project-yellow-ghost.com", friends: ['Guest@project-yellow-ghost.com'], streak_emoji:"\u{1F525}",photoURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png"}
         this.state = {
+            logged_in: false,
             streak_image: "\u{1F525}",
             user_name: "Guest",
             user_email: "Guest",
@@ -29,6 +30,7 @@ class Messages extends Component {
         auth.signInWithPopup(provider)
         .then((result) => {
             this.setState({
+                logged_in: true,
                 user_name: result.user.displayName,
                 user_email: result.user.email,
                 user_pic: result.user.photoURL,
@@ -61,9 +63,13 @@ class Messages extends Component {
     logout = () => {
         firebase.auth().signOut()
         this.setState({
+            logged_in: false,
+            streak_image: "\u{1F525}",
             user_name: "Guest",
             user_email: "Guest",
-            user_friends: ["Guest (Me)"],
+            user_friends: [dummy_dict],
+            user_strangers: null,
+            everyone: [dummy_dict],
             user_pic: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png",
         })
     }
@@ -84,17 +90,20 @@ class Messages extends Component {
 
     get_friends_list = () => {
         console.log("Get friends!!!!!");
-        const friends = db.collection("users").doc(this.state.user_email);
-        friends.get().then((doc) => {
-            if (!doc.data().hasOwnProperty('friends')) {
-                friends_list = [this.state.user_email];
-                this.get_messages();
-            } else {
-                friends_list = doc.data()["friends"];
-                this.get_messages();
-            }
+        if (this.state.logged_in) {
+            const friends = db.collection("users").doc(this.state.user_email);
+            friends.get().then((doc) => {
+                if (!doc.data().hasOwnProperty('friends')) {
+                    friends_list = [this.state.user_email];
+                    this.get_messages();
+                } else {
+                    friends_list = doc.data()["friends"];
+                    this.get_messages();
+                }
+    
+            });
+        }
 
-        });
     }
 
     get_messages = () => {
@@ -139,15 +148,26 @@ class Messages extends Component {
                 user_email={this.state.user_email}
                 user_name={this.state.user_name}
                 user_pic={this.state.user_pic}
-                login={this.login} logout={this.logout}
+                login={this.login.bind(this)}
+                logout={this.logout.bind(this)}
                 user_friends={this.state.user_friends}
                 user_strangers={this.state.user_strangers}
                 everyone={this.state.everyone}
                 get_friends_list={this.get_friends_list.bind(this)}
                 friends_list={friends_list}
+                logged_in={this.state.logged_in}
             />
             <ul className="messages-list">
-            {this.state.user_friends.map((x) => (<Message sender_email={x.email} profile_url={x.photoURL} sender_name={x.name} user_email={this.state.user_email} streak_image={this.state.streak_image} />))}
+            {this.state.user_friends.map((x) => (
+                <Message 
+                    sender_email={x.email} 
+                    profile_url={x.photoURL} 
+                    sender_name={x.name} 
+                    user_email={this.state.user_email} 
+                    streak_image={this.state.streak_image}
+                    logged_in={this.state.logged_in}
+                />))
+            }
             </ul>
         </div>
         );
