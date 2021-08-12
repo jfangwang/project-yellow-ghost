@@ -1,6 +1,5 @@
 import React, { Component, useState, useEffect } from 'react';
-import {auth, storage, db} from './Firebase.js';
-import firebase from 'firebase/app';
+import {db} from './Firebase.js';
 import './Messages.css';
 
 function Friends(props) {

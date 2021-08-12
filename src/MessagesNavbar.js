@@ -1,6 +1,4 @@
 import React, { Component, useState, useEffect } from 'react';
-import {auth, storage, db} from './Firebase.js';
-import firebase from 'firebase/app';
 import {Friends, Strangers, Everyone} from './Friends.js';
 import './Messages.css';
 
