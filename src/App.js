@@ -160,8 +160,6 @@ class App extends React.Component {
   }
   componentDidMount() {
       this.check_user();
-      this.get_friends_list();
-      this.get_all_users();
   }
 
 

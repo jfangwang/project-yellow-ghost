@@ -6,12 +6,12 @@ export default function MessagesNavbar(props) {
 	const [show_friends, setShow_Friends] = useState(false);
 
 	const show_friends_button = () => {
-		setShow_Friends(true);
 		props.get_friends_list();
+		setShow_Friends(true);
 	}
 	const hide_friends_button = ()=> {
-		setShow_Friends(false);
 		props.get_friends_list();
+		setShow_Friends(false);
 	}
 
 	return (
