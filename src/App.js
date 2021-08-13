@@ -13,8 +13,17 @@ import Camera from './Camera.js';
 // All the firebase calls will occur here to minimize usage
 
 const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
-var friends_list = [];
-var dummy_dict = {name:"Guest (me)", email: "Guest@project-yellow-ghost.com", friends: ['Guest@project-yellow-ghost.com'], streak_emoji:"\u{1F525}",photoURL: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png"}
+var default_pic = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png"
+var dummy_dict = {
+  email: "Guest@project-yellow-ghost.com",
+  name:"Guest",
+  photoURL: default_pic,
+  streak_emoji:"\u{1F525}",
+  imgs_sent: 0,
+  imgs_received: 0,
+  friends: ['Guest@project-yellow-ghost.com'],
+}
+
 
 class App extends React.Component {
   constructor(props) {
@@ -26,13 +35,17 @@ class App extends React.Component {
       width: window.innerWidth,
       // All for Messages
       logged_in: false,
-      streak_image: "\u{1F525}",
-      user_name: "Guest",
+      user_friends_dict: [dummy_dict],
+      user_strangers_dict: null,
+      everyone_dict: [dummy_dict],
+      // Properties for every user on firebase
       user_email: "Guest",
-      user_friends: [dummy_dict],
-      user_strangers: null,
-      everyone: [dummy_dict],
-      user_pic: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png",
+      user_name: "Guest",
+      user_pic: default_pic,
+      streak_emoji: "\u{1F525}",
+      imgs_sent: 0,
+      imgs_received: 0,
+      user_friends: ["Guest@mail"]
     }
     window.addEventListener("resize", this.update);
   }
@@ -49,33 +62,13 @@ class App extends React.Component {
   login = () => {
     auth.signInWithPopup(provider)
     .then((result) => {
-        this.setState({
-            logged_in: true,
-            user_name: result.user.displayName,
-            user_email: result.user.email,
-            user_pic: result.user.photoURL,
-        })
-        // Creates a new entry in db if user is signing up
-        const userdb = db.collection("users").doc(result.user.email);
-        userdb.get().then((doc) => {
-            if (!doc.exists) {
-                db.collection("users").doc(result.user.email).set({
-                    email: result.user.email,
-                    name: result.user.displayName,
-                    photoURL: result.user.photoURL,
-                    streak_emoji: this.state.streak_image,
-                    friends: [result.user.email],
-                })
-                .catch((error) => {
-                    console.log("Couldn't write user to DB, error: ", error);
-                });
-                this.get_friends_list()
-            } else {
-                this.get_friends_list();
-            }
-        }).catch((error) => {
-            console.log("Error getting document:", error);
-        });
+      this.setState({
+          logged_in: true,
+          user_name: result.user.displayName,
+          user_email: result.user.email,
+          user_pic: result.user.photoURL,
+          user_friends: [result.user.email],
+      }, this.get_friends_list)
     })
     .catch((error) => console.log(error.message));
   }
@@ -83,12 +76,12 @@ class App extends React.Component {
     firebase.auth().signOut()
     this.setState({
         logged_in: false,
-        streak_image: "\u{1F525}",
+        streak_emoji: "\u{1F525}",
         user_name: "Guest",
         user_email: "Guest",
-        user_friends: [dummy_dict],
-        user_strangers: null,
-        everyone: [dummy_dict],
+        user_friends_dict: [dummy_dict],
+        user_strangers_dict: null,
+        everyone_dict: [dummy_dict],
         user_pic: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png",
     })
   }
@@ -100,59 +93,76 @@ class App extends React.Component {
                 user_email: user.email,
                 user_pic: user.photoURL,
                 logged_in: true,
-            },
-            this.get_friends_list,
+            }, this.get_friends_list
             )
         }
     }.bind(this))
 	}
 	get_friends_list = () => {
-			console.log("Get friends!!!!!");
-			if (this.state.logged_in) {
-					const friends = db.collection("users").doc(this.state.user_email);
-					friends.get().then((doc) => {
-							if (!doc.data().hasOwnProperty('friends')) {
-									friends_list = [this.state.user_email];
-									this.get_messages();
-							} else {
-									friends_list = doc.data()["friends"];
-									this.get_messages();
-							}
 
-					});
-			}
+    const userdb = db.collection("users").doc(this.state.user_email);
+        userdb.get().then((doc) => {
+            if (!doc.exists) {
+              // It is a new user and creates a new doc
+              db.collection("users").doc(this.state.user_email).set({
+                  email: this.state.user_email,
+                  name: this.state.user_name,
+                  photoURL: this.state.user_pic,
+                  streak_emoji: this.state.streak_emoji,
+                  imgs_sent: 0,
+                  imgs_received: 0,
+                  friends: [this.state.user_email],
+              })
+              .catch((error) => {
+                  console.log("Couldn't write user to DB, error: ", error);
+              });
+              this.get_all_users()
+            } else {
+              // User has logged in before and has friends
+              this.setState({
+                user_friends: doc.data()["friends"],
+                imgs_sent: doc.data()["imgs_sent"],
+                imgs_received: doc.data()["imgs_received"],
+                streak_emoji: doc.data()["streak_emoji"],
+              }, this.get_all_users);
+            }
 
-	}
-	get_messages = () => {
-			const sender = db.collection("users");
-			var friends_meta = [];
-			var strangers_meta = [];
-			var everyone_meta = [];
-			var meta_idx = 0;
-			var strangers_idx = 0;
-			var everyone_idx = 0;
-			sender.get().then((doc) => {
-					for (var i=0;i<doc.docs.length;i++) {
-							if (friends_list.includes(doc.docs[i].data()['email'])) {
-									friends_meta[meta_idx] = doc.docs[i].data()
-									meta_idx = meta_idx + 1;
-							} else {
-									strangers_meta[strangers_idx] = doc.docs[i].data()
-									strangers_idx = strangers_idx + 1;
-							}
-							everyone_meta[everyone_idx] = doc.docs[i].data()
-							everyone_idx = everyone_idx + 1;
-					}
-					this.setState({
-							user_friends: friends_meta,
-							user_strangers: strangers_meta,
-							everyone: everyone_meta,
-					})
-			});
-	}
-	componentDidMount() {
-			this.check_user();
-	}
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+        });
+  }
+  get_all_users = () => {
+    var friends_meta = [];
+    var strangers_meta = [];
+    var everyone_meta = [];
+    var meta_idx = 0;
+    var strangers_idx = 0;
+    var everyone_idx = 0;
+    const sender = db.collection("users");
+    sender.get().then((doc) => {
+        for (var i=0;i<doc.docs.length;i++) {
+            if (this.state.user_friends.includes(doc.docs[i].data()['email'])) {
+                friends_meta[meta_idx] = doc.docs[i].data()
+                meta_idx = meta_idx + 1;
+            } else {
+                strangers_meta[strangers_idx] = doc.docs[i].data()
+                strangers_idx = strangers_idx + 1;
+            }
+            everyone_meta[everyone_idx] = doc.docs[i].data()
+            everyone_idx = everyone_idx + 1;
+        }
+        this.setState({
+            user_friends_dict: friends_meta,
+            user_strangers_dict: strangers_meta,
+            everyone_dict: everyone_meta,
+        })
+    });
+  }
+  componentDidMount() {
+      this.check_user();
+      this.get_friends_list();
+      this.get_all_users();
+  }
 
 
   render() {
@@ -162,7 +172,21 @@ class App extends React.Component {
           <Helmet>
             <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"></meta>
           </Helmet>
-          <Messages/>
+          <Messages
+            user_email={this.state.user_email}
+            user_name={this.state.user_name}
+            user_pic={this.state.user_pic}
+            user_friends_dict={this.state.user_friends_dict}
+            user_strangers_dict={this.state.user_strangers_dict}
+            everyone_dict={this.state.everyone_dict}
+            logged_in={this.state.logged_in}
+            login={this.login.bind(this)}
+            logout={this.logout.bind(this)}
+            get_friends_list={this.get_friends_list.bind(this)}
+            get_all_users={this.get_all_users.bind(this)}
+            friends_list={this.state.user_friends}
+            streak_emoji={this.state.streak_emoji}
+          />
         </div>
         <div style={Object.assign({backgroundColor: 'Plum'})} >
           <Helmet>

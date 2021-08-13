@@ -9,12 +9,10 @@ function Friends(props) {
 
 	const remove_friend = () => {
 		props.friends_list.splice(props.friends_list.indexOf(props.friend_username), 1)
-		// console.log(props.friends_list, props.friends_list.indexOf(props.friend_username), props.friend_username);
 		friends.update({friends: props.friends_list})
 	}
 	const remove = () => {
 		remove_friend();
-		// props.get_friends_list();
 		setRemoved(true);
 	}
 
@@ -41,13 +39,11 @@ function Strangers(props) {
 	
 	const add_friend = () => {
 		props.friends_list.push(props.stranger_username);
-		// console.log("adding stranger", props.stranger_username, props.user_email, props.friends_list);
 		friends.update({friends: props.friends_list})
 	}
 
 	const add_true = () => {
 		add_friend();
-		// props.get_friends_list();
 		setAdded(true);
 	}
 
@@ -79,7 +75,6 @@ function Everyone(props) {
 					   </ul>
 					   </div>
 					   <div className="add-box-2">
-						   {/* <button><b>Remove</b></button> */}
 					   </div>
 	   </li>
    )

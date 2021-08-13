@@ -40,7 +40,8 @@ export default function MessagesNavbar(props) {
 			</div>
 		</div>
 		: null}
-		{ show_friends ?
+		{ show_friends && props.user_strangers_dict != null &&
+		props.user_friends_dict != null && props.everyone_dict != null ?
 		<div className="add-friends">
 			<div className="add-navbar">
 				<div className="nav-box-1"><ul><li><a onClick={hide_friends_button}><b>Close</b></a></li></ul></div>
@@ -49,9 +50,9 @@ export default function MessagesNavbar(props) {
 			</div>
 			<div className="add-body">
 				<div className="search-bar"><input type="search" placeholder="Find Friends"></input></div>
-				<div className="add-title-navbar"><h3 className="quick-add">Quick Add ({props.logged_in ? props.user_strangers.length : 0})</h3></div>
+				<div className="add-title-navbar"><h3 className="quick-add">Quick Add ({props.logged_in ? props.user_strangers_dict.length : 0})</h3></div>
 				<ul className="add-list list-container">
-				{props.logged_in ? props.user_strangers.map((x) => (
+				{props.logged_in ? props.user_strangers_dict.map((x) => (
 					<Strangers 
 						stranger_pic={x.photoURL} 
 						stranger_name={x.name}
@@ -64,9 +65,9 @@ export default function MessagesNavbar(props) {
 					null
 				}
 				</ul>
-				<div className="add-title-navbar"><h3 className="quick-add">Friends ({props.user_friends.length})</h3></div>
+				<div className="add-title-navbar"><h3 className="quick-add">Friends ({props.user_friends_dict.length})</h3></div>
 				<ul className="add-list list-container">
-				{props.user_friends.map((x) => (
+				{props.user_friends_dict.map((x) => (
 					<Friends 
 						friend_pic={x.photoURL} 
 						friend_name={x.name} 
@@ -77,9 +78,9 @@ export default function MessagesNavbar(props) {
 					/>))
 				}
 				</ul>
-				<div className="add-title-navbar"><h3 className="quick-add">Everyone ({props.everyone.length})</h3></div>
+				<div className="add-title-navbar"><h3 className="quick-add">Everyone ({props.everyone_dict.length})</h3></div>
 				<ul className="add-list list-container">
-				{props.everyone.map((x) => (
+				{props.everyone_dict.map((x) => (
 					<Everyone stranger_pic={x.photoURL}
 						stranger_name={x.name} 
 						stranger_username={x.email} 

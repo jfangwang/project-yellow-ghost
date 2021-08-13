@@ -46,8 +46,6 @@ export default function Message(props) {
     }
 
     var status_output = <p>{status}</p>;
-    // const test1 = document.getElementById('icon');
-    // console.log("test", test1);
     var icon = <div className="message-received"/>;
 
     if (status === "New Snap"){
@@ -105,7 +103,6 @@ export default function Message(props) {
 
     const close = () => {
         setImg(null);
-        console.log("opening snap", props.user_email);
         const img = db.collection('posts').doc(props.user_email).collection("Received").doc(imgid);
         img.delete().then(() => {
             console.log("Document deleted");
@@ -155,7 +152,7 @@ export default function Message(props) {
                         {icon}
                         {status_output}
                         {time != 0 ? <p><ReactTimeAgo date={time} locale="en-US"/></p> : null }
-                        {props.streak_num > 0 ? <p>{props.streak_num}{props.streak_image}</p> : null}
+                        {props.streak_num > 0 ? <p>{props.streak_num}{props.streak_emoji}</p> : null}
                     </div>
                 </ul>
             </li>
