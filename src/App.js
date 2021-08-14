@@ -194,7 +194,14 @@ class App extends React.Component {
           {/* <Helmet>
             <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"></meta>
           </Helmet> */}
-          <Camera/>
+          <Camera
+            height={this.state.height}
+            width={this.state.width}
+            user_name={this.state.user_name}
+            user_pic={this.state.user_pic}
+            login={this.login.bind(this)}
+            logout={this.logout.bind(this)}
+          />
         </div>
       </BindKeyboardSwipeableViews>
     );
