@@ -8,11 +8,15 @@ function Friends(props) {
 	const friends = db.collection("users").doc(props.user_email);
 
 	const remove_friend = () => {
+
 		props.friends_list.splice(props.friends_list.indexOf(props.friend_username), 1)
 		friends.update({friends: props.friends_list})
+
 	}
 	const remove = () => {
-		remove_friend();
+		if (props.friend_username != "Guest@project-yellow-ghost.com") {
+			remove_friend();
+		}
 		setRemoved(true);
 	}
 
@@ -34,6 +38,7 @@ function Friends(props) {
 
 function Strangers(props) {
 
+
 	const [added, setAdded] = useState(false);
 	const friends = db.collection("users").doc(props.user_email);
 	
@@ -43,7 +48,9 @@ function Strangers(props) {
 	}
 
 	const add_true = () => {
-		add_friend();
+		if (props.friend_username != "Guest@project-yellow-ghost.com") {
+			add_friend();
+		}
 		setAdded(true);
 	}
 

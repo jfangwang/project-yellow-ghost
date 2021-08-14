@@ -4,6 +4,7 @@ import { v4 as uuid } from "uuid";
 import './Camera.css';
 import {storage, db} from './Firebase.js';
 import firebase from 'firebase/app';
+import CameraNavbar from './CameraNavbar';
 
 
 class Camera extends Component {
@@ -14,6 +15,7 @@ class Camera extends Component {
             height: window.innerHeight,
             image: null,
             screen: 'camera',
+            faceMode: "user"
 
         }
         window.addEventListener("resize", this.update);
@@ -34,9 +36,6 @@ class Camera extends Component {
         var name = user.displayName;
         var avatarURL = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png";
 				var to_users = [email]
-        if (user) {
-
-        }
         const uploadTask = storage.ref(`posts/${id}`).putString(this.state.image, 'data_url');
           uploadTask.on(
           "state_changed",
@@ -86,7 +85,7 @@ class Camera extends Component {
     }
 
     capture = () => {
-        const img = this.webcam.getScreenshot();
+        const img = this.webcam.getScreenshot({width: this.state.width, height: this.state.height});
         this.setState({ image: img, screen: "captured" })
     }
 
@@ -97,19 +96,35 @@ class Camera extends Component {
     render() {
         return (
             <>
-                {/* { this.state.image ? <img src={this.state.image} alt="asdf"/> : <Webcam
-                    ref={this.setRef}
-                    videoConstraints={{facingMode: this.state.faceMode, width: this.state.width, height: this.state.height}}
-                    screenshotFormat="image/jpeg"
-                    audio={false}
-                    mirrored={true}
-                    className="webcam"
-                />}
+            <div className="webcam-screen">
+            <Webcam
 
-                { this.state.image || this.state.show_send_list ? <button className="capture" onClick={this.close}>Close</button> : <button className="capture" onClick={this.capture}>Capture</button> }
-                { this.state.image? <button className="send">Send to...</button> : null }
-                { this.state.show_send_list ? <button className="send" onClick={this.send}>Send</button> : null} */}
-              {this.state.screen ==="camera" ? 
+              className="webcam"
+              ref={this.setRef}
+              audio={false}
+              mirrored={true}
+              // imageSmoothing={true}
+              screenshotFormat="image/png"
+              screenshotQuality={1}
+              videoConstraints={{facingMode: this.state.faceMode}}
+            />
+              <div className="webcam-overlay">
+                <CameraNavbar login={this.login}/>
+                <div className="webcam-footer">
+                  <div className="nav-box-1">
+                    <ul>
+                      <li><a>Memories</a></li>
+                      <li><a>Capture</a></li>
+                      <li><a>Filters</a></li>
+                    </ul>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+
+              {/* {this.state.screen ==="camera" ?
               <div className="cam-tab">
                 <Webcam
                   ref={this.setRef}
@@ -135,7 +150,7 @@ class Camera extends Component {
                 <button className="send" onClick={this.send}>Send</button>
                 <button className="capture" onClick={this.close}>Close</button>
               </div> : null
-              }
+              } */}
             
             </>
         );

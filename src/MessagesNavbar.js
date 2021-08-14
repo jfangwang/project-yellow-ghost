@@ -50,19 +50,18 @@ export default function MessagesNavbar(props) {
 			</div>
 			<div className="add-body">
 				<div className="search-bar"><input type="search" placeholder="Find Friends"></input></div>
-				<div className="add-title-navbar"><h3 className="quick-add">Quick Add ({props.logged_in ? props.user_strangers_dict.length : 0})</h3></div>
+				<div className="add-title-navbar"><h3 className="quick-add">Quick Add ({props.user_strangers_dict.length})</h3></div>
 				<ul className="add-list list-container">
-				{props.logged_in ? props.user_strangers_dict.map((x) => (
+				{props.user_strangers_dict.map((x) => (
 					<Strangers 
 						stranger_pic={x.photoURL} 
 						stranger_name={x.name}
-						stranger_username={x.email}  
+						stranger_username={x.email}
+						friend_username={x.email}
 						friends_list={props.friends_list} 
 						user_email={props.user_email}
 						get_friends_list={props.get_friends_list}
 					/>))
-					:
-					null
 				}
 				</ul>
 				<div className="add-title-navbar"><h3 className="quick-add">Friends ({props.user_friends_dict.length})</h3></div>

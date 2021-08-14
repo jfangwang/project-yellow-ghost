@@ -33,10 +33,12 @@ class App extends React.Component {
       index: 0,
       height: window.innerHeight,
       width: window.innerWidth,
+      // All for Camera
+
       // All for Messages
       logged_in: false,
       user_friends_dict: [dummy_dict],
-      user_strangers_dict: null,
+      user_strangers_dict: [dummy_dict],
       everyone_dict: [dummy_dict],
       // Properties for every user on firebase
       user_email: "Guest",
@@ -45,7 +47,7 @@ class App extends React.Component {
       streak_emoji: "\u{1F525}",
       imgs_sent: 0,
       imgs_received: 0,
-      user_friends: ["Guest@mail"]
+      user_friends: ["Guest@mail"],
     }
     window.addEventListener("resize", this.update);
   }
@@ -80,7 +82,7 @@ class App extends React.Component {
         user_name: "Guest",
         user_email: "Guest",
         user_friends_dict: [dummy_dict],
-        user_strangers_dict: null,
+        user_strangers_dict: [dummy_dict],
         everyone_dict: [dummy_dict],
         user_pic: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png",
     })
@@ -100,36 +102,38 @@ class App extends React.Component {
 	}
 	get_friends_list = () => {
 
-    const userdb = db.collection("users").doc(this.state.user_email);
-        userdb.get().then((doc) => {
-            if (!doc.exists) {
-              // It is a new user and creates a new doc
-              db.collection("users").doc(this.state.user_email).set({
-                  email: this.state.user_email,
-                  name: this.state.user_name,
-                  photoURL: this.state.user_pic,
-                  streak_emoji: this.state.streak_emoji,
-                  imgs_sent: 0,
-                  imgs_received: 0,
-                  friends: [this.state.user_email],
-              })
-              .catch((error) => {
-                  console.log("Couldn't write user to DB, error: ", error);
-              });
-              this.get_all_users()
-            } else {
-              // User has logged in before and has friends
-              this.setState({
-                user_friends: doc.data()["friends"],
-                imgs_sent: doc.data()["imgs_sent"],
-                imgs_received: doc.data()["imgs_received"],
-                streak_emoji: doc.data()["streak_emoji"],
-              }, this.get_all_users);
-            }
+    if (this.state.user_email != "Guest") {
+      const userdb = db.collection("users").doc(this.state.user_email);
+      userdb.get().then((doc) => {
+          if (!doc.exists) {
+            // It is a new user and creates a new doc
+            db.collection("users").doc(this.state.user_email).set({
+                email: this.state.user_email,
+                name: this.state.user_name,
+                photoURL: this.state.user_pic,
+                streak_emoji: this.state.streak_emoji,
+                imgs_sent: 0,
+                imgs_received: 0,
+                friends: [this.state.user_email],
+            })
+            .catch((error) => {
+                console.log("Couldn't write user to DB, error: ", error);
+            });
+            this.get_all_users()
+          } else {
+            // User has logged in before and has friends
+            this.setState({
+              user_friends: doc.data()["friends"],
+              imgs_sent: doc.data()["imgs_sent"],
+              imgs_received: doc.data()["imgs_received"],
+              streak_emoji: doc.data()["streak_emoji"],
+            }, this.get_all_users);
+          }
 
-        }).catch((error) => {
-            console.log("Error getting document:", error);
-        });
+      }).catch((error) => {
+          console.log("Error getting document:", error);
+      });
+    }
   }
   get_all_users = () => {
     var friends_meta = [];
@@ -187,9 +191,9 @@ class App extends React.Component {
           />
         </div>
         <div style={Object.assign({backgroundColor: 'Plum'})} >
-          <Helmet>
+          {/* <Helmet>
             <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"></meta>
-          </Helmet>
+          </Helmet> */}
           <Camera/>
         </div>
       </BindKeyboardSwipeableViews>
