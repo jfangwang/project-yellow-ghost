@@ -143,7 +143,7 @@ export default function Message(props) {
     
     return (
         <>
-        {img ? <div className="image-background" onClick={close}><img className="image" src={img} /></div> :
+        {img ? <div className="image-background" onClick={close}><img id="image" className="" src={img} /></div> :
             <li className="message-content" onClick={open}>
                 <img className="message-avatar" src={props.profile_url} alt="Avatar"/>
                 <ul className="message-info">

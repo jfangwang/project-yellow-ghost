@@ -228,10 +228,19 @@ a:hover {
     left: 0;
     height: 100%;
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: black;
 }
-.image {
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
+.image-desktop {
+    width: 100% !important;
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+.image-mobile {
+    height : 100% !important;
+    width: auto;
+    overflow-y: hidden;
+    overflow-x: hidden;
 }

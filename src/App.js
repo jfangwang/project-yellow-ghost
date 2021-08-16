@@ -8,6 +8,7 @@ import firebase from 'firebase/app';
 import './App.css';
 import Messages from './Messages.js';
 import Camera from './Camera.js';
+import { findAllByAltText } from '@testing-library/react';
 
 
 // All the firebase calls will occur here to minimize usage
@@ -33,6 +34,7 @@ class App extends React.Component {
       index: 0,
       height: window.innerHeight,
       width: window.innerWidth,
+      mobile: false,
       // All for Camera
 
       // All for Messages
@@ -52,11 +54,25 @@ class App extends React.Component {
     window.addEventListener("resize", this.update);
   }
 
+  set_device = () => {
+    if (this.state.width < this.state.height) {
+      this.setState({
+        mobile:true
+      })
+    } else {
+      this.setState({
+        mobile:false
+      })
+    }
+  }
+
   update = () => {
     this.setState({
       width: window.innerWidth,
       height: window.innerHeight
-    });
+    },
+    this.set_device()
+    );
   };
 
   // For Messages Component
@@ -164,6 +180,7 @@ class App extends React.Component {
   }
   componentDidMount() {
       this.check_user();
+      this.set_device();
   }
 
 
@@ -201,6 +218,7 @@ class App extends React.Component {
             user_pic={this.state.user_pic}
             login={this.login.bind(this)}
             logout={this.logout.bind(this)}
+            mobile={this.state.mobile}
           />
         </div>
       </BindKeyboardSwipeableViews>
