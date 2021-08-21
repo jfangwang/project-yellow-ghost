@@ -214,11 +214,19 @@ class App extends React.Component {
           <Camera
             height={this.state.height}
             width={this.state.width}
+            mobile={this.state.mobile}
+            user_email={this.state.user_email}
             user_name={this.state.user_name}
             user_pic={this.state.user_pic}
+            user_friends_dict={this.state.user_friends_dict}
+            user_strangers_dict={this.state.user_strangers_dict}
+            everyone_dict={this.state.everyone_dict}
+            logged_in={this.state.logged_in}
             login={this.login.bind(this)}
             logout={this.logout.bind(this)}
-            mobile={this.state.mobile}
+            get_friends_list={this.get_friends_list.bind(this)}
+            get_all_users={this.get_all_users.bind(this)}
+            friends_list={this.state.user_friends}
           />
         </div>
       </BindKeyboardSwipeableViews>

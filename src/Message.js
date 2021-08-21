@@ -120,14 +120,10 @@ export default function Message(props) {
                 })
                 delete_photo();
             } else {
-                // Update list if there are other peole who have to see the post
+                // Update list if there are other people who have to see the post
                 var i = 0;
-                var arr = []
-                for (i=0; i<doc.data()["to"].length; i=i+1) {
-                    if (doc.data()["to"][i] != props.user_email){
-                        arr[i] = doc.data()["to"][i];
-                    }
-                }
+                var arr = doc.data()["to"]
+                arr.splice(arr.indexOf(props.user_email), 1)
                 sender.update({to: arr}).then(() => {
                     console.log("Updated sender's list");
                 }).catch((error) => {
@@ -143,7 +139,7 @@ export default function Message(props) {
     
     return (
         <>
-        {img ? <div className="image-background" onClick={close}><img id="image" className="" src={img} /></div> :
+        {img ? <div className="image-background" onClick={close}><img id="image" className="image-preview" src={img} /></div> :
             <li className="message-content" onClick={open}>
                 <img className="message-avatar" src={props.profile_url} alt="Avatar"/>
                 <ul className="message-info">

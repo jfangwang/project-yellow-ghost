@@ -244,3 +244,17 @@ a:hover {
     overflow-y: hidden;
     overflow-x: hidden;
 }
+.selected {
+    background-color: rgb(31, 168, 247);
+    height: 80%;
+    width: 100%;
+    border-radius: 100%;
+}
+.selected:hover {
+    background-color: rgb(114, 192, 218);
+}
+.unselected {
+    height: 80%;
+    width: 100%;
+    border-radius: 100%;
+}
