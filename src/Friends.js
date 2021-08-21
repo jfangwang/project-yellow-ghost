@@ -62,7 +62,7 @@ function SendFriends(props) {
 				<div className="add-box-1">
 				<img className="message-avatar" src={props.friend_pic} alt="Avatar"/>
 				<ul className="message-info">
-						<h1 className="selected">{props.friend_name}</h1>
+						<h2 className="selected">{props.friend_name}</h2>
 						{/* <p>{props.friend_username}</p> */}
 				</ul>
 				</div>
@@ -75,7 +75,7 @@ function SendFriends(props) {
 				<div className="add-box-1">
 				<img className="message-avatar" src={props.friend_pic} alt="Avatar"/>
 				<ul className="message-info">
-						<h1>{props.friend_name}</h1>
+						<h2>{props.friend_name}</h2>
 						{/* <p>{props.friend_username}</p> */}
 				</ul>
 				</div>

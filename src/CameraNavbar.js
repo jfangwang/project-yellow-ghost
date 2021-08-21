@@ -34,7 +34,7 @@ export default function CameraNavbar(props) {
 		<div className="nav-box-3">
 				<ul>
 					<li><a onClick={show_friends_button}>Add Friend</a></li>
-					<li><a>New Chat</a></li>
+					<li><a>Flip Camera</a></li>
 				</ul>
 			</div>
 		</div>

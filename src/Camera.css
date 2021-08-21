@@ -73,6 +73,15 @@ div[class="webcam-overlay"] li {
     justify-content: space-between;
     padding: 1rem 0 1rem 0;
 }
+.send_to-footer {
+    position: absolute;
+    bottom:0;
+    background-color: rgb(31, 168, 247);
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
 .send_to-header {
     width: 100%;
     padding: 2rem 0 2rem 0;

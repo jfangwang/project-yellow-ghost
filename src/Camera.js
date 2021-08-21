@@ -243,23 +243,13 @@ export default function Camera(props) {
           </ul>
         </div>
         <div className="send-list">
-          <div className="stories-header"><h3>Stories</h3></div>
+          {/* <div className="stories-header"><h3>Stories</h3></div>
           <ul className="selection-list list-container">
             <li>My Story</li>
           </ul>
           <div className="stories-header"><h3>Best Friends</h3></div>
           <ul className="add-list list-container">
-            {/* {props.user_friends_dict.map((x) => (
-              <SendFriends 
-                friend_pic={x.photoURL} 
-                friend_name={x.name} 
-                friend_username={x.email} 
-                friends_list={props.friends_list}
-                user_email={props.user_email}  
-                get_friends_list={props.get_friends_list}
-              />))
-            } */}
-          </ul>
+          </ul> */}
           <div className="stories-header"><h3>Recents</h3></div>
           <ul className="add-list list-container">
             {props.user_friends_dict.map((x) => (
@@ -276,9 +266,12 @@ export default function Camera(props) {
             }
           </ul>
         </div>
-        <div classname="send_to-footer">
-          {send_list.length <= 0 ? null: <button className="send" onClick={send}><h1>Send</h1></button> }
+        {send_list.length <= 0 ? null: 
+        <div className="send_to-footer">
+          <div></div>
+          <button className="send" onClick={send}><h1>Send</h1></button>
         </div>
+        }
       </div>
       : null}
       { show_friends && props.user_strangers_dict != null &&
