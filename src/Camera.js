@@ -26,8 +26,6 @@ export default function Camera(props) {
         var name = user.displayName;
         var avatarURL = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png";
 				var to_users = send_list;
-        var promises = [];
-        var url = "";
         const uploadTask = storage.ref(`posts/${id}`).putString(image, 'data_url');
           uploadTask.on(
           "state_changed",
