@@ -77,6 +77,7 @@ div[class="webcam-overlay"] li {
     width: 100%;
     padding: 2rem 0 2rem 0;
     background-color: white;
+    padding: 1rem 0 3rem 0 !important;
 }
 .send_to-header ul {
     display: flex;

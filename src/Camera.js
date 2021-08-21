@@ -68,7 +68,8 @@ export default function Camera(props) {
     }
 
     const send_to = () => {
-      setScreen("send_to")
+      setScreen("send_to");
+      setSend_list([]);
     }
 
     const go_back = () => {
@@ -93,6 +94,15 @@ export default function Camera(props) {
     const hide_friends_button = ()=> {
       props.get_friends_list();
       setShow_Friends(false);
+    }
+
+    const handle_send_list = (e) => {
+      var arr = [];
+      e.forEach((element) => {
+        arr.push(element);
+      })
+      setSend_list(arr)
+      console.log(arr);
     }
 
     useEffect(() => {
@@ -234,7 +244,7 @@ export default function Camera(props) {
         </div>
         <div className="send-list">
           <div className="stories-header"><h3>Stories</h3></div>
-          <ul className="add-list list-container">
+          <ul className="selection-list list-container">
             <li>My Story</li>
           </ul>
           <div className="stories-header"><h3>Best Friends</h3></div>
@@ -255,6 +265,7 @@ export default function Camera(props) {
             {props.user_friends_dict.map((x) => (
               <SendFriends
                 send_list={send_list}
+                handle_send_list={handle_send_list}
                 friend_pic={x.photoURL} 
                 friend_name={x.name} 
                 friend_username={x.email} 
@@ -266,7 +277,7 @@ export default function Camera(props) {
           </ul>
         </div>
         <div classname="send_to-footer">
-          {send_list.length == 0 ? <button onClick={send}>Send</button> : <button onClick={send}>Send</button> }
+          {send_list.length <= 0 ? null: <button className="send" onClick={send}><h1>Send</h1></button> }
         </div>
       </div>
       : null}

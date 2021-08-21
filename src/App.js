@@ -43,13 +43,13 @@ class App extends React.Component {
       user_strangers_dict: [dummy_dict],
       everyone_dict: [dummy_dict],
       // Properties for every user on firebase
-      user_email: "Guest",
+      user_email: "Guest@project-yellow-ghost.com",
       user_name: "Guest",
       user_pic: default_pic,
       streak_emoji: "\u{1F525}",
       imgs_sent: 0,
       imgs_received: 0,
-      user_friends: ["Guest@mail"],
+      user_friends: ["Guest@project-yellow-ghost.com"],
     }
     window.addEventListener("resize", this.update);
   }
