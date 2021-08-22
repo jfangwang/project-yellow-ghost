@@ -2,8 +2,9 @@ import React, { Component, useState, useEffect } from 'react';
 import {Friends, Strangers, Everyone} from './Friends.js';
 import './Messages.css';
 
-export default function MessagesNavbar(props) {
-	const [show_friends, setShow_Friends] = useState(false);
+
+export default function GeneralNavBar(props) {
+    const [show_friends, setShow_Friends] = useState(false);
 
 	const show_friends_button = () => {
 		props.get_friends_list();
@@ -17,7 +18,7 @@ export default function MessagesNavbar(props) {
 	return (
 		<>
 		{ !show_friends ? 
-		<div className="navbar">
+		<div className="navbar gen">
 		<div className="nav-box-1">
 			<ul>
 				<li>
@@ -30,7 +31,7 @@ export default function MessagesNavbar(props) {
 			</ul>
 		</div>
 		<div className="nav-box-2">
-			<h1>Chat</h1>
+			<h1>GENERAL</h1>
 		</div>
 		<div className="nav-box-3">
 				<ul>
@@ -42,7 +43,7 @@ export default function MessagesNavbar(props) {
 		: null}
 		{ show_friends && props.user_strangers_dict != null &&
 		props.user_friends_dict != null && props.everyone_dict != null ?
-		<div className="add-friends">
+		<div className="add-friends gen">
 			<div className="add-navbar">
 				<div className="nav-box-1"><ul><li><a onClick={hide_friends_button}><b>Close</b></a></li></ul></div>
 				<div className="nav-box-2"><h1>Add Friends</h1></div>

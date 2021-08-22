@@ -18,7 +18,14 @@
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
     justify-content: space-between;
-    background-color: white;
+    /* background-color: white; */
+    color: white;
+}
+.gen {
+    position: absolute;
+    top:0;
+    z-index: 10;
+    color: black;
 }
 /* .nav-box-1 ul, .nav-box-2 h1, .nav-box-3 ul, .messages-list{
     margin-block-start: 0rem;

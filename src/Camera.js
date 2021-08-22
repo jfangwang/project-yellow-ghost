@@ -177,20 +177,11 @@ export default function Camera(props) {
       { screen ==="camera" ?
         
         <div className="webcam-overlay">
-          <CameraNavbar
-            user_email={props.user_email}
-            user_name={props.user_name}
-            user_pic={props.user_pic}
-            login={props.login}
-            logout={props.logout}
-            user_friends_dict={props.user_friends_dict}
-            user_strangers_dict={props.user_strangers_dict}
-            everyone_dict={props.everyone_dict}
-            get_friends_list={props.get_friends_list}
-            get_all_users={props.get_all_users}
-            friends_list={props.friends_list}
-            logged_in={props.logged_in}
-          />
+          <div className="navbar">
+          <div className="nav-box-2">
+            <h1>Chat</h1>
+          </div>
+          </div>
 
           <div className="webcam-footer">
             <div className="nav-box-1">

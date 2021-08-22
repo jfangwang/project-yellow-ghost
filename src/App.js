@@ -8,7 +8,7 @@ import firebase from 'firebase/app';
 import './App.css';
 import Messages from './Messages.js';
 import Camera from './Camera.js';
-import { findAllByAltText } from '@testing-library/react';
+import GeneralNavBar from './GeneralNavBar.js';
 
 
 // All the firebase calls will occur here to minimize usage
@@ -211,6 +211,23 @@ class App extends React.Component {
 
   render() {
     return (
+      <>
+      <GeneralNavBar
+        user_email={this.state.user_email}
+        user_name={this.state.user_name}
+        user_pic={this.state.user_pic}
+        user_friends_dict={this.state.user_friends_dict}
+        user_strangers_dict={this.state.user_strangers_dict}
+        everyone_dict={this.state.everyone_dict}
+        logged_in={this.state.logged_in}
+        login={this.login.bind(this)}
+        logout={this.logout.bind(this)}
+        get_friends_list={this.get_friends_list.bind(this)}
+        get_messages_list={this.get_messages_list.bind(this)}
+        get_all_users={this.get_all_users.bind(this)}
+        friends_list={this.state.user_friends}
+        streak_emoji={this.state.streak_emoji}
+      />
       <BindKeyboardSwipeableViews enableMouseEvents style={Object.assign({width: this.state.width, height: this.state.height, position: 'absolute', top: '0%', left: '0%'})}>
         <div style={Object.assign({backgroundColor: 'white', minHeight: '100vh', width: '100%'})}>
           <Helmet>
@@ -218,19 +235,9 @@ class App extends React.Component {
           </Helmet>
           <Messages
             user_email={this.state.user_email}
-            user_name={this.state.user_name}
-            user_pic={this.state.user_pic}
-            user_friends_dict={this.state.user_friends_dict}
-            user_strangers_dict={this.state.user_strangers_dict}
-            everyone_dict={this.state.everyone_dict}
             logged_in={this.state.logged_in}
-            login={this.login.bind(this)}
-            logout={this.logout.bind(this)}
-            get_friends_list={this.get_friends_list.bind(this)}
-            get_messages_list={this.get_messages_list.bind(this)}
-            get_all_users={this.get_all_users.bind(this)}
-            friends_list={this.state.user_friends}
             streak_emoji={this.state.streak_emoji}
+            user_friends_dict={this.state.user_friends_dict}
           />
         </div>
         <div style={Object.assign({backgroundColor: 'Plum'})} >
@@ -241,22 +248,14 @@ class App extends React.Component {
             height={this.state.height}
             width={this.state.width}
             mobile={this.state.mobile}
-            user_email={this.state.user_email}
-            user_name={this.state.user_name}
-            user_pic={this.state.user_pic}
             user_friends_dict={this.state.user_friends_dict}
             user_strangers_dict={this.state.user_strangers_dict}
             everyone_dict={this.state.everyone_dict}
-            logged_in={this.state.logged_in}
-            login={this.login.bind(this)}
-            logout={this.logout.bind(this)}
-            get_friends_list={this.get_friends_list.bind(this)}
-            get_messages_list={this.get_messages_list.bind(this)}
-            get_all_users={this.get_all_users.bind(this)}
-            friends_list={this.state.user_friends}
+
           />
         </div>
       </BindKeyboardSwipeableViews>
+      </>
     );
   }
 }

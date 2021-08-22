@@ -1,26 +1,16 @@
 import React, { Component } from 'react';
 import './Messages.css';
-import MessagesNavbar from './MessagesNavbar';
 import Message from './Message';
 
 
 function Messages(props) {
     return (
     <div className="messages-screen">
-        <MessagesNavbar
-            user_email={props.user_email}
-            user_name={props.user_name}
-            user_pic={props.user_pic}
-            login={props.login}
-            logout={props.logout}
-            user_friends_dict={props.user_friends_dict}
-            user_strangers_dict={props.user_strangers_dict}
-            everyone_dict={props.everyone_dict}
-            get_friends_list={props.get_friends_list}
-            get_all_users={props.get_all_users}
-            friends_list={props.friends_list}
-            logged_in={props.logged_in}
-        />
+        <div className="navbar">
+		<div className="nav-box-2">
+			<h1>Chat</h1>
+		</div>
+		</div>
         <ul className="messages-list">
         {props.logged_in ? null :
         <li className="welcome-statement">Welcome to Project Yellow Ghost, a web app version of SnapChat. This was a project developed by Jonathan Wang
