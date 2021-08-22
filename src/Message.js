@@ -66,6 +66,7 @@ export default function Message(props) {
     const open = () => {
         if (status == "New Snap") {
             setImg(localImgURL);
+            remove_name(); 
         }
     }
 
@@ -127,7 +128,6 @@ export default function Message(props) {
 
     const close = () => {
         setImg(null);
-        remove_name(); 
     }
 
     var status_output = <p>{status}</p>;
