@@ -64,7 +64,7 @@ export default function MessagesNavbar(props) {
 					/>))
 				}
 				</ul>
-				<div className="add-title-navbar"><h3 className="quick-add">Friends ({props.user_friends_dict.length})</h3></div>
+				<div className="add-title-navbar"><h3 className="quick-add">Friends ({props.user_friends_dict.length - 1})</h3></div>
 				<ul className="add-list list-container">
 				{props.user_friends_dict.map((x) => (
 					<Friends 
@@ -83,6 +83,7 @@ export default function MessagesNavbar(props) {
 					<Everyone stranger_pic={x.photoURL}
 						stranger_name={x.name} 
 						stranger_username={x.email} 
+						user_email={props.user_email} 
 					/>))}
 				</ul>
 				<div className="add-footer">

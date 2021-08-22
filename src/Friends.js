@@ -2,6 +2,7 @@ import React, { Component, useState, useEffect } from 'react';
 import {db} from './Firebase.js';
 import './Messages.css';
 import checkmark from './images/black-checkmark.png';
+import firebase from 'firebase/app';
 
 function Friends(props) {
 
@@ -9,10 +10,27 @@ function Friends(props) {
 	const friends = db.collection("users").doc(props.user_email);
 
 	const remove_friend = () => {
-
 		props.friends_list.splice(props.friends_list.indexOf(props.friend_username), 1)
 		friends.update({friends: props.friends_list})
+		db.collection("posts").doc(props.user_email).collection("Latest_Messages").doc(props.friend_username).delete();
+		
+		var friend_arr = [];
 
+		db.collection("posts").doc(props.friend_username).collection("Latest_Messages").get().then((doc) => {
+			doc.docs.forEach((element) => {
+				friend_arr.push(element.data().email);
+			})
+			if (friend_arr.includes(props.user_email)) {
+				// Friend still has user as a friend
+				// updating friend's latest messages list
+				db.collection("posts").doc(props.friend_username).collection("Latest_Messages").doc(props.user_email).update({
+					friend_since: null,
+					status: "Friend broke up",
+					streak_num: 0,
+					timeStamp: null
+				})
+			}
+		})
 	}
 	const remove = () => {
 		if (props.friend_username != "Guest@project-yellow-ghost.com") {
@@ -21,19 +39,22 @@ function Friends(props) {
 		setRemoved(true);
 	}
 
-    return (
-        <li className="add-friends-content">
-						<div className="add-box-1">
-						<img className="message-avatar" src={props.friend_pic} alt="Avatar"/>
-						<ul className="message-info">
-								<h3>{props.friend_name}</h3>
-								<p>{props.friend_username}</p>
-						</ul>
-						</div>
-						<div className="add-box-2">
-						{removed ? <p className="removed"><b>Removed!</b></p> : <button onClick={remove}><b>Remove</b></button>}
-						</div>
-        </li>
+    return (<>
+        {props.friend_username == props.user_email ? null : 
+		<li className="add-friends-content">
+		<div className="add-box-1">
+			<img className="message-avatar" src={props.friend_pic} alt="Avatar"/>
+			<ul className="message-info">
+				<h3>{props.friend_name}</h3> 
+				<p>{props.friend_username}</p>
+			</ul>
+		</div>
+		<div className="add-box-2">
+			{removed ? <p className="removed"><b>Removed!</b></p> : <button onClick={remove}><b>Remove</b></button>}
+		</div>
+		</li>
+		}
+		</>
     )
 }
 
@@ -93,10 +114,55 @@ function Strangers(props) {
 
 	const [added, setAdded] = useState(false);
 	const friends = db.collection("users").doc(props.user_email);
+
+
 	
 	const add_friend = () => {
 		props.friends_list.push(props.stranger_username);
 		friends.update({friends: props.friends_list})
+		var stranger_arr = [];
+
+		db.collection("posts").doc(props.stranger_username).collection("Latest_Messages").get().then((doc) => {
+			doc.docs.forEach((element) => {
+				stranger_arr.push(element.data().email);
+			})
+			if (stranger_arr.includes(props.user_email)) {
+				// Stranger already added user as a friend
+				// updating user's latest messages list
+				console.log("New Friend Added!")
+				var fire_time = firebase.firestore.FieldValue.serverTimestamp();
+				db.collection("posts").doc(props.user_email).collection("Latest_Messages").doc(props.stranger_username).set({
+					email: props.stranger_username,
+					name: props.stranger_name,
+					photoURL: props.stranger_pic,
+					imgs_sent: 0,
+					imgs_received: 0,
+					friend_since: fire_time,
+					status: "New Friend!",
+					streak_num: 0,
+					timeStamp: null
+				})
+				// updating stranger's latest messages list
+				db.collection("posts").doc(props.stranger_username).collection("Latest_Messages").doc(props.user_email).update({
+					friend_since: fire_time,
+					status: "New Friend!",
+				})
+			} else {
+				console.log("Pending...")
+				// Stranger has not added user as a friend yet
+				db.collection("posts").doc(props.user_email).collection("Latest_Messages").doc(props.stranger_username).set({
+					email: props.stranger_username,
+					name: props.stranger_name,
+					photoURL: props.stranger_pic,
+					imgs_sent: 0,
+					imgs_received: 0,
+					friend_since: null,
+					status: "Pending",
+					streak_num: 0,
+					timeStamp: null
+				})
+			}
+		})
 	}
 
 	const add_true = () => {
@@ -129,8 +195,12 @@ function Everyone(props) {
 					   <div className="add-box-1">
 					   <img className="message-avatar" src={props.stranger_pic} alt="Avatar"/>
 					   <ul className="message-info">
-							   <h3>{props.stranger_name}</h3>
-							   <p>{props.stranger_username}</p>
+					   		{props.stranger_username == props.user_email ?
+								<h3>{props.stranger_name} (Me)</h3> 
+								:
+								<h3>{props.stranger_name}</h3> 
+							}
+							<p>{props.stranger_username}</p>
 					   </ul>
 					   </div>
 					   <div className="add-box-2">

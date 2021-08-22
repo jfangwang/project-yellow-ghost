@@ -200,7 +200,7 @@ a:hover {
     width: 0;
 	height: 0;
 	border-top: 0.5rem solid transparent;
-	border-left: 1rem solid #555;
+	border-left: 1rem solid black;
 	border-bottom: 0.5rem solid transparent;
 }
 .message-sent {
@@ -209,6 +209,13 @@ a:hover {
 	border-top: 0.5rem solid transparent;
 	border-left: 1rem solid #664db1;
 	border-bottom: 0.5rem solid transparent;
+}
+.message-new-friend {
+    height: 0.6rem;
+    width: 0.6rem;
+    background-color: none;
+    border: 0.17rem solid lightgrey;
+    border-radius: 0.2rem;
 }
 .red {
     color: red;

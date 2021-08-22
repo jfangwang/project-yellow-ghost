@@ -39,26 +39,55 @@ export default function Camera(props) {
             .child(id)
             .getDownloadURL()
             .then(url => {
+              var time_sent = firebase.firestore.FieldValue.serverTimestamp();
               to_users.forEach(user_temp => {
-                db.collection('posts').doc(user_temp).collection("Received").doc(id).set({
+                // Adding images to selected users
+                db.collection('posts').doc(user_temp).collection("Received").doc(email).collection("images").doc(id).set({
                   imageURL: url,
                   id: id,
                   email: email,
                   name: name,
-                  avatarURL: avatarURL,
-                  read: false,
-                  timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
+                  photoURL: avatarURL,
+                  timeStamp: time_sent,
                 })
-                console.log("Photo Sent");
               })
-            })
-            db.collection('posts').doc(email).collection("Sent").doc(id).set({
-              id: id,
-              email: email,
-              timeStamp: firebase.firestore.FieldValue.serverTimestamp(),
-              to: to_users,
+              // Update selected user's latest messages
+              to_users.forEach(user_temp => {
+                db.collection('posts').doc(user_temp).collection("Latest_Messages").doc(email).update({
+                  imageURL: url,
+                  photoURL: avatarURL,
+                  id: id,
+                  email: email,
+                  name: name,
+                  timeStamp: time_sent,
+                  status: "New Snap",
+                })
+              })
+              // Add an image doc to sender's sent foler to keep track of selected users
+              db.collection('posts').doc(email).collection("Sent").doc(id).set({
+                id: id,
+                email: email,
+                timeStamp: time_sent,
+                to: to_users,
+              })
+              // Update sender's latest messages for selected users
+              to_users.forEach(user_temp => {
+                if (user_temp != email) {
+                  db.collection('posts').doc(email).collection("Latest_Messages").doc(user_temp).update({
+                    imageURL: url,
+                    photoURL: avatarURL,
+                    id: id,
+                    timeStamp: time_sent,
+                    status: "Sent",
+                  })
+                }
+               
+              })
+              props.get_messages_list();
+
             })
           })
+          console.log("Photo Sent");
           setSend_list([]);
     }
 

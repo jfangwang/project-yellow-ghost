@@ -17,36 +17,121 @@ export default function Message(props) {
 
     // Check Firebase if user has any new messages
 
+    const [img, setImg] = useState(null);
+    const [imgid, setImgid] = useState(null);
+    const [imgs_sent, setSentImg] = useState(null);
+    const [imgs_received, setReceivedImg] = useState(null);
     const [status, setStatus] = useState("Received");
-    const [time, setTime] = useState(0);
-    const [imgArr, setImgArr] = useState([]);
+    const [streak_num, setStreakNum] = useState(null);
+    const [time, setTime] = useState(null);
+    const [friendSince, setFriendSince] = useState(null);
+    var user_received_images = db.collection('posts')
+                        .doc(props.user_email)
+                        .collection("Received")
+                        .doc(props.sender_email)
+                        .collection("images");
+    var sender_sent_images = db.collection('posts')
+                        .doc(props.sender_email)
+                        .collection("Sent");
+    var user_latest_messages = db.collection("posts")
+                        .doc(props.user_email)
+                        .collection("Latest_Messages")
+                        .doc(props.sender_email);
+    var sender_latest_messages = db.collection("posts")
+                        .doc(props.sender_email)
+                        .collection("Latest_Messages")
+                        .doc(props.user_email);
+    var localImgURL = null;
 
     const update_messages = () => {
-        db.collection('posts')
-        .doc(props.user_email)
-        .collection("Received")
-        .orderBy("timeStamp", "desc")
-        .onSnapshot((snapshot) => {
-            var i = 0;
-            // Filters out all the photos sent by the sender
-            while (i < snapshot.docs.length && snapshot.docs[i].data()["email"] != props.sender_email) { i = i + 1; }
-            if (i < snapshot.docs.length) {
-                if (snapshot.docs[i].data()["email"] == props.sender_email) {
-                    setStatus("New Snap");
-                    if (snapshot.docs[i].data()["timeStamp"] != null) {
-                        setTime(snapshot.docs[i].data()["timeStamp"].toDate().toUTCString());
-                    }
-                } else {
-                    setStatus("Received");
+        if (props.sender_email !== "Guest@project-yellow-ghost.com") {
+            user_latest_messages.onSnapshot((doc) => {
+                setSentImg(doc.data()["imgs_sent"]);
+                setReceivedImg(doc.data()["imgs_received"]);
+                setStatus(doc.data()["status"]);
+                setStreakNum(doc.data()["streak_num"]);
+                try {
+                    setTime(doc.data()["timeStamp"].toDate().toUTCString());
+                } catch (error) {
+                    // Nothing
                 }
+                setImgid(doc.data()["id"]);
+                localImgURL = doc.data()["imageURL"];
+                // setFriendSince(doc.data()["friend_since"])
+            })
+        }
+    }
+    update_messages();
+
+    const open = () => {
+        if (status == "New Snap") {
+            setImg(localImgURL);
+        }
+    }
+
+    const check_next_photo = () => {
+        user_received_images.orderBy("timeStamp", "desc").get().then((doc) => {
+
+            // Update the sender's latest messages list
+            sender_latest_messages.update({
+                id: null,
+                imageURL: null,
+                imgs_sent: 0,
+                status: "Opened",
+            })
+            
+            // Gets the next photo if there is another photo and
+            // sets it to user's message list
+            // console.log("about to update latest messages list")
+            // console.log(doc.docs, doc.docs.length);
+            if (doc.docs.length > 0) {
+                user_latest_messages.update({
+                    id: doc.docs[0].data()["id"],
+                    imageURL: doc.docs[0].data()["imageURL"],
+                    imgs_received: imgs_received + 1,
+                    status: "New Snap",
+                    timeStamp: doc.docs[0].data()["timeStamp"],
+                })
+
             } else {
-                setStatus("Received");
+                user_latest_messages.update({
+                    id: null,
+                    imageURL: null,
+                    imgs_received: imgs_sent + 1,
+                    status: "Received",
+                })
             }
         })
     }
 
+    const remove_name = () => {
+        sender_sent_images.doc(imgid).get().then((doc) => {
+            if (!doc.data() || doc.data()["to"].length == 1) {
+                // Delete from storage
+                storage.ref(`posts/${imgid}`).delete();
+                // Delete from firestore
+                sender_sent_images.doc(imgid).delete();
+                // Remove images from received folder
+                user_received_images.doc(imgid).delete();
+            } else {
+                var arr = doc.data()["to"];
+                arr.splice(arr.indexOf(props.user_email), 1);
+                // Update Firestore with deleted to list
+                sender_sent_images.doc(imgid).update({to: arr});
+                // Remove images from received folder
+                user_received_images.doc(imgid).delete();
+            }
+            check_next_photo();
+        })
+    }
+
+    const close = () => {
+        setImg(null);
+        remove_name(); 
+    }
+
     var status_output = <p>{status}</p>;
-    var icon = <div className="message-received"/>;
+    var icon = <div className=""/>;
 
     if (status === "New Snap"){
         icon = <div className="message-new" />
@@ -57,85 +142,9 @@ export default function Message(props) {
         icon = <div className="message-sent"/>
     } else if (status === "Opened") {
         icon = <div className="message-opened"/>
+    } else if (status == "New Friend!") {
+        icon = <div className="message-new-friend"/>
     }
-
-    const [img, setImg] = useState(null);
-    const [imgid, setImgid] = useState(null);
-
-    const open = () => {
-        console.log("opening snap", props.user_email);
-        db.collection('posts')
-        .doc(props.user_email)
-        .collection("Received")
-        .orderBy("timeStamp", "desc")
-        .get().then((snapshot) => {
-            var i = 0;
-            while (i < snapshot.docs.length && snapshot.docs[i].data()["email"] != props.sender_email) { i = i + 1; }
-            if (i < snapshot.docs.length) {
-                if (snapshot.docs[i].data()["email"] == props.sender_email) {
-                    if (snapshot.docs[i].data() != null) {
-                        setImg(snapshot.docs[i].data()["imageURL"]);
-                        setImgid(snapshot.docs[i].data()["id"]);
-                    }
-                } else {
-                    setStatus("Received");
-                }
-            } else {
-                setStatus("Received");
-            }
-        })
-    }
-
-    const delete_photo = () => {
-        storage.ref(`posts/${imgid}`).delete()
-        .then((url) => {
-            console.log("Deleted from storage: ", imgid);
-        })
-        .catch((error) => {
-            console.log("TRIED DELETING: ", imgid)
-        });
-        db.collection('posts').doc(imgid).delete().then(() => {
-          console.log("Deleted from firestore");
-        }).catch((error) => {
-          console.error("Error removing document: ", error);
-        });
-      }
-
-    const close = () => {
-        setImg(null);
-        const img = db.collection('posts').doc(props.user_email).collection("Received").doc(imgid);
-        img.delete().then(() => {
-            console.log("Document deleted");
-        }).catch((error) => {
-            console.log("Error removing document: ", error);
-        })
-        update_messages();
-        const sender = db.collection('posts').doc(props.sender_email).collection("Sent").doc(imgid);
-        sender.get().then((doc) => {
-            if (doc.data()["to"].length == 1) {
-                sender.delete().then(() => {
-                    console.log("sender document deleted, everyone saw the pic");
-                }).catch((error) => {
-                    console.log("Could not delete sender's document");
-                })
-                delete_photo();
-            } else {
-                // Update list if there are other people who have to see the post
-                var i = 0;
-                var arr = doc.data()["to"]
-                arr.splice(arr.indexOf(props.user_email), 1)
-                sender.update({to: arr}).then(() => {
-                    console.log("Updated sender's list");
-                }).catch((error) => {
-                    console.log("could not update list: ", error);
-                })
-            }
-        })
-    }
-
-    useEffect(() => {
-        update_messages();
-    })
     
     return (
         <>
@@ -147,7 +156,7 @@ export default function Message(props) {
                     <div className="message-sub-info">
                         {icon}
                         {status_output}
-                        {time != 0 ? <p><ReactTimeAgo date={time} locale="en-US"/></p> : null }
+                        {time != null ? <p><ReactTimeAgo date={time} locale="en-US"/></p> : null }
                         {props.streak_num > 0 ? <p>{props.streak_num}{props.streak_emoji}</p> : null}
                     </div>
                 </ul>

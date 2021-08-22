@@ -118,7 +118,7 @@ class App extends React.Component {
 	}
 	get_friends_list = () => {
 
-    if (this.state.user_email != "Guest") {
+    if (this.state.user_email != "Guest@project-yellow-ghost.com") {
       const userdb = db.collection("users").doc(this.state.user_email);
       userdb.get().then((doc) => {
           if (!doc.exists) {
@@ -135,15 +135,33 @@ class App extends React.Component {
             .catch((error) => {
                 console.log("Couldn't write user to DB, error: ", error);
             });
-            this.get_all_users()
+            // Create latest messages list for user
+            db.collection("posts").doc(this.state.user_email).collection("Latest_Messages").doc(this.state.user_email).set({
+              email: this.state.user_email,
+              name: this.state.user_name,
+              imageURL: null,
+              photoURL: this.state.user_pic,
+              imgs_sent: 0,
+              imgs_received: 0,
+              friend_since: firebase.firestore.FieldValue.serverTimestamp(),
+              status: "New Friend!",
+              streak_num: 0,
+              timeStamp: null,
+              id: null,
+            })
+            .catch((error) => {
+                console.log("Couldn't write user to DB, error: ", error);
+            });
+            this.get_messages_list()
           } else {
             // User has logged in before and has friends
             this.setState({
-              user_friends: doc.data()["friends"],
               imgs_sent: doc.data()["imgs_sent"],
               imgs_received: doc.data()["imgs_received"],
               streak_emoji: doc.data()["streak_emoji"],
-            }, this.get_all_users);
+            }, 
+            this.get_messages_list,
+            );
           }
 
       }).catch((error) => {
@@ -151,25 +169,32 @@ class App extends React.Component {
       });
     }
   }
+
+  get_messages_list = () => {
+    var friend_list = [];
+    var list = db.collection("posts").doc(this.state.user_email).collection("Latest_Messages");
+    list.get().then((doc) => {
+      doc.forEach((element) => {
+        friend_list.push(element.data()['email']);
+      })
+    })
+    this.setState({
+      user_friends: friend_list
+    }, this.get_all_users)
+  }
+
   get_all_users = () => {
     var friends_meta = [];
     var strangers_meta = [];
     var everyone_meta = [];
-    var meta_idx = 0;
-    var strangers_idx = 0;
-    var everyone_idx = 0;
-    const sender = db.collection("users");
-    sender.get().then((doc) => {
+    db.collection("users").get().then((doc) => {
         for (var i=0;i<doc.docs.length;i++) {
             if (this.state.user_friends.includes(doc.docs[i].data()['email'])) {
-                friends_meta[meta_idx] = doc.docs[i].data()
-                meta_idx = meta_idx + 1;
+                friends_meta.push(doc.docs[i].data());
             } else {
-                strangers_meta[strangers_idx] = doc.docs[i].data()
-                strangers_idx = strangers_idx + 1;
+                strangers_meta.push(doc.docs[i].data());
             }
-            everyone_meta[everyone_idx] = doc.docs[i].data()
-            everyone_idx = everyone_idx + 1;
+            everyone_meta.push(doc.docs[i].data());
         }
         this.setState({
             user_friends_dict: friends_meta,
@@ -202,6 +227,7 @@ class App extends React.Component {
             login={this.login.bind(this)}
             logout={this.logout.bind(this)}
             get_friends_list={this.get_friends_list.bind(this)}
+            get_messages_list={this.get_messages_list.bind(this)}
             get_all_users={this.get_all_users.bind(this)}
             friends_list={this.state.user_friends}
             streak_emoji={this.state.streak_emoji}
@@ -225,6 +251,7 @@ class App extends React.Component {
             login={this.login.bind(this)}
             logout={this.logout.bind(this)}
             get_friends_list={this.get_friends_list.bind(this)}
+            get_messages_list={this.get_messages_list.bind(this)}
             get_all_users={this.get_all_users.bind(this)}
             friends_list={this.state.user_friends}
           />

@@ -59,11 +59,13 @@ export default function CameraNavbar(props) {
 						friend_username={x.email}
 						friends_list={props.friends_list} 
 						user_email={props.user_email}
+						user_name={props.user_name}
+						user_pic={props.user_pic}
 						get_friends_list={props.get_friends_list}
 					/>))
 				}
 				</ul>
-				<div className="add-title-navbar"><h3 className="quick-add">Friends ({props.user_friends_dict.length})</h3></div>
+				<div className="add-title-navbar"><h3 className="quick-add">Friends ({props.user_friends_dict.length - 1})</h3></div>
 				<ul className="add-list list-container">
 				{props.user_friends_dict.map((x) => (
 					<Friends 
