@@ -197,18 +197,26 @@ a:hover {
     border-radius: 0.2rem;
 }
 .message-opened {
-    width: 0;
-	height: 0;
-	border-top: 0.5rem solid transparent;
+    width: 0.9rem;
+	height: 0.9rem;
+    background-image: url('./images/opened-icon.png');
+    background-repeat: no-repeat;
+    background-size: 0.9rem 0.9rem;
+    background-position: center;
+	/* border-top: 0.5rem solid transparent;
 	border-left: 1rem solid black;
-	border-bottom: 0.5rem solid transparent;
+	border-bottom: 0.5rem solid transparent; */
 }
 .message-sent {
-    width: 0;
-	height: 0;
-	border-top: 0.5rem solid transparent;
+    width: 0.9rem;
+	height: 0.9rem;
+    background-image: url('./images/sent-icon.png');
+    background-repeat: no-repeat;
+    background-size: 0.9rem 0.9rem;
+    background-position: center;
+	/* border-top: 0.5rem solid transparent;
 	border-left: 1rem solid #664db1;
-	border-bottom: 0.5rem solid transparent;
+	border-bottom: 0.5rem solid transparent; */
 }
 .message-new-friend {
     height: 0.6rem;
