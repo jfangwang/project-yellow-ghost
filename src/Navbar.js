@@ -179,7 +179,7 @@ function AddFriend(props) {
 			<div className="navbar">
 					{/* Placeholder */}
 			</div>
-			<h1>Friends</h1>
+			<h1>Friends ({Object.keys(props.friends).length})</h1>
 			<ul className="list-container">
 				{/* <h3>List: {Object.keys(props.friends)}</h3> */}
 				{Object.keys(props.friends).sort().map((key) => (
@@ -190,7 +190,7 @@ function AddFriend(props) {
 					/>
 				))}
 			</ul>
-			<h1>Strangers</h1>
+			<h1>Strangers ({Object.keys(props.strangers).length})</h1>
 			<ul className="list-container">
 				{/* <h3>List: {Object.keys(props.strangers)}</h3> */}
 				{Object.keys(props.strangers).sort().map((key) => (
@@ -201,7 +201,7 @@ function AddFriend(props) {
 					/>
 				))}
 			</ul>
-			<h1>Everyone</h1>
+			<h1>Everyone ({Object.keys(props.everyone).length})</h1>
 			<ul className="list-container">
 				{/* <h3>List: {Object.keys(props.strangers)}</h3> */}
 				{Object.keys(props.everyone).sort().map((key) => (

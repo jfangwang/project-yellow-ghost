@@ -14,11 +14,22 @@ import './Messages.css';
 */
 
 export default function Message(props) {
-
-    return (
-        <>
-        <h1>Message</h1>
-        </>
-    )
+	return (
+			<>
+			<li className="list-container">
+				<div className="pic-container">
+					<img className="friend-profile-pic" src={props.friend["profile_pic_url"]}></img>
+				</div>
+				<div className="friend-info">
+					<h3>{props.friend["name"]}</h3>
+					<h5>{props.friend["status"]}</h5>
+				</div>
+				<div className="friend-info">
+					<h3>{props.friend["streak"]}{props.streak_emoji}</h3>
+				</div>
+			</li>
+			
+			</>
+	)
 
 }

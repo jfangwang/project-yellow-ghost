@@ -24,16 +24,6 @@
 .nav-profile-pic:hover {
   opacity: 80%;
 }
-.screen {
-  height: 100vh;
-  width: 100%;
-  z-index: 9;
-  background-color: lightgrey;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
 
 /* Profile Section */
 .profile-pic {
@@ -43,30 +33,16 @@
 }
 
 /* Add Friend Section */
-.list-container {
-  width:100%;
-}
-.item-container {
-  /* border: 1px red dashed; */
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  width: 100%;
-  padding:1rem 0 1rem 0;
-  width: 100%;
-}
-.pic-container {
-  /* border: 1px blue dashed; */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 .friend-profile-pic {
   border-radius: 1rem;
   width:4rem;
 }
 .friend-info {
   /* border: 1px green dashed; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 0.5rem 0 0.5rem;
 }
 .friend-button {
   /* border: 1px orange dashed; */

@@ -136,6 +136,7 @@ class App extends React.Component {
                 streak_ref: null,
                 sent: 0,
                 received: 0,
+                last_time_stamp: null,
                 snaps: []
             }
           },
@@ -152,7 +153,7 @@ class App extends React.Component {
           pic: doc.data()["profile_pic_url"],
           received: doc.data()["total_received"],
           sent: doc.data()["total_sent"],
-          streak_emoji: doc.data()["emoji"],
+          streak_emoji: doc.data()["streak_emoji"],
           created: doc.data()["created"],
           friends: doc.data()["friends"]
         }, this.start_snapshot)
@@ -184,7 +185,6 @@ class App extends React.Component {
   }
   // Updates user's Friends, Strangers, and Everyone list
   update_people_list = () => {
-    console.log(this.state.friends)
     var strangers = {}
     var everyone = {}
     db.collection("Users").get().then((doc) => {
@@ -221,6 +221,7 @@ class App extends React.Component {
         streak_ref: null,
         sent: 0,
         received: 0,
+        last_time_stamp: null,
         snaps: []
       }
       dict[friend] = new_friend_entry;
@@ -299,6 +300,10 @@ class App extends React.Component {
             <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"></meta>
           </Helmet>
           <Messages
+            // User Info
+            loggedIn={this.state.loggedIn}
+            friends={this.state.friends}
+            streak_emoji={this.state.streak_emoji}
           />
         </div>
         <div style={Object.assign({backgroundColor: 'Plum'})} >

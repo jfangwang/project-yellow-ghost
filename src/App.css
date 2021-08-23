@@ -28,3 +28,30 @@ button {
 button:hover {
   opacity: 50%;
 }
+/* General */
+.screen {
+  height: 100vh;
+  width: 100%;
+  z-index: 9;
+  background-color: lightgrey;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.list-container {
+
+}
+.item-container {
+  /* border: 1px red dashed; */
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  padding: 0 1rem 0 1rem;
+}
+.pic-container {
+  /* border: 1px blue dashed; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
