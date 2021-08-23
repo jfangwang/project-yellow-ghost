@@ -6,12 +6,10 @@ div[class*="nav-box"] ul {
 div[class*="nav-box"] ul li {
     margin: 0 0.7rem 0 0.7rem;
 }
-ul[class*="messages-list"] li, ul[class*="add-list"] li {
+ul[class*="messages-list"] li {
     display: flex;
     justify-content: flex-start;
     padding: 1rem 1rem 1rem 1rem;
-}
-ul[class*="messages-list"] li, ul[class*="add-list"] {
     border-bottom: 1px rgb(170, 170, 170) solid;
 }
 .welcome-statement {

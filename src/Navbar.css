@@ -16,3 +16,23 @@
     justify-content: space-between;
     height: 2.5rem;
 }
+.profile-pic {
+  height: 2rem;
+  width:2rem;
+  border-radius: 0.25rem;
+}
+.profile-pic:hover {
+  opacity: 80%;
+}
+.screen {
+  height: 100vh;
+  width: 100%;
+  z-index: 9;
+  background-color: coral;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Profile Section */

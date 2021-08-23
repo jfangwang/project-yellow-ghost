@@ -7,7 +7,7 @@ import firebase from 'firebase/app';
 import './App.css';
 import Messages from './Messages.js';
 import Camera from './Camera.js';
-import NavBar from './Navbar.js';
+import {NavBar} from './Navbar.js';
 import Footer from './Footer.js';
 
 // All the firebase calls will occur here to minimize usage
@@ -49,7 +49,6 @@ class App extends React.Component {
       })
     }
   }
-
   update = () => {
     this.setState({
       width: window.innerWidth,
@@ -74,6 +73,8 @@ class App extends React.Component {
     return (
       <>
       <NavBar
+        default_pic={default_pic}
+        index={index}
       />
       <BindKeyboardSwipeableViews enableMouseEvents index={index} onChangeIndex={this.handleChangeIndex} style={Object.assign({width: this.state.width, height: this.state.height, position: 'absolute', top: '0%', left: '0%'})}>
         <div style={Object.assign({backgroundColor: 'white', minHeight: '100vh', width: '100%'})}>
