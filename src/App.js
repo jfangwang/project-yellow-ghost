@@ -33,19 +33,20 @@ class App extends React.Component {
       index: 0,
       height: window.innerHeight,
       width: window.innerWidth,
-      mobile: false,
+      orientation: "Landscape",
+      disable_swiping: false,
     }
     window.addEventListener("resize", this.update);
   }
 
   set_device = () => {
-    if (this.state.width < this.state.height) {
+    if (this.state.width > this.state.height) {
       this.setState({
-        mobile:true
+        orientation: "Landscape"
       })
     } else {
       this.setState({
-        mobile:false
+        orientation: "Mobile"
       })
     }
   }
@@ -67,6 +68,11 @@ class App extends React.Component {
       index: e
     })
   }
+  setDisabledSwiping(e) {
+    this.setState({
+      disable_swiping: e,
+    })
+  }
 
   render() {
     const { index } = this.state;
@@ -75,8 +81,9 @@ class App extends React.Component {
       <NavBar
         default_pic={default_pic}
         index={index}
+        disable_swiping={this.setDisabledSwiping.bind(this)}
       />
-      <BindKeyboardSwipeableViews enableMouseEvents index={index} onChangeIndex={this.handleChangeIndex} style={Object.assign({width: this.state.width, height: this.state.height, position: 'absolute', top: '0%', left: '0%'})}>
+      <BindKeyboardSwipeableViews disabled={this.state.disable_swiping} enableMouseEvents index={index} onChangeIndex={this.handleChangeIndex} style={Object.assign({width: this.state.width, height: this.state.height, position: 'absolute', top: '0%', left: '0%'})}>
         <div style={Object.assign({backgroundColor: 'white', minHeight: '100vh', width: '100%'})}>
           <Helmet>
             <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"></meta>
@@ -89,6 +96,9 @@ class App extends React.Component {
             <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"></meta>
           </Helmet>
           <Camera
+            index={index}
+            changeToIndex={this.changeToIndex.bind(this)}
+            disable_swiping={this.setDisabledSwiping.bind(this)}
           />
         </div>
       </BindKeyboardSwipeableViews>
