@@ -43,6 +43,7 @@ class App extends React.Component {
       sent: null,
       streak_emoji: null,
       created:null,
+      pending: {},
       friends: [],
       strangers: [],
       everyone: [],
@@ -126,12 +127,13 @@ class App extends React.Component {
           streak_emoji:  "\u{1F525}",
           total_sent: 0,
           total_received: 0,
+          pending: {},
           friends: {
             [this.state.email]: {
                 created: c,
                 profile_pic_url: this.state.pic,
                 name: this.state.name,
-                status: "New Friend!",
+                status: "new-friend",
                 streak: 0,
                 streak_ref: null,
                 sent: 0,
@@ -155,7 +157,8 @@ class App extends React.Component {
           sent: doc.data()["total_sent"],
           streak_emoji: doc.data()["streak_emoji"],
           created: doc.data()["created"],
-          friends: doc.data()["friends"]
+          friends: doc.data()["friends"],
+          pending: doc.data()["pending"],
         }, this.start_snapshot)
       }
     })
@@ -172,6 +175,7 @@ class App extends React.Component {
     //     streak_emoji: doc.data()["emoji"],
     //     created: doc.data()["created"],
     //     friends: doc.data()["friends"],
+    //     pending: doc.data()["pending"],
     //   })
     //   console.log("snapshot created")
     // }, (error) => {
@@ -216,7 +220,7 @@ class App extends React.Component {
         created: value.created,
         profile_pic_url: value.profile_pic_url,
         name: value.name,
-        status: "New Friend!",
+        status: "new-friend",
         streak: 0,
         streak_ref: null,
         sent: 0,
@@ -260,6 +264,7 @@ class App extends React.Component {
       pic: default_pic,
       sent: 0,
       received: 0,
+      pending: {},
       friends: [],
       strangers: [],
       everyone: [],
@@ -290,6 +295,7 @@ class App extends React.Component {
         received={this.state.received}
         sent={this.state.sent}
         created={this.state.created}
+        pending={this.state.pending}
         friends={this.state.friends}
         strangers={this.state.strangers}
         everyone={this.state.everyone}

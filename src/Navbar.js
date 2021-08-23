@@ -164,11 +164,8 @@ function ProfileModal(props) {
 			<h3>{props.email}</h3>
 			<h3>Received - {props.received} | {props.sent} - Sent</h3>
 			<h3>Joined Project Yellow Ghost on {props.created}</h3>
+			<h3>Created by Jonathan Wang</h3>
 			<button onClick={logout} style={{backgroundColor: "red"}}><h1>Logout</h1></button>
-
-			<div className="footer">
-				{/* Placeholder */}
-			</div>
 		</div>
 	)
 }

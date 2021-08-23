@@ -1,6 +1,6 @@
 import React, { Component, useState, useEffect } from 'react';
 import {auth, storage, db} from './Firebase.js';
-import ReactTimeAgo from 'react-timeago';
+import TimeAgo from 'react-timeago';
 import firebase from 'firebase/app';
 import './Messages.css';
 
@@ -14,6 +14,17 @@ import './Messages.css';
 */
 
 export default function Message(props) {
+	var icon_class = "message-" + props.friend["status"]
+	var status_dict = {
+		["new-friend"]: "New Friend!",
+		received: "Received",
+		sent: "Sent",
+		opened: "Opened",
+		pending: "Pending",
+		["not-friends"]: "Unfriended You",
+		blocked: "Blocked",
+	}
+	var status = status_dict[props.friend["status"]]
 	return (
 			<>
 			<li className="list-container">
@@ -22,10 +33,19 @@ export default function Message(props) {
 				</div>
 				<div className="friend-info">
 					<h3>{props.friend["name"]}</h3>
-					<h5>{props.friend["status"]}</h5>
+					<div className="message-info">
+						<div className="message-info">
+							<div className={icon_class} />
+							<h5>{status}</h5>
+						</div>
+						<h5>{props.friend["last_time_stamp"] ? <> - <TimeAgo date={props.friend["last_time_stamp"]} /> - </> : null}</h5>
+						<div>
+							<h5>{props.friend["streak"]}{props.streak_emoji}</h5>
+						</div>
+					</div>
 				</div>
 				<div className="friend-info">
-					<h3>{props.friend["streak"]}{props.streak_emoji}</h3>
+					
 				</div>
 			</li>
 			

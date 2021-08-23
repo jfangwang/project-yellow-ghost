@@ -18,3 +18,54 @@ ul[class*="messages-list"] li {
 ul[class*="add-list"] li:not(:last-child) {
     border-bottom: 1px rgb(170, 170, 170) solid;
 }
+/* Message */
+.message-new {
+    height: 0.95rem;
+    width: 0.95rem;
+    background-color: red;
+    border-radius: 0.2rem;
+}
+.message-received {
+    height: 0.6rem;
+    width: 0.6rem;
+    background-color: none;
+    border: 0.17rem solid red;
+    border-radius: 0.2rem;
+}
+.message-opened {
+    width: 0.9rem;
+	height: 0.9rem;
+    background-image: url('./images/opened-icon.png');
+    background-repeat: no-repeat;
+    background-size: 0.9rem 0.9rem;
+    background-position: center;
+	/* border-top: 0.5rem solid transparent;
+	border-left: 1rem solid black;
+	border-bottom: 0.5rem solid transparent; */
+}
+.message-sent {
+    width: 0.9rem;
+	height: 0.9rem;
+    background-image: url('./images/sent-icon.png');
+    background-repeat: no-repeat;
+    background-size: 0.9rem 0.9rem;
+    background-position: center;
+	/* border-top: 0.5rem solid transparent;
+	border-left: 1rem solid #664db1;
+	border-bottom: 0.5rem solid transparent; */
+}
+.message-new-friend {
+    height: 0.6rem;
+    width: 0.6rem;
+    background-color: none;
+    border: 0.17rem solid lightgrey;
+    border-radius: 0.2rem;
+}
+.message-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.message-info > * {
+    margin: 0 0.1rem 0 0.1rem;
+}
