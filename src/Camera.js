@@ -17,12 +17,10 @@ export default function Camera(props) {
   return (
     <>
     <div className="webcam-screen">
-    <div className="navbar">
-    <div className="nav-box-2">
-      <h1>Chat</h1>
-    </div>
-    </div>
-    <Webcam
+      <div className="navbar">
+        {/* Placeholder */}
+      </div>
+      <Webcam
         id="imageElement"
         className="image-desktop"
         ref={webcamRef}
@@ -32,7 +30,10 @@ export default function Camera(props) {
         screenshotFormat="image/png"
         screenshotQuality={1}
         videoConstraints={{facingMode: "User"}}
-      />
+        />
+      <div className="footer">
+	  	  {/* Placeholder */}
+			</div>
     </div>
     </>
   );

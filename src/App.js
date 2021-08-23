@@ -7,8 +7,8 @@ import firebase from 'firebase/app';
 import './App.css';
 import Messages from './Messages.js';
 import Camera from './Camera.js';
-import GeneralNavBar from './GeneralNavBar.js';
-
+import NavBar from './Navbar.js';
+import Footer from './Footer.js';
 
 // All the firebase calls will occur here to minimize usage
 
@@ -58,13 +58,24 @@ class App extends React.Component {
     this.set_device()
     );
   };
+  handleChangeIndex = index => {
+    this.setState({
+      index,
+    });
+  };
+  changeToIndex(e) {
+    this.setState({
+      index: e
+    })
+  }
 
   render() {
+    const { index } = this.state;
     return (
       <>
-      <GeneralNavBar
+      <NavBar
       />
-      <BindKeyboardSwipeableViews enableMouseEvents style={Object.assign({width: this.state.width, height: this.state.height, position: 'absolute', top: '0%', left: '0%'})}>
+      <BindKeyboardSwipeableViews enableMouseEvents index={index} onChangeIndex={this.handleChangeIndex} style={Object.assign({width: this.state.width, height: this.state.height, position: 'absolute', top: '0%', left: '0%'})}>
         <div style={Object.assign({backgroundColor: 'white', minHeight: '100vh', width: '100%'})}>
           <Helmet>
             <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"></meta>
@@ -80,6 +91,10 @@ class App extends React.Component {
           />
         </div>
       </BindKeyboardSwipeableViews>
+      <Footer
+        index={index}
+        changeToIndex={this.changeToIndex.bind(this)}
+      />
       </>
     );
   }

@@ -1,11 +1,10 @@
 import React, { Component, useState, useEffect } from 'react';
-import './Messages.css';
+import './Navbar.css';
 
-
-export default function GeneralNavBar(props) {
+export default function NavBar(props) {
 	return (
 		<>
-		<div className="navbar gen">
+		<div className="navbar app-nav">
 		<div className="nav-box-1">
 			<ul>
 				<li>
