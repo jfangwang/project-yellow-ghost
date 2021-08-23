@@ -4,11 +4,6 @@ import {auth, storage, db, provider} from './Firebase.js';
 import firebase from 'firebase/app';
 
 function NavBar(props) {
-	// User Info
-	const [loggedIn, setLoggedIn] = useState(null);
-	const [name, setName] = useState(null);
-	const [email, setEmail] = useState(null);
-	const [pic, setPic] = useState(null);
 	// Screens
 	const [showProfileScreen, setShowProfileScreen] = useState(false);
 	const [showAddFriendScreen, setShowAddFriendScreen] = useState(false);
@@ -23,39 +18,6 @@ function NavBar(props) {
 	const [showFlipCam, setShowFlipCam] = useState(null);
 	// Navbar content
 	const [navTitle, setNavTitle] = useState("Chat")
-
-	const check_user = () => {
-		firebase.auth().onAuthStateChanged(function(user) {
-			if (user) {
-				setLoggedIn(true);
-				setName(user.displayName);
-				setEmail(user.email);
-				setPic(user.photoURL)
-			} else {
-				setLoggedIn(false);
-				setName("Guest");
-				setEmail("Guest@Guest.com");
-				setPic(props.default_pic)
-			}
-		})
-	}
-
-	const login = () => {
-    auth.signInWithPopup(provider)
-    .then((result) => {
-			setLoggedIn(true);
-			setName(result.user.displayName);
-			setEmail(result.user.email);
-			setPic(result.user.photoURL)
-    })
-  }
-	const logout = () => {
-    firebase.auth().signOut()
-		setLoggedIn(false);
-		setName("Guest");
-		setEmail("Guest@Guest.com");
-		setPic(props.default_pic)
-  }
 
 	const toggleProfile = () => {
 		setShowProfileScreen(true);
@@ -97,8 +59,8 @@ function NavBar(props) {
 	}
 
 	useEffect(() => {
-    check_user();
-		console.log("index: ", props.index)
+    // check_user();
+		// console.log("index: ", props.index);
 		if (props.index == 0) {
 			setShowNewChat(true);
 			setShowFlipCam(false);
@@ -112,11 +74,11 @@ function NavBar(props) {
 		<>
 		<div className="navbar app-nav">
 		<div className="nav-box-1">
-			<ul>		
+			<ul>
 				{showLogin ?
-					loggedIn ?
-						<li><img className="profile-pic" onClick={toggleProfile} src={pic}/></li>
-						: <li><a onClick={login}>Sign In</a></li>
+					props.loggedIn ?
+						<li><img className="nav-profile-pic" onClick={toggleProfile} src={props.pic}/></li>
+						: <li><a onClick={props.login}>Sign In</a></li>
 					: null}
 				
 				{showClose ? 
@@ -152,18 +114,35 @@ function NavBar(props) {
 		</div>
 		{showProfileScreen ? 
 			<ProfileModal
-				pic={pic}
-				name={name}
-				email={email}
-				toggleProfile={toggleProfile}
-				logout={logout}
+			// User Info
+				pic={props.pic}
+				name={props.name}
+				email={props.email}
+				received={props.received}
+				sent={props.sent}
+				created={props.created}
+				// functions
+				resetNav={resetNav}
+				logout={props.logout}
 			/>
 			: null
 		}
 		{showAddFriendScreen ? 
+			<>
+			
 			<AddFriend
-
+				friends={props.friends}
+				strangers={props.strangers}
+				everyone={props.everyone}
+				edit_friends={props.edit_friends}
 			/>
+			{/* <div className="screen">
+				<div className="navbar">
+				</div>
+				<button onClick={() => props.edit_friends("remove", "key", "value")}>Remove</button>
+			</div> */}
+			
+			</>
 			: null
 		}
 		</>
@@ -172,7 +151,7 @@ function NavBar(props) {
 
 function ProfileModal(props) {
 	const logout = () => {
-		props.toggleProfile();
+		props.resetNav();
 		props.logout();
 	}
 	return (
@@ -180,11 +159,11 @@ function ProfileModal(props) {
 			<div className="navbar">
 					{/* Placeholder */}
 			</div>
-			<img src={props.pic} style={{borderRadius: "1rem",width:"8rem", margin:"1rem"}} />
+			<img src={props.pic} className="profile-pic" />
 			<h1>{props.name}</h1>
 			<h3>{props.email}</h3>
-			<h3>Received | Sent</h3>
-			<h3>Joined Project Yellow Ghost on August 9, 2021</h3>
+			<h3>Received - {props.received} | {props.sent} - Sent</h3>
+			<h3>Joined Project Yellow Ghost on {props.created}</h3>
 			<button onClick={logout} style={{backgroundColor: "red"}}><h1>Logout</h1></button>
 
 			<div className="footer">
@@ -200,12 +179,108 @@ function AddFriend(props) {
 			<div className="navbar">
 					{/* Placeholder */}
 			</div>
-			<h1>Add Friends Here</h1>
-
+			<h1>Friends</h1>
+			<ul className="list-container">
+				{/* <h3>List: {Object.keys(props.friends)}</h3> */}
+				{Object.keys(props.friends).sort().map((key) => (
+					<Friend
+						friends={props.friends}
+						k={key}
+						edit_friends={props.edit_friends}
+					/>
+				))}
+			</ul>
+			<h1>Strangers</h1>
+			<ul className="list-container">
+				{/* <h3>List: {Object.keys(props.strangers)}</h3> */}
+				{Object.keys(props.strangers).sort().map((key) => (
+					<Stranger
+						strangers={props.strangers}
+						k={key}
+						edit_friends={props.edit_friends}
+					/>
+				))}
+			</ul>
+			<h1>Everyone</h1>
+			<ul className="list-container">
+				{/* <h3>List: {Object.keys(props.strangers)}</h3> */}
+				{Object.keys(props.everyone).sort().map((key) => (
+					<Everyone
+						everyone={props.everyone}
+						k={key}
+						edit_friends={props.edit_friends}
+					/>
+				))}
+			</ul>
 			<div className="footer">
 				{/* Placeholder */}
 			</div>
 		</div>
+	)
+}
+
+function Friend(props) {
+	var friends = props.friends;
+	var key = props.k;
+
+	return (
+		<>
+			<li className="item-container">
+				<div className="pic-container">
+					<img className="friend-profile-pic" src={friends[key].profile_pic_url}/>
+				</div>	
+				<div className="friend-info">
+					<h2>{friends[key].name}</h2>
+					<p>{key}</p>
+				</div>
+				<div className="friend-button">
+					<button onClick={() => props.edit_friends("remove", key, friends[key])}>Remove</button>
+				</div>
+			</li>
+		</>
+	)
+}
+
+function Stranger(props) {
+	var strangers = props.strangers;
+	var key = props.k;
+
+	return (
+		<>
+			<li className="item-container">
+				<div className="pic-container">
+					<img className="friend-profile-pic" src={strangers[key].profile_pic_url}/>
+				</div>	
+				<div className="friend-info">
+					<h2>{strangers[key].name}</h2>
+					<p>{key}</p>
+				</div>
+				<div className="friend-button">
+					<button onClick={() => props.edit_friends("add", key, strangers[key])}>Add</button>
+				</div>
+			</li>
+		</>
+	)
+}
+
+function Everyone(props) {
+	var everyone = props.everyone;
+	var key = props.k;
+
+	return (
+		<>
+			<li className="item-container">
+				<div className="pic-container">
+					<img className="friend-profile-pic" src={everyone[key].profile_pic_url}/>
+				</div>	
+				<div className="friend-info">
+					<h2>{everyone[key].name}</h2>
+					<p>{key}</p>
+				</div>
+				<div className="friend-button">
+				</div>
+			</li>
+		</>
 	)
 }
 

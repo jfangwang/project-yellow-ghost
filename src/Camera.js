@@ -1,19 +1,20 @@
-import React, { Component, useEffect, useState } from 'react';
+import React from 'react';
+// import React, { Component, useEffect, useState } from 'react';
 import Webcam from "react-webcam";
-import { v4 as uuid } from "uuid";
 import './Camera.css';
-import {storage, db} from './Firebase.js';
-import firebase from 'firebase/app';
+// import {storage, db} from './Firebase.js';
+// import firebase from 'firebase/app';
+// import { v4 as uuid } from "uuid";
 
 export default function Camera(props) {
   const webcamRef = React.useRef(null);
-  const capture = React.useCallback(
-    () => {
-      // const img = webcamRef.current.getScreenshot({width:props.width, height:props.height});
-      const img = webcamRef.current.getScreenshot();
-    },
-    [webcamRef]
-  );
+  // const capture = React.useCallback(
+  //   () => {
+  //     // const img = webcamRef.current.getScreenshot({width:props.width, height:props.height});
+  //     const img = webcamRef.current.getScreenshot();
+  //   },
+  //   [webcamRef]
+  // );
   return (
     <>
     <div className="webcam-screen">
@@ -29,7 +30,7 @@ export default function Camera(props) {
         forceScreenshotSourceSize={false}
         screenshotFormat="image/png"
         screenshotQuality={1}
-        videoConstraints={{facingMode: "User"}}
+        videoConstraints={{facingMode: props.faceMode}}
         />
       <div className="footer">
 	  	  {/* Placeholder */}

@@ -1,6 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
+// import React, { Component } from 'react';
 import './Messages.css';
-import Message from './Message';
+// import Message from './Message';
 
 
 function Messages(props) {
