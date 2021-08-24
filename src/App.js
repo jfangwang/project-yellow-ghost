@@ -182,24 +182,24 @@ class App extends React.Component {
     })
   }
   start_snapshot = () => {
-    this.update_people_list()
-    // const user_doc = db.collection("Users").doc(this.state.email);1
-    // user_doc.onSnapshot((doc) => {
-    //   this.setState({
-    //     name: doc.data()["name"],
-    //     pic: doc.data()["profile_pic_url"],
-    //     received: doc.data()["total_received"],
-    //     sent: doc.data()["total_sent"],
-    //     streak_emoji: doc.data()["emoji"],
-    //     created: doc.data()["created"],
-    //     friends: doc.data()["friends"],
-    //     pending: doc.data()["pending"],
-    //   })
-    //   console.log("snapshot created")
-    // }, (error) => {
-    //   alert("Problem with real time firebase, cannot get live updates.");
-    //   console.log(error);
-    // })
+    const user_doc = db.collection("Users").doc(this.state.email);
+    user_doc.onSnapshot((doc) => {
+      this.setState({
+        name: doc.data()["name"],
+        pic: doc.data()["profile_pic_url"],
+        received: doc.data()["total_received"],
+        sent: doc.data()["total_sent"],
+        streak_emoji: doc.data()["streak_emoji"],
+        created: doc.data()["created"],
+        friends: doc.data()["friends"],
+        pending: doc.data()["pending"],
+      })
+      console.log("snapshot created");
+      this.update_people_list();
+    }, (error) => {
+      alert("Problem with real time firebase, cannot get live updates.");
+      console.log(error);
+    })
   }
   end_snapshot = () => {
     this.start_snapshot();
@@ -220,10 +220,11 @@ class App extends React.Component {
         }
         everyone[user.id] = user.data();
       })
-      // console.log("Friends: ", f)
-      // console.log("Strangers: ", strangers)
-      // console.log("Everyone: ", everyone)
+      console.log("Friends: ", f)
+      console.log("Strangers: ", strangers)
+      console.log("Everyone: ", everyone)
       this.setState({
+        friends: f,
         strangers: strangers,
         everyone: everyone,
       })
@@ -341,6 +342,10 @@ class App extends React.Component {
             loggedIn={this.state.loggedIn}
             friends={this.state.friends}
             streak_emoji={this.state.streak_emoji}
+            pic={this.state.pic}
+            email={this.state.email}
+            showNavbar={this.showNavbar.bind(this)}
+            showFooter={this.showFooter.bind(this)}
           />
         </div>
         <div style={Object.assign({backgroundColor: 'Plum'})} >

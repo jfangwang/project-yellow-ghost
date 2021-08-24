@@ -4,7 +4,7 @@ import './Messages.css';
 import Message from './Message';
 
 
-function Messages(props) {
+export default function Messages(props) {
     return (
     <div className="messages-screen">
 			<div className="navbar">
@@ -23,8 +23,12 @@ function Messages(props) {
 						friend={props.friends[key]}
 						streak_emoji={props.streak_emoji}
 						k={key}
+						pic={props.pic}
+						email={props.email}
+						showNavbar={props.showNavbar}
+      			showFooter={props.showFooter}
 					/>
-				))}
+				))}	``
 			</ul>
 			<div className="footer app-foot">
 				{/* Placeholder */}
@@ -32,5 +36,3 @@ function Messages(props) {
     </div>
     );
 }
-
-export default Messages;

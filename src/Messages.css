@@ -23,6 +23,7 @@ ul[class*="add-list"] li:not(:last-child) {
     height: 0.95rem;
     width: 0.95rem;
     background-color: red;
+    color: red;
     border-radius: 0.2rem;
 }
 .message-received {
@@ -68,4 +69,18 @@ ul[class*="add-list"] li:not(:last-child) {
 }
 .message-info > * {
     margin: 0 0.1rem 0 0.1rem;
+}
+.background-opened-image {
+    position: absolute;
+    top: 0;
+    height: 100vh;
+    width: 100%;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+}
+.opened-image {
+    width: 100%;
 }

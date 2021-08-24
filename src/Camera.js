@@ -66,7 +66,7 @@ function Camera(props) {
     var total_sent = 0;
     const id = uuid();
     sendList.forEach((user) => {
-      total_sent = sent + 1;
+      total_sent = total_sent + 1;
       newDict[user]["status"] = "Sent";
       newDict[user]["last_time_stamp"] = time_sent;
       newDict[user]["sent"] = props.sent + 1;
@@ -124,7 +124,7 @@ function Camera(props) {
             pending: list["pending"],
             profile_pic_url: list["profile_pic_url"],
             streak_emoji: list["streak_emoji"],
-            total_received: list["total_received"],
+            total_received: list["total_received"] + 1,
             total_sent: list["total_sent"],
           });
         } else if (Object.keys(list["pending"]).includes(props.email)) {
@@ -141,7 +141,7 @@ function Camera(props) {
             pending: list["pending"],
             profile_pic_url: list["profile_pic_url"],
             streak_emoji: list["streak_emoji"],
-            total_received: list["total_received"],
+            total_received: list["total_received"] + 1,
             total_sent: list["total_sent"],
           });
         } else {
