@@ -29,11 +29,14 @@ class App extends React.Component {
     super(props);
     this.state = {
       // For swiping screen
-      index: 0,
+      index: 1,
       height: window.innerHeight,
       width: window.innerWidth,
       orientation: "Landscape",
       disable_swiping: false,
+      // Navbar
+      showNavbar: true,
+      showFooter: true,
       // User Info
       loggedIn: null,
       name: null,
@@ -147,6 +150,21 @@ class App extends React.Component {
           received: 0,
           sent: 0,
           streak_emoji: "\u{1F525}",
+          pending: {},
+          friends: {
+            [this.state.email]: {
+              created: c,
+              profile_pic_url: this.state.pic,
+              name: this.state.name,
+              status: "new-friend",
+              streak: 0,
+              streak_ref: null,
+              sent: 0,
+              received: 0,
+              last_time_stamp: null,
+              snaps: [],
+            }
+          },
         }, this.start_snapshot)
       } else {
         // User has logged in before
@@ -165,7 +183,7 @@ class App extends React.Component {
   }
   start_snapshot = () => {
     this.update_people_list()
-    // const user_doc = db.collection("Users").doc(this.state.email);
+    // const user_doc = db.collection("Users").doc(this.state.email);1
     // user_doc.onSnapshot((doc) => {
     //   this.setState({
     //     name: doc.data()["name"],
@@ -189,6 +207,7 @@ class App extends React.Component {
   }
   // Updates user's Friends, Strangers, and Everyone list
   update_people_list = () => {
+    var f = {}
     var strangers = {}
     var everyone = {}
     db.collection("Users").get().then((doc) => {
@@ -196,10 +215,12 @@ class App extends React.Component {
         // console.log("This.friends: ", this.state.friends, user.id);
         if (!Object.keys(this.state.friends).includes(user.id)) {
           strangers[user.id] = user.data()
+        } else {
+          f[user.id] = user.data()
         }
         everyone[user.id] = user.data();
       })
-      // console.log("Friends: ", friends)
+      console.log("Friends: ", f)
       // console.log("Strangers: ", strangers)
       // console.log("Everyone: ", everyone)
       this.setState({
@@ -244,6 +265,13 @@ class App extends React.Component {
     }
   }
 
+  showNavbar = (status) => {
+    this.setState({showNavbar: status})
+  }
+  showFooter = (status) => {
+    this.setState({showFooter: status})
+  }
+
   login = () => {
     auth.signInWithPopup(provider)
     .then((result) => {
@@ -280,26 +308,29 @@ class App extends React.Component {
     const { index } = this.state;
     return (
       <>
-      <NavBar
-        index={index}
-        // Functions
-        login={this.login.bind(this)}
-        logout={this.logout.bind(this)}
-        disable_swiping={this.setDisabledSwiping.bind(this)}
-        edit_friends={this.edit_friends.bind(this)}
-        // User Info
-        loggedIn={this.state.loggedIn}
-        name={this.state.name}
-        email={this.state.email}
-        pic={this.state.pic}
-        received={this.state.received}
-        sent={this.state.sent}
-        created={this.state.created}
-        pending={this.state.pending}
-        friends={this.state.friends}
-        strangers={this.state.strangers}
-        everyone={this.state.everyone}
-      />
+      {this.state.showNavbar ?
+        <NavBar
+          index={index}
+          // Functions
+          login={this.login.bind(this)}
+          logout={this.logout.bind(this)}
+          disable_swiping={this.setDisabledSwiping.bind(this)}
+          edit_friends={this.edit_friends.bind(this)}
+          // User Info
+          loggedIn={this.state.loggedIn}
+          name={this.state.name}
+          email={this.state.email}
+          pic={this.state.pic}
+          received={this.state.received}
+          sent={this.state.sent}
+          created={this.state.created}
+          pending={this.state.pending}
+          friends={this.state.friends}
+          strangers={this.state.strangers}
+          everyone={this.state.everyone}
+        />
+        : null
+      }
       <BindKeyboardSwipeableViews disabled={this.state.disable_swiping} enableMouseEvents index={index} onChangeIndex={this.handleChangeIndex} style={Object.assign({width: this.state.width, height: this.state.height, position: 'absolute', top: '0%', left: '0%'})}>
         <div style={Object.assign({backgroundColor: 'white', minHeight: '100vh', width: '100%'})}>
           <Helmet>
@@ -320,13 +351,20 @@ class App extends React.Component {
             index={index}
             changeToIndex={this.changeToIndex.bind(this)}
             disable_swiping={this.setDisabledSwiping.bind(this)}
+            showNavbar={this.showNavbar.bind(this)}
+            showFooter={this.showFooter.bind(this)}
+            friends={this.state.friends}
           />
         </div>
       </BindKeyboardSwipeableViews>
-      <Footer
-        index={index}
-        changeToIndex={this.changeToIndex.bind(this)}
-      />
+      {this.state.showFooter ? 
+        <Footer
+          index={index}
+          changeToIndex={this.changeToIndex.bind(this)}
+        />
+        : null
+      }
+      
       </>
     );
   }
