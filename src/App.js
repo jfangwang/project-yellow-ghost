@@ -220,11 +220,11 @@ class App extends React.Component {
         }
         everyone[user.id] = user.data();
       })
-      console.log("Friends: ", f)
-      console.log("Strangers: ", strangers)
-      console.log("Everyone: ", everyone)
+      // console.log("Friends: ", f)
+      // console.log("Strangers: ", strangers)
+      // console.log("Everyone: ", everyone)
       this.setState({
-        friends: f,
+        // friends: f,
         strangers: strangers,
         everyone: everyone,
       })

@@ -67,9 +67,9 @@ function Camera(props) {
     const id = uuid();
     sendList.forEach((user) => {
       total_sent = total_sent + 1;
-      newDict[user]["status"] = "Sent";
+      newDict[user]["status"] = "sent";
       newDict[user]["last_time_stamp"] = time_sent;
-      newDict[user]["sent"] = props.sent + 1;
+      newDict[user]["sent"] = newDict[user]["sent"] + 1;
     })
 
     const user_doc = db.collection("Users").doc(props.email);

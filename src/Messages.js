@@ -28,7 +28,7 @@ export default function Messages(props) {
 						showNavbar={props.showNavbar}
       			showFooter={props.showFooter}
 					/>
-				))}	``
+				))}	
 			</ul>
 			<div className="footer app-foot">
 				{/* Placeholder */}
