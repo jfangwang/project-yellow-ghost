@@ -1,11 +1,16 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { Component, useEffect, useState, useRef } from 'react';
 import Webcam from "react-webcam";
 import './Camera.css';
 import sent from './images/sent-vid-icon.png';
 import checkmark from './images/black-checkmark.png';
+import PhotoLibIcon from './images/photo-library-icon.png';
+import FaceFilterIcon from './images/face-filter-icon.png';
+import CloseIcon from './images/close.png';
 import {storage, db} from './Firebase.js';
 import firebase from 'firebase/app';
 import { v4 as uuid } from "uuid";
+import Flippy, { FrontSide, BackSide } from 'react-flippy';
+
 
 function Camera(props) {
   const [img, setImg] = useState(null);
@@ -13,20 +18,11 @@ function Camera(props) {
   const [aspectRatio, setAspectRatio] = useState(16/9);
   const [sendList, setSendList] = useState([]);
 
-  const webcamRef = React.useRef(null);
-  const capture = React.useCallback(
-    () => {
-      // const img = webcamRef.current.getScreenshot({width:props.width, height:props.height});
-      setImg(webcamRef.current.getScreenshot());
-      setScreen("captured")
-      props.showNavbar(false)
-      props.showFooter(false)
-      props.disable_swiping(true)
-    },
-    [webcamRef]
-  );
   const sendTo = () => {
     setScreen("send");
+    if (img === null) {
+      close()
+    }
   }
   const send = () => {
     setImg(null);
@@ -58,101 +54,114 @@ function Camera(props) {
   }
 
   const send_pic = () => {
-
-    // Update Sender's Doc: Friends -> Receiver_Name -> Status -> Sent
-    //                      Last_Time_Stamp, Sent: +1, Total_Sent: +1
-    var time_sent = new Date().toLocaleString();
-    var newDict = props.friends;
-    var total_sent = 0;
-    const id = uuid();
-    sendList.forEach((user) => {
-      total_sent = total_sent + 1;
-      newDict[user]["status"] = "sent";
-      newDict[user]["last_time_stamp"] = time_sent;
-      newDict[user]["sent"] = newDict[user]["sent"] + 1;
-    })
-
-    const user_doc = db.collection("Users").doc(props.email);
-    user_doc.update({
-      total_sent: props.sent + total_sent,
-      friends: newDict,
-    })
-    
-
-    
-
-    // // Add actual photo image to storage
-    const uploadTask = storage.ref(`posts/${id}`).putString(img, 'data_url');
-    uploadTask.on(
-      "state_changed",
-      snapshot => {},
-      error => {
-        console.log(error);
-      },
-      () => {
-        storage.ref(`posts/${id}`).getDownloadURL().then(url => {
-          // Add a photo doc containing: id, sender, sent, opened, time_stamp
-          db.collection("Photos").doc(id).set({
-            sender: props.email,
-            sent: sendList,
-            opened: [],
-            time_stamp: time_sent,
-            image_url: url,
+    if (props.email != "Guest@Guest.com") {
+      // User is logged in
+      // Update Sender's Doc: Friends -> Receiver_Name -> Status -> Sent
+      // Last_Time_Stamp, Sent: +1, Total_Sent: +1
+      var time_sent = new Date().toLocaleString();
+      var newDict = props.friends;
+      var total_sent = 0;
+      const id = uuid();
+      sendList.forEach((user) => {
+        total_sent = total_sent + 1;
+        newDict[user]["status"] = "sent";
+        newDict[user]["last_time_stamp"] = time_sent;
+        newDict[user]["sent"] = newDict[user]["sent"] + 1;
+      })
+      const user_doc = db.collection("Users").doc(props.email);
+      user_doc.update({
+        total_sent: props.sent + total_sent,
+        friends: newDict,
+      })
+      // // Add actual photo image to storage
+      const uploadTask = storage.ref(`posts/${id}`).putString(img, 'data_url');
+      uploadTask.on(
+        "state_changed",
+        snapshot => {},
+        error => {
+          console.log(error);
+        },
+        () => {
+          storage.ref(`posts/${id}`).getDownloadURL().then(url => {
+            // Add a photo doc containing: id, sender, sent, opened, time_stamp
+            db.collection("Photos").doc(id).set({
+              sender: props.email,
+              sent: sendList,
+              opened: [],
+              time_stamp: time_sent,
+              image_url: url,
+            })
           })
+        }
+      )
+      // Add photo id to Receiver's Doc:  Friends -> Sender_Name -> Status -> Received
+      //                                  Last_Time_Stamp, Received: +1, Total_Received: +1
+      sendList.forEach((user) => {
+        var receiver_doc = db.collection("Users").doc(user);
+        // check if receiver is friends with sender
+        receiver_doc.get().then((doc) => {
+          var list = doc.data();
+          if (Object.keys(list["friends"]).includes(props.email)){
+            var friends_dict = list["friends"];
+            friends_dict[props.email]["status"] = "new";
+            friends_dict[props.email]["last_time_stamp"] = time_sent;
+            friends_dict[props.email]["received"] = friends_dict[props.email]["received"] + 1;
+            friends_dict[props.email]["snaps"].push(id);
+            list["friends"] = friends_dict;
+            receiver_doc.set({
+              created: list["created"],
+              friends: list["friends"],
+              name: list["name"],
+              pending: list["pending"],
+              profile_pic_url: list["profile_pic_url"],
+              streak_emoji: list["streak_emoji"],
+              total_received: list["total_received"] + 1,
+              total_sent: list["total_sent"],
+            });
+          } else if (Object.keys(list["pending"]).includes(props.email)) {
+            var pending_dict = list["pending"];
+            pending_dict[props.email]["status"] = "new";
+            pending_dict[props.email]["last_time_stamp"] = time_sent;
+            pending_dict[props.email]["received"] = friends_dict[props.email]["received"] + 1;
+            pending_dict[props.email]["snaps"].push(id);
+            list["pending"] = pending_dict;
+            receiver_doc.set({
+              created: list["created"],
+              friends: list["friends"],
+              name: list["name"],
+              pending: list["pending"],
+              profile_pic_url: list["profile_pic_url"],
+              streak_emoji: list["streak_emoji"],
+              total_received: list["total_received"] + 1,
+              total_sent: list["total_sent"],
+            });
+          } else {
+            console.log("Not a friend, skipping "+user+".");
+          }
         })
       })
-
-    
-    // Add photo id to Receiver's Doc:  Friends -> Sender_Name -> Status -> Received
-    //                                  Last_Time_Stamp, Received: +1, Total_Received: +1
-    sendList.forEach((user) => {
-      var receiver_doc = db.collection("Users").doc(user);
-      // check if receiver is friends with sender
-      receiver_doc.get().then((doc) => {
-        var list = doc.data();
-        if (Object.keys(list["friends"]).includes(props.email)){
-          var friends_dict = list["friends"];
-          friends_dict[props.email]["status"] = "new";
-          friends_dict[props.email]["last_time_stamp"] = time_sent;
-          friends_dict[props.email]["received"] = friends_dict[props.email]["received"] + 1;
-          friends_dict[props.email]["snaps"].push(id);
-          list["friends"] = friends_dict;
-          receiver_doc.set({
-            created: list["created"],
-            friends: list["friends"],
-            name: list["name"],
-            pending: list["pending"],
-            profile_pic_url: list["profile_pic_url"],
-            streak_emoji: list["streak_emoji"],
-            total_received: list["total_received"] + 1,
-            total_sent: list["total_sent"],
-          });
-        } else if (Object.keys(list["pending"]).includes(props.email)) {
-          var pending_dict = list["pending"];
-          pending_dict[props.email]["status"] = "new";
-          pending_dict[props.email]["last_time_stamp"] = time_sent;
-          pending_dict[props.email]["received"] = friends_dict[props.email]["received"] + 1;
-          pending_dict[props.email]["snaps"].push(id);
-          list["pending"] = pending_dict;
-          receiver_doc.set({
-            created: list["created"],
-            friends: list["friends"],
-            name: list["name"],
-            pending: list["pending"],
-            profile_pic_url: list["profile_pic_url"],
-            streak_emoji: list["streak_emoji"],
-            total_received: list["total_received"] + 1,
-            total_sent: list["total_sent"],
-          });
-        } else {
-          console.log("Not a friend, skipping "+user+".");
-        }
-      })
-    })
-
-
-    setSendList([]);
+      setSendList([]);
+    } else {
+      // User is a guest
+      console.log("Guest is logged in")
+    }
   }
+  const webcamRef = React.useRef(null);
+  const capture = React.useCallback(
+    () => {
+      // const img = webcamRef.current.getScreenshot({width:props.width, height:props.height});
+      setImg(webcamRef.current.getScreenshot());
+      setScreen("captured")
+      props.showNavbar(false)
+      props.showFooter(false)
+      props.disable_swiping(true)
+    },
+    [webcamRef]
+  );
+  // const flippy = React.useRef(null);
+  // const test = () => {
+  //   flippy.current.toggle()
+  // }
 
   return (
     <>
@@ -170,6 +179,41 @@ function Camera(props) {
         screenshotQuality={1}
         videoConstraints={{facingMode: props.faceMode}}
       />
+       {/* <Flippy
+          flipOnHover={false} // default false
+          flipDirection="horizontal" // horizontal or vertical
+          ref={flippy} // to use toggle method like this.flippy.toggle()
+          // if you pass isFlipped prop component will be controlled component.
+          // and other props, which will go to div
+          className="image-desktop"
+        >
+          <FrontSide>
+            <Webcam
+              id="webcam"
+              className="image-desktop"
+              ref={webcamRef}
+              audio={false}
+              mirrored={true}
+              forceScreenshotSourceSize={false}
+              screenshotFormat="image/png"
+              screenshotQuality={1}
+              videoConstraints={{facingMode: props.faceMode}}
+            />
+          </FrontSide>
+          <BackSide className="image-desktop">
+          <Webcam
+              id="webcam"
+              className="image-desktop"
+              ref={webcamRef}
+              audio={false}
+              mirrored={true}
+              forceScreenshotSourceSize={false}
+              screenshotFormat="image/png"
+              screenshotQuality={1}
+              videoConstraints={{facingMode: props.faceMode}}
+            />
+          </BackSide>
+        </Flippy> */}
 
       {screen === "camera" ? 
         <div className="webcam-overlay">
@@ -177,7 +221,12 @@ function Camera(props) {
             <div className="navbar"/>
           </div>
           <div className="camera-footer">
-            <button onClick={capture}>Capture</button>
+            <div className="camera-footer-buttons">
+              <img className="photo-lib-icon" src={PhotoLibIcon} onClick="" />
+              <button className="capture-button" onClick={capture}></button>
+              <img className="face-filter-icon" src={FaceFilterIcon} onClick="" />
+            </div>
+            
             <div className="footer"/>
             <div className="footer"/>
           </div>
@@ -190,7 +239,7 @@ function Camera(props) {
         <div className="captured-overlay">
           <div className="camera-nav">
             <div className="navbar">
-              <button className="close" onClick={close}>Close</button>
+              <img className="close" onClick={close} src={CloseIcon}></img>
             </div>
           </div>
           <img className="image-desktop" src={img} />

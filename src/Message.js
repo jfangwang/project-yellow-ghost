@@ -102,7 +102,7 @@ export default function Message(props) {
 		blocked: "Blocked",
 	}
 	var status = status_dict[props.friend["status"]]
-	console.log(status);
+	// console.log(status);
 	return (
 			<>
 			{img ?

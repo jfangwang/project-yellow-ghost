@@ -3,7 +3,7 @@
   bottom:0;
   z-index: 8;
   color: white;
-  /* background-color: lightblue; */
+  background-color: lightgrey;
 }
 .footer {
   width: 100%;
@@ -14,4 +14,25 @@
   padding-bottom: 0.5rem;
   justify-content: space-evenly;
   height: 2.5rem;
+}
+.footer-item {
+  height: 2.5rem;
+  width:2.5rem;
+  border-radius: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: none !important;
+}
+/* UI Icons */
+.footer-chat-icon {
+  border-radius: 0.25rem;
+  height: 2.5rem;
+  width: 2.5rem;
+  
+}
+.footer-camera-icon {
+  height: 2.3rem;
+  width: 2.3rem;
+  border-radius: 0.25rem;
 }

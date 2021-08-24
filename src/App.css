@@ -11,22 +11,19 @@
 li {
   text-decoration: none;
   list-style-type: none;
+  background-color: lightgrey;
 }
 a {
   padding: 0.3rem 0.3rem 0.3rem 0.3rem;
   border-radius: 0.25rem;
 }
 a:hover {
-  background-color: lightblue;
   cursor: pointer;
 }
 button {
   padding: 0.5rem 1rem 0.5rem 1rem;
   outline:none;
   border: none;
-}
-button:hover {
-  opacity: 50%;
 }
 /* General */
 .screen {
@@ -40,7 +37,7 @@ button:hover {
   align-items: center;
 }
 .list-container {
-
+  background-color: white !important;
 }
 .item-container {
   /* border: 1px red dashed; */

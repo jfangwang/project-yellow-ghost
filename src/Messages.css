@@ -4,7 +4,7 @@ div[class*="nav-box"] ul {
     align-items: center;
 }
 div[class*="nav-box"] ul li {
-    margin: 0 0.7rem 0 0.7rem;
+    margin: 0 0.3rem 0 0.3rem;
 }
 ul[class*="messages-list"] li {
     display: flex;

@@ -29,11 +29,13 @@ class App extends React.Component {
     super(props);
     this.state = {
       // For swiping screen
-      index: 1,
+      index: 0,
       height: window.innerHeight,
       width: window.innerWidth,
       orientation: "Landscape",
       disable_swiping: false,
+      // Camera
+      faceMode: "user",
       // Navbar
       showNavbar: true,
       showFooter: true,
@@ -266,6 +268,20 @@ class App extends React.Component {
     }
   }
 
+  flipCamera = () => {
+    if (this.state.faceMode == "user") {
+      this.setState({
+        faceMode: "environment"
+      })
+      console.log("environemnt")
+    } else {
+      this.setState({
+        faceMode: "user"
+      })
+      console.log("user")
+    }
+  }
+
   showNavbar = (status) => {
     this.setState({showNavbar: status})
   }
@@ -317,6 +333,7 @@ class App extends React.Component {
           logout={this.logout.bind(this)}
           disable_swiping={this.setDisabledSwiping.bind(this)}
           edit_friends={this.edit_friends.bind(this)}
+          flipCamera={this.flipCamera.bind(this)}
           // User Info
           loggedIn={this.state.loggedIn}
           name={this.state.name}
@@ -359,6 +376,8 @@ class App extends React.Component {
             disable_swiping={this.setDisabledSwiping.bind(this)}
             showNavbar={this.showNavbar.bind(this)}
             showFooter={this.showFooter.bind(this)}
+            // Camera
+            faceMode={this.state.faceMode}
             // User Info
             friends={this.state.friends}
             email={this.state.email}
