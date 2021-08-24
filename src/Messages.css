@@ -35,7 +35,7 @@ ul[class*="add-list"] li:not(:last-child) {
 .message-opened {
     width: 0.9rem;
 	height: 0.9rem;
-    background-image: url('./images/opened-icon.png');
+    background-image: url('./images/opened-img-icon.png');
     background-repeat: no-repeat;
     background-size: 0.9rem 0.9rem;
     background-position: center;
@@ -46,7 +46,7 @@ ul[class*="add-list"] li:not(:last-child) {
 .message-sent {
     width: 0.9rem;
 	height: 0.9rem;
-    background-image: url('./images/sent-icon.png');
+    background-image: url('./images/sent-img-icon.png');
     background-repeat: no-repeat;
     background-size: 0.9rem 0.9rem;
     background-position: center;

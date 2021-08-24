@@ -6,7 +6,7 @@ import {auth, db, provider} from './Firebase.js';
 import firebase from 'firebase/app';
 import './App.css';
 import Messages from './Messages.js';
-import Camera from './Camera.js';
+import {Camera} from './Camera.js';
 import {NavBar} from './Navbar.js';
 import Footer from './Footer.js';
 
@@ -220,7 +220,7 @@ class App extends React.Component {
         }
         everyone[user.id] = user.data();
       })
-      console.log("Friends: ", f)
+      // console.log("Friends: ", f)
       // console.log("Strangers: ", strangers)
       // console.log("Everyone: ", everyone)
       this.setState({
@@ -349,11 +349,18 @@ class App extends React.Component {
           </Helmet>
           <Camera
             index={index}
+            // Functions
             changeToIndex={this.changeToIndex.bind(this)}
             disable_swiping={this.setDisabledSwiping.bind(this)}
             showNavbar={this.showNavbar.bind(this)}
             showFooter={this.showFooter.bind(this)}
+            // User Info
             friends={this.state.friends}
+            email={this.state.email}
+            sent={this.state.sent}
+            // Increment this.sent
+            // Add person to pending list
+
           />
         </div>
       </BindKeyboardSwipeableViews>

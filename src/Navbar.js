@@ -51,7 +51,9 @@ function NavBar(props) {
 		setShowSearch(true);
 		setShowTitle(true);
 		setShowAddFriend(true);
-		setShowNewChat(true);
+		if (props.index == 0) {
+			setShowNewChat(true);
+		}
 		setShowMore(false);
 		setShowClose(false);
 		setNavTitle("Chat");
@@ -64,9 +66,11 @@ function NavBar(props) {
 		if (props.index == 0) {
 			setShowNewChat(true);
 			setShowFlipCam(false);
+			setShowTitle(true);
 		} else if (props.index == 1) {
 			setShowNewChat(false);
 			setShowFlipCam(true);
+			setShowTitle(false);
 		}
   },[props.index]);
 

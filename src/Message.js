@@ -17,6 +17,7 @@ export default function Message(props) {
 	var icon_class = "message-" + props.friend["status"]
 	var status_dict = {
 		["new-friend"]: "New Friend!",
+		new: "New Snap",
 		received: "Received",
 		sent: "Sent",
 		opened: "Opened",
