@@ -51,6 +51,23 @@
   height: 1.7rem;
   width: 1.7rem;
 }
+.close-icon {
+  height: 1.5rem;
+  width: 1.5rem;
+  margin-left: 0.7rem;
+}
+.sign-in {
+  display: flex;
+  align-items: center;
+  border-radius: 1rem;
+  height: 2.5rem;
+  padding: 0 0.7rem 0 0.7rem;
+  background-color: yellow;
+  font-weight: 750;
+}
+.sign-in:hover {
+  background-color: rgb(223, 223, 0);
+}
 
 /* Profile Section */
 .profile-pic {
@@ -75,10 +92,71 @@
   /* border: 1px orange dashed; */
   display: flex;
   align-items: center;
+  flex-direction: row;
+  justify-content: center;
+}
+.add-friend-icon {
+  height: 0.9rem;
+  width: 0.9rem;
+}
+.add-friend-list-icon {
+  padding-right: 0.4rem;
+  height: 0.9rem;
+  width: 0.9rem;
+}
+.friend-button {
+  margin-right: 1rem;
 }
 .friend-button button {
   border-radius: 1rem;
+  background-color: lightgrey !important;
+  padding: 0.4rem 1rem 0.4rem 1rem !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
 }
 .removed-friend {
   background-color: rgb(255, 126, 126);
+}
+.friend-head {
+  display: flex;
+  justify-content: flex-start;
+  width: 96%;
+  margin: 2rem 0 0.5rem 0;
+}
+.friend-list-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 96%;
+  background-color: white;
+  border-radius: 1rem;
+}
+
+.friend-list-container li, .friend-list-container button {
+  background-color: white;
+  justify-content: space-between;
+  border-radius: 1rem;
+  padding: 0.7rem 0.5rem 0.7rem 0.5rem;
+}
+
+.friend-list-container li:not(:last-child), .friend-list-container button:not(:last-child) {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.pic-info-mix {
+  display: flex;
+  flex-direction: row;
+  margin-left: 0.5rem;
+}
+.friend-search {
+  width: 96%;
+  padding: 0.5rem 1rem 0.5rem 1rem;
+  outline: none;
+  border: none;
+  border-radius: 1rem;
+  font-size: 1rem;
+  background-color: rgb(192, 192, 192);
 }

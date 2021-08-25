@@ -41,17 +41,21 @@ class App extends React.Component {
       showFooter: true,
       // User Info
       loggedIn: null,
-      name: null,
       email: null,
+      created:null,
+      friends: {},
+      name: null,
+      added_me: {},
+      pending: {},
       pic: null,
+      streak_emoji: null,
       received: null,
       sent: null,
-      streak_emoji: null,
-      created:null,
-      pending: {},
-      friends: [],
-      strangers: [],
-      everyone: [],
+      // Guest Info
+      local_img: null,
+      // Lists
+      strangers: {},
+      everyone: {},
 
     }
 
@@ -98,6 +102,7 @@ class App extends React.Component {
   check_user = () => {
 		firebase.auth().onAuthStateChanged(function(user) {
 			if (user) {
+        // Loading in known user
         this.setState({
           loggedIn: true,
           name: user.displayName,
@@ -105,15 +110,61 @@ class App extends React.Component {
           email: user.email,
         }, this.check_user_on_firebase)
 			} else {
+        // Setting up guest account
+        var creation = new Date().toLocaleString();
 				this.setState({
           loggedIn: false,
+          created: creation,
           name: "Guest",
           email: "Guest@Guest.com",
           pic: default_pic,
-          sent: 0,
-          received: 0,
-          streak_emoji: "\u{1F525}",
-          created: new Date().toLocaleString(),
+          streak_emoji:  "\u{1F525}",
+          total_sent: 0,
+          total_received: 0,
+          added_me: {},
+          pending: {},
+          friends: {
+            ["Guest@Guest.com"]: {
+                created: creation,
+                profile_pic_url: default_pic,
+                name: "Guest",
+                status: "new-friend",
+                streak: 0,
+                streak_ref: null,
+                sent: 0,
+                received: 0,
+                last_time_stamp: null,
+                snaps: []
+            }
+          },
+          strangers: {
+            ["Guest@Guest.com"]: {
+                created: creation,
+                profile_pic_url: default_pic,
+                name: "Guest",
+                status: "new-friend",
+                streak: 0,
+                streak_ref: null,
+                sent: 0,
+                received: 0,
+                last_time_stamp: null,
+                snaps: []
+            }
+          },
+          everyone: {
+            ["Guest@Guest.com"]: {
+                created: creation,
+                profile_pic_url: default_pic,
+                name: "Guest",
+                status: "new-friend",
+                streak: 0,
+                streak_ref: null,
+                sent: 0,
+                received: 0,
+                last_time_stamp: null,
+                snaps: []
+            }
+          },
         })
 			}
 		}.bind(this))
@@ -132,6 +183,7 @@ class App extends React.Component {
           streak_emoji:  "\u{1F525}",
           total_sent: 0,
           total_received: 0,
+          added_me: {},
           pending: {},
           friends: {
             [this.state.email]: {
@@ -152,6 +204,7 @@ class App extends React.Component {
           received: 0,
           sent: 0,
           streak_emoji: "\u{1F525}",
+          added_me: {},
           pending: {},
           friends: {
             [this.state.email]: {
@@ -179,6 +232,7 @@ class App extends React.Component {
           created: doc.data()["created"],
           friends: doc.data()["friends"],
           pending: doc.data()["pending"],
+          added_me: doc.data()["added_me"],
         }, this.start_snapshot)
       }
     })
@@ -195,6 +249,7 @@ class App extends React.Component {
         created: doc.data()["created"],
         friends: doc.data()["friends"],
         pending: doc.data()["pending"],
+        added_me: doc.data()["added_me"],
       })
       console.log("snapshot created");
       this.update_people_list();
@@ -212,6 +267,7 @@ class App extends React.Component {
     var f = {}
     var strangers = {}
     var everyone = {}
+    var added_me = {}
     db.collection("Users").get().then((doc) => {
       doc.docs.forEach((user) => {
         // console.log("This.friends: ", this.state.friends, user.id);
@@ -221,12 +277,19 @@ class App extends React.Component {
           f[user.id] = user.data()
         }
         everyone[user.id] = user.data();
+        
+        if (this.state.email == user.id) {
+          added_me = user.data()["added_me"]
+          console.log("Added me", user.data()["added_me"])
+        }
       })
       // console.log("Friends: ", f)
       // console.log("Strangers: ", strangers)
       // console.log("Everyone: ", everyone)
+      
       this.setState({
         // friends: f,
+        added_me: added_me,
         strangers: strangers,
         everyone: everyone,
       })
@@ -238,8 +301,48 @@ class App extends React.Component {
     // console.log("friend", friend);
     // console.log("value", value);
     const user_doc = db.collection("Users").doc(this.state.email);
+    const friend_doc = db.collection("Users").doc(friend);
+    // New friends entire document in dictionary form
+    var friend_dict = {};
     var dict = this.state.friends;
-    if (action === "add") {
+    var pending = this.state.pending;
+    var added_me = this.state.added_me;
+
+    if (action == "pending") {
+      // Add user's pending friend to user's friends list and change status to pending
+      var new_friend_entry = {
+        created: value.created,
+        profile_pic_url: value.profile_pic_url,
+        name: value.name,
+        status: "pending",
+        streak: null,
+        streak_ref: null,
+        sent: null,
+        received: null,
+        last_time_stamp: null,
+        snaps: []
+      }
+      dict[friend] = new_friend_entry;
+      user_doc.update({friends: dict})
+
+      // Get pending friend's doc info
+      friend_doc.get().then((doc) => {
+        friend_dict = doc.data()
+        // Add user to pending friend's pending list
+        friend_dict["added_me"][this.state.email] = dict[this.state.email];
+        friend_doc.update({
+          added_me: friend_dict["added_me"],
+        })
+      })
+      
+
+      
+
+
+
+    } else if (action === "add") {
+
+      // Add a entry for new friend under user's friends
       var new_friend_entry = {
         created: value.created,
         profile_pic_url: value.profile_pic_url,
@@ -253,19 +356,50 @@ class App extends React.Component {
         snaps: []
       }
       dict[friend] = new_friend_entry;
-      // Add to firestore
-      user_doc.update({friends: dict})
-      // Update state for user
+      // delete friend from added_me list
+      delete added_me[friend]
+      // Update added_me and friends list to firestore
+      user_doc.update({friends: dict, added_me: added_me})
+
+      // Update user on friend's friends list
+      friend_doc.get().then((doc) => {
+        friend_dict = doc.data();
+        friend_dict["friends"][this.state.email]["status"] = "new-friend";
+        friend_dict["friends"][this.state.email]["streak"] = 0;
+        friend_doc.update({friends: friend_dict["friends"]})
+      })
+
+      // Update local added_me and friends list
       this.setState({
         friends: dict,
       }, this.update_people_list)
+
+      
+
+
+
+
     } else if (action === "remove") {
       delete dict[friend]
+      // update user dict
       user_doc.update({friends: dict})
       this.setState({
         friends: dict,
       }, this.update_people_list)
+
+      // update friend's dict
+      friend_doc.get().then((doc) => {
+        // Check if friend still has user on their list
+        friend_dict = doc.data();
+        if (Object.keys(friend_dict["friends"]).includes(this.state.email)) {
+          friend_dict["friends"][this.state.email]["status"] = "not-friends";
+          friend_dict["friends"][this.state.email]["streak"] = null;
+          friend_doc.update({friends: friend_dict["friends"]})
+        }
+        
+      })
     }
+    this.update_people_list()
   }
 
   flipCamera = () => {
@@ -343,6 +477,7 @@ class App extends React.Component {
           sent={this.state.sent}
           created={this.state.created}
           pending={this.state.pending}
+          added_me={this.state.added_me}
           friends={this.state.friends}
           strangers={this.state.strangers}
           everyone={this.state.everyone}

@@ -6,6 +6,7 @@ import checkmark from './images/black-checkmark.png';
 import PhotoLibIcon from './images/photo-library-icon.png';
 import FaceFilterIcon from './images/face-filter-icon.png';
 import CloseIcon from './images/close.png';
+import DownArrowIcon from './images/down-arrow-icon.png';
 import {storage, db} from './Firebase.js';
 import firebase from 'firebase/app';
 import { v4 as uuid } from "uuid";
@@ -17,6 +18,7 @@ function Camera(props) {
   const [screen, setScreen] = useState("camera");
   const [aspectRatio, setAspectRatio] = useState(16/9);
   const [sendList, setSendList] = useState([]);
+  const bad_status_arr = ["pending", "not-friends", "blocked"];
 
   const sendTo = () => {
     setScreen("send");
@@ -25,7 +27,6 @@ function Camera(props) {
     }
   }
   const send = () => {
-    setImg(null);
     setScreen("camera");
     send_pic()
     props.changeToIndex(0);
@@ -56,44 +57,33 @@ function Camera(props) {
   const send_pic = () => {
     if (props.email != "Guest@Guest.com") {
       // User is logged in
-      // Update Sender's Doc: Friends -> Receiver_Name -> Status -> Sent
-      // Last_Time_Stamp, Sent: +1, Total_Sent: +1
+      
       var time_sent = new Date().toLocaleString();
       var newDict = props.friends;
       var total_sent = 0;
+      var good_status = [];
+      var count = 0;
       const id = uuid();
-      sendList.forEach((user) => {
-        total_sent = total_sent + 1;
-        newDict[user]["status"] = "sent";
-        newDict[user]["last_time_stamp"] = time_sent;
-        newDict[user]["sent"] = newDict[user]["sent"] + 1;
-      })
       const user_doc = db.collection("Users").doc(props.email);
-      user_doc.update({
-        total_sent: props.sent + total_sent,
-        friends: newDict,
-      })
-      // // Add actual photo image to storage
-      const uploadTask = storage.ref(`posts/${id}`).putString(img, 'data_url');
-      uploadTask.on(
-        "state_changed",
-        snapshot => {},
-        error => {
-          console.log(error);
-        },
-        () => {
-          storage.ref(`posts/${id}`).getDownloadURL().then(url => {
-            // Add a photo doc containing: id, sender, sent, opened, time_stamp
-            db.collection("Photos").doc(id).set({
-              sender: props.email,
-              sent: sendList,
-              opened: [],
-              time_stamp: time_sent,
-              image_url: url,
-            })
+
+      // Update Sender's Doc: Friends -> Receiver_Name -> Status -> Sent
+      // Last_Time_Stamp, Sent: +1, Total_Sent: +1
+      sendList.forEach((user) => {
+        count = count + 1;
+        if (!bad_status_arr.includes(props.friends[user]["status"])) {
+          total_sent = total_sent + 1;
+          newDict[user]["status"] = "sent";
+          newDict[user]["last_time_stamp"] = time_sent;
+          newDict[user]["sent"] = newDict[user]["sent"] + 1;
+        }
+        if (sendList.length == count) {
+          user_doc.update({
+            total_sent: props.sent + total_sent,
+            friends: newDict,
           })
         }
-      )
+      })
+
       // Add photo id to Receiver's Doc:  Friends -> Sender_Name -> Status -> Received
       //                                  Last_Time_Stamp, Received: +1, Total_Received: +1
       sendList.forEach((user) => {
@@ -101,14 +91,16 @@ function Camera(props) {
         // check if receiver is friends with sender
         receiver_doc.get().then((doc) => {
           var list = doc.data();
-          if (Object.keys(list["friends"]).includes(props.email)){
+          if (Object.keys(list["friends"]).includes(props.email) &&
+              !bad_status_arr.includes(list["friends"][props.email]["status"])) {
+            good_status.push(user);
             var friends_dict = list["friends"];
             friends_dict[props.email]["status"] = "new";
             friends_dict[props.email]["last_time_stamp"] = time_sent;
             friends_dict[props.email]["received"] = friends_dict[props.email]["received"] + 1;
             friends_dict[props.email]["snaps"].push(id);
             list["friends"] = friends_dict;
-            receiver_doc.set({
+            receiver_doc.update({
               created: list["created"],
               friends: list["friends"],
               name: list["name"],
@@ -118,14 +110,16 @@ function Camera(props) {
               total_received: list["total_received"] + 1,
               total_sent: list["total_sent"],
             });
-          } else if (Object.keys(list["pending"]).includes(props.email)) {
-            var pending_dict = list["pending"];
-            pending_dict[props.email]["status"] = "new";
-            pending_dict[props.email]["last_time_stamp"] = time_sent;
-            pending_dict[props.email]["received"] = friends_dict[props.email]["received"] + 1;
-            pending_dict[props.email]["snaps"].push(id);
-            list["pending"] = pending_dict;
-            receiver_doc.set({
+          } else if (Object.keys(list["added_me"]).includes(props.email) &&
+                     !bad_status_arr.includes(list["friends"][props.email]["status"])) {
+            good_status.push(user);
+            var added_me_dict = list["added_me"];
+            added_me_dict[props.email]["status"] = "new";
+            added_me_dict[props.email]["last_time_stamp"] = time_sent;
+            added_me_dict[props.email]["received"] = friends_dict[props.email]["received"] + 1;
+            added_me_dict[props.email]["snaps"].push(id);
+            list["added_me"] = added_me_dict;
+            receiver_doc.update({
               created: list["created"],
               friends: list["friends"],
               name: list["name"],
@@ -136,14 +130,44 @@ function Camera(props) {
               total_sent: list["total_sent"],
             });
           } else {
-            console.log("Not a friend, skipping "+user+".");
+            console.log("Did not send it to "+user+".");
           }
         })
       })
+
+      // // Add actual photo image to storage
+      const uploadTask = storage.ref(`posts/${id}`).putString(img, 'data_url');
+      // check if user will be sending to an eligible user (Not blocked, unfriended, etc)
+      if (total_sent > 0) {
+        uploadTask.on(
+          "state_changed",
+          snapshot => {},
+          error => {
+            console.log(error);
+          },
+          () => {
+            storage.ref(`posts/${id}`).getDownloadURL().then(url => {
+              // Add a photo doc containing: id, sender, sent, opened, time_stamp
+              db.collection("Photos").doc(id).set({
+                sender: props.email,
+                sent: good_status,
+                opened: [],
+                time_stamp: time_sent,
+                image_url: url,
+              })
+            })
+          }
+        )
+      }
+      
+
       setSendList([]);
+      setImg(null);
     } else {
       // User is a guest
       console.log("Guest is logged in")
+      setImg(null);
+      setSendList([]);
     }
   }
   const webcamRef = React.useRef(null);
@@ -255,13 +279,13 @@ function Camera(props) {
       {screen === "send" ?
         <div className="send-overlay">
           <div className="navbar">
-            <button className="back" onClick={back}>Back</button>
+            <img className="close-icon" src={DownArrowIcon} onClick={back}></img>
             <input className="send-search" type="search"></input>
             <button>...</button>
           </div>
 
-          <h1>Recents ({Object.keys(props.friends).length})</h1>
-          <ul className="list-container send-list">
+          <h3 className="friend-head">Recents ({Object.keys(props.friends).length})</h3>
+          <ul className="friend-list-container">
             {/* <h3>List: {Object.keys(props.friends)}</h3> */}
             {Object.keys(props.friends).sort().map((key) => (
               <Receiver
@@ -310,13 +334,15 @@ function Receiver(props) {
 	return (
 		<>
 			<button onClick={toggleSelected} className="item-container">
-				<div className="pic-container">
-					<img className="friend-profile-pic" src={friends[key].profile_pic_url}/>
-				</div>	
-				<div className="friend-info">
-					<h2>{friends[key].name}</h2>
-					<p>{key}</p>
-				</div>
+				<div className="pic-info-mix">
+          <div className="pic-container">
+            <img className="friend-profile-pic" src={friends[key].profile_pic_url}/>
+          </div>	
+          <div className="friend-info">
+            <h2>{friends[key].name}</h2>
+            <p>{key}</p>
+          </div>
+        </div>
 				<div className="friend-button">
           {added ?
             <div className="selected-circle"><img className="checkmark" src={checkmark} alt="U+2713"></img></div>

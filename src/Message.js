@@ -32,37 +32,42 @@ export default function Message(props) {
 			setOpened(doc.data()["opened"]);
 		})
 		
-
-		// Update Sender's doc
-		const time = new Date().toLocaleString();
-		var sender_doc = db.collection("Users").doc(props.k);
-		sender_doc.get().then((doc) => {
-			var sender_dict = doc.data();
-			sender_dict["friends"][props.email]["last_time_stamp"] = time;
-			sender_dict["friends"][props.email]["profile_pic_url"] = props.pic;
-			sender_dict["friends"][props.email]["status"] = "opened";
-			sender_doc.update({
-				friends: sender_dict["friends"],
-			})
-		})
 		// Update the User's (Receiver) doc
+		const time = new Date().toLocaleString();
+		var receiver_dict = {};
 		var user_doc = db.collection("Users").doc(props.email);
 		user_doc.get().then((doc) => {
-			var receiver_dict = doc.data();
-			receiver_dict["friends"][props.k]["last_time_stamp"] = time;
+			receiver_dict = doc.data();
 
 			if (receiver_dict["friends"][props.k]["snaps"].length <= 1) {
 				receiver_dict["friends"][props.k]["status"] = "received";
+				receiver_dict["friends"][props.k]["last_time_stamp"] = time;
 			} else {
 				receiver_dict["friends"][props.k]["status"] = "new";
 			}
 			receiver_dict["friends"][props.k]["snaps"]
 			.splice(receiver_dict["friends"][props.k]["snaps"].length - 1, 1);
-			user_doc.update({
-				friends: receiver_dict["friends"],
-			})
-		})
 
+			// Update Sender's doc
+			var sender_doc = db.collection("Users").doc(props.k);
+			sender_doc.get().then((doc) => {
+				var sender_dict = doc.data();
+				
+				sender_dict["friends"][props.email]["profile_pic_url"] = props.pic;
+				if (receiver_dict["friends"][props.k]["status"] == "received") {
+					sender_dict["friends"][props.email]["status"] = "opened";
+					sender_dict["friends"][props.email]["last_time_stamp"] = time;
+				}
+				
+				sender_doc.update({
+					friends: sender_dict["friends"],
+				})
+				user_doc.update({
+					friends: receiver_dict["friends"],
+				})
+			})
+			
+		})
 	}
 	const delete_photo = () => {
 		// Delete photo if it is the last user to see it
@@ -123,7 +128,9 @@ export default function Message(props) {
 							</div>
 							<h5>{props.friend["last_time_stamp"] ? <> - <TimeAgo date={props.friend["last_time_stamp"]} /> - </> : null}</h5>
 							<div>
-								<h5>{props.friend["streak"]}{props.streak_emoji}</h5>
+									{props.friend["streak"] === null ? null : 
+										<h5>{props.friend["streak"]}{props.streak_emoji}</h5>
+									}
 							</div>
 						</div>
 					</div>

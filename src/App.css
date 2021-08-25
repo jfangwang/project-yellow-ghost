@@ -25,6 +25,9 @@ button {
   outline:none;
   border: none;
 }
+ul li:not(:last-child) {
+  border-bottom: 1px rgb(170, 170, 170) solid;
+}
 /* General */
 .screen {
   height: 100vh;
@@ -43,8 +46,8 @@ button {
   /* border: 1px red dashed; */
   display: flex;
   flex-direction: row;
-  width: 100%;
   padding: 0 1rem 0 1rem;
+  align-items: center;
 }
 .pic-container {
   /* border: 1px blue dashed; */
