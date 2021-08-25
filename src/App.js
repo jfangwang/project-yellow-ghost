@@ -309,37 +309,70 @@ class App extends React.Component {
     var added_me = this.state.added_me;
 
     if (action == "pending") {
-      // Add user's pending friend to user's friends list and change status to pending
-      var new_friend_entry = {
-        created: value.created,
-        profile_pic_url: value.profile_pic_url,
-        name: value.name,
-        status: "pending",
-        streak: null,
-        streak_ref: null,
-        sent: null,
-        received: null,
-        last_time_stamp: null,
-        snaps: []
-      }
-      dict[friend] = new_friend_entry;
-      user_doc.update({friends: dict})
 
-      // Get pending friend's doc info
+      // Check if potential friend still has user on their friend list (unfriended situation)
       friend_doc.get().then((doc) => {
-        friend_dict = doc.data()
-        // Add user to pending friend's pending list
-        friend_dict["added_me"][this.state.email] = dict[this.state.email];
-        friend_doc.update({
-          added_me: friend_dict["added_me"],
-        })
+        if (Object.keys(doc.data()["friends"]).includes(this.state.email)) {
+          // add friend
+          var new_friend_entry = {
+            created: value.created,
+            profile_pic_url: value.profile_pic_url,
+            name: value.name,
+            status: "new-friend",
+            streak: 0,
+            streak_ref: null,
+            sent: 0,
+            received: 0,
+            last_time_stamp: null,
+            snaps: []
+          }
+          dict[friend] = new_friend_entry;
+          user_doc.update({friends: dict});
+
+          // Get pending friend's doc info
+          friend_doc.get().then((doc) => {
+            friend_dict = doc.data()
+            // Add user to pending friend's pending list
+            friend_dict["friends"][this.state.email]["status"] = "new-friend";
+            friend_doc.update({
+              friends: friend_dict["friends"],
+            })
+          })
+          // Update local added_me and friends list
+          this.setState({
+            friends: dict,
+          }, this.update_people_list)
+        } else {
+           // Add user's pending friend to user's friends list and change status to pending
+          var new_friend_entry = {
+            created: value.created,
+            profile_pic_url: value.profile_pic_url,
+            name: value.name,
+            status: "pending",
+            streak: null,
+            streak_ref: null,
+            sent: 0,
+            received: 0,
+            last_time_stamp: null,
+            snaps: []
+          }
+          dict[friend] = new_friend_entry;
+          user_doc.update({friends: dict})
+
+          // Get pending friend's doc info
+          friend_doc.get().then((doc) => {
+            friend_dict = doc.data()
+            // Add user to pending friend's pending list
+            friend_dict["added_me"][this.state.email] = dict[this.state.email];
+            friend_doc.update({
+              added_me: friend_dict["added_me"],
+            })
+          })
+          this.setState({
+            friends: dict,
+          }, this.update_people_list)
+        }
       })
-      
-
-      
-
-
-
     } else if (action === "add") {
 
       // Add a entry for new friend under user's friends
@@ -374,12 +407,16 @@ class App extends React.Component {
         friends: dict,
       }, this.update_people_list)
 
-      
-
-
-
-
-    } else if (action === "remove") {
+    } else if (action == "remove pending") {
+      delete dict[friend]
+      user_doc.update({friends: dict})
+      friend_doc.get().then((doc) => {
+        friend_dict = doc.data();
+        delete friend_dict["added_me"][this.state.email];
+        friend_doc.update({added_me: friend_dict["added_me"]})
+      })
+    
+    }else if (action === "remove") {
       delete dict[friend]
       // update user dict
       user_doc.update({friends: dict})
@@ -517,6 +554,7 @@ class App extends React.Component {
             friends={this.state.friends}
             email={this.state.email}
             sent={this.state.sent}
+            emoji={this.state.streak_emoji}
             // Increment this.sent
             // Add person to pending list
 

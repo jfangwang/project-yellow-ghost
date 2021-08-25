@@ -96,6 +96,7 @@ export default function Message(props) {
 	}
 
 	var icon_class = "message-" + props.friend["status"]
+	var emoji = null;
 	var status_dict = {
 		["new-friend"]: "New Friend!",
 		new: "New Snap",
@@ -106,7 +107,13 @@ export default function Message(props) {
 		["not-friends"]: "Unfriended You",
 		blocked: "Blocked",
 	}
+	var emoji_dict = {
+		["not-friends"]: "\u{1F494}",
+		blocked: "\u{26D4}",
+		pending: "\u{23F3}"
+	}
 	var status = status_dict[props.friend["status"]]
+	emoji = emoji_dict[props.friend["status"]]
 	// console.log(status);
 	return (
 			<>
@@ -122,14 +129,16 @@ export default function Message(props) {
 					<div className="friend-info">
 						<h3>{props.friend["name"]}</h3>
 						<div className="message-info">
-							<div className="message-info">
-								<div className={icon_class} />
-								<h5>{status}</h5>
+							<div className="message-info-container">
+								{emoji ? <p>{emoji}</p> : <div className={icon_class}></div>}
+								<h5>{status} </h5>
 							</div>
 							<h5>{props.friend["last_time_stamp"] ? <> - <TimeAgo date={props.friend["last_time_stamp"]} /> - </> : null}</h5>
-							<div>
-									{props.friend["streak"] === null ? null : 
-										<h5>{props.friend["streak"]}{props.streak_emoji}</h5>
+							<div className="streak-container">
+									{props.friend["streak"] === null ? null : <>
+										<h5>{props.friend["streak"]}</h5>
+										<h5>{props.streak_emoji}</h5>
+										</>
 									}
 							</div>
 						</div>

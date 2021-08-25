@@ -186,6 +186,7 @@ function Camera(props) {
   // const test = () => {
   //   flippy.current.toggle()
   // }
+  
 
   return (
     <>
@@ -266,10 +267,14 @@ function Camera(props) {
               <img className="close" onClick={close} src={CloseIcon}></img>
             </div>
           </div>
-          <img className="image-desktop" src={img} />
+          {img ? <img className="image-desktop" src={img} /> :
+            <h1 style={{textAlign: "center"}}>Camera did not capture anything {"\u{1F61E}"}</h1>
+          }
           <div className="captured-footer">
-            <button className="save">Save</button>
-            <button className="send-to" onClick={sendTo}><b>Send To</b><img className="send-to-icon" src={sent} /></button>
+            {img ? <button className="save">Save</button> : <button className="save" disabled>Save</button> }
+            {img ? <button className="send-to" onClick={sendTo}><b>Send To</b><img className="send-to-icon" src={sent} /></button>
+             : <button className="send-to" disabled><b>Send To</b><img className="send-to-icon" src={sent} /></button>
+            }
           </div>
         </div>
         </>
@@ -294,6 +299,9 @@ function Camera(props) {
                 sendList={sendList}
                 handle_send_list={handle_send_list}
                 selected={sendList.includes(key) ? true : false}
+                email={props.email}
+                emoji={props.emoji}
+                bad_status_arr={bad_status_arr}
               />
             ))}
           </ul>
@@ -331,25 +339,51 @@ function Receiver(props) {
     setAdded(!added);
   }
 
+  var status_dict = {
+		["new-friend"]: "New Friend!",
+		new: "New Snap",
+		received: "Received",
+		sent: "Sent",
+		opened: "Opened",
+		pending: "Pending",
+		["not-friends"]: "Unfriended You",
+		blocked: "Blocked",
+	}
+	var emoji_dict = {
+		["not-friends"]: "\u{1F494}",
+		blocked: "\u{26D4}",
+		pending: "\u{23F3}"
+	}
+  var emoji = null;
+  var status = null;
+  status = status_dict[friends[key]["status"]]
+  emoji = emoji_dict[friends[key]["status"]]
+
 	return (
 		<>
-			<button onClick={toggleSelected} className="item-container">
-				<div className="pic-info-mix">
+      <button onClick={toggleSelected} className="item-container" disabled={props.bad_status_arr.includes(friends[key]["status"])}>
+        <div className="pic-info-mix">
           <div className="pic-container">
             <img className="friend-profile-pic" src={friends[key].profile_pic_url}/>
           </div>	
           <div className="friend-info">
-            <h2>{friends[key].name}</h2>
-            <p>{key}</p>
+            <h3>{friends[key].name}</h3>
+            {props.bad_status_arr.includes(friends[key]["status"]) ? <h4>{emoji} {status}</h4> : null}
           </div>
         </div>
-				<div className="friend-button">
+        <div className="friend-button">
+            {friends[key]["streak"] === null ? null :
+              <div className="streak-container">
+                <h3>{friends[key].streak}</h3>
+                <h3>{props.emoji}</h3>
+              </div>
+            }
           {added ?
             <div className="selected-circle"><img className="checkmark" src={checkmark} alt="U+2713"></img></div>
             : <div className="unselected-circle"><img className="checkmark" src={checkmark} alt="U+2713"></img></div>
           }
-				</div>
-			</button>
+        </div>
+      </button>
 		</>
 	)
 }

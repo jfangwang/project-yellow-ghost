@@ -48,6 +48,8 @@ ul li:not(:last-child) {
   flex-direction: row;
   padding: 0 1rem 0 1rem;
   align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 .pic-container {
   /* border: 1px blue dashed; */

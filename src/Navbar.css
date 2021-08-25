@@ -75,18 +75,31 @@
   width:8rem;
   margin:1rem
 }
+.profile-modal {
+  display: flex;
+  justify-content:space-evenly;
+  align-items: center;
+  text-align: center;
+}
+.profile-modal > * {
+  text-align: center;
+}
 
 /* Add Friend Section */
 .friend-profile-pic {
   border-radius: 1rem;
-  width:4rem;
+  width:3rem;
 }
 .friend-info {
   /* border: 1px green dashed; */
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: flex-start;
   padding: 0 0.5rem 0 0.5rem;
+}
+.friend-info p {
+  font-size: 0.9rem;
 }
 .friend-button {
   /* border: 1px orange dashed; */
@@ -94,6 +107,10 @@
   align-items: center;
   flex-direction: row;
   justify-content: center;
+}
+.friend-button > *:not(:last-child) {
+  margin-right: 1rem;
+  margin-left: 1rem;
 }
 .add-friend-icon {
   height: 0.9rem;

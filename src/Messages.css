@@ -62,13 +62,14 @@ ul[class*="add-list"] li:not(:last-child) {
     border: 0.17rem solid lightgrey;
     border-radius: 0.2rem;
 }
-.message-info {
+.message-info, .message-info-container {
     display: flex;
     flex-direction: row;
     align-items: center;
 }
-.message-info > * {
-    margin: 0 0.1rem 0 0.1rem;
+.message-info-container > *:not(:first-child)  {
+    margin-left: 0.3rem;
+    margin-right: 0.3rem;
 }
 .background-opened-image {
     position: absolute;

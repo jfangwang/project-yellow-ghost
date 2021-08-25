@@ -172,24 +172,23 @@ function ProfileModal(props) {
 		props.logout();
 	}
 	return (
-		<div className="screen">
+		<div className="screen profile-modal">
 			<div className="navbar">
 					{/* Placeholder */}
 			</div>
 			<img src={props.pic} className="profile-pic" />
 			<h1>{props.name}</h1>
 			<h3>{props.email}</h3>
-			<h3>Received - {props.received} | {props.sent} - Sent</h3>
-			<h3>Joined Project Yellow Ghost on {props.created}</h3>
-			<h3>Created by Jonathan Wang</h3>
+			<h3>{"\u{1F4ED}"} {props.received} | {props.sent} {"\u{2709}"}</h3>
+			<h3>Total: {props.received + props.sent}</h3>
+			<h3>Created by Jonathan Wang {"\u{1F603}"}</h3>
+			<h3>Joined: {props.created}</h3>
 			<button onClick={logout} style={{backgroundColor: "red"}}><h1>Logout</h1></button>
 		</div>
 	)
 }
 
 function AddFriend(props) {
-	console.log(props.added_me)
-
 	var filtered_strangers = props.strangers;
 	Object.keys(props.added_me).forEach(item => {
 		delete filtered_strangers[item];
@@ -203,7 +202,6 @@ function AddFriend(props) {
 			<input type="search" placeholder="Find Friends" className="friend-search" />
 			<h3 className="friend-head">Quick Add ({Object.keys(props.strangers).length})</h3>
 			<ul className="friend-list-container">
-				{/* <h3>List: {Object.keys(props.strangers)}</h3> */}
 				{Object.keys(filtered_strangers).sort().map((key) => (
 					<Stranger
 						strangers={filtered_strangers}
@@ -213,7 +211,7 @@ function AddFriend(props) {
 				))}
 			</ul>
 			{Object.keys(filtered_strangers).length === 0 ? 
-				<p>No one else to add.</p>
+				<p>You are friends with everyone</p>
 				: null
 			}
 			{Object.keys(props.added_me).length === 0 ? null :
@@ -230,9 +228,8 @@ function AddFriend(props) {
 					</ul>
 				</>
 			}
-			<h3 className="friend-head">Friends ({Object.keys(props.friends).length})</h3>
+			<h3 className="friend-head">Friends ({Object.keys(props.friends).length - 1})</h3>
 			<ul className="friend-list-container">
-				{/* <h3>List: {Object.keys(props.friends)}</h3> */}
 				{Object.keys(props.friends).sort().map((key) => (
 					<Friend
 						friends={props.friends}
@@ -242,6 +239,10 @@ function AddFriend(props) {
 					/>
 				))}
 			</ul>
+			{Object.keys(props.friends).length - 1 === 0 ? 
+				<p>Add some friends!</p>
+				: null
+			}
 			<h3 className="friend-head">Everyone ({Object.keys(props.everyone).length})</h3>
 			<ul className="friend-list-container">
 				{/* <h3>List: {Object.keys(props.strangers)}</h3> */}
@@ -263,27 +264,28 @@ function AddFriend(props) {
 function Friend(props) {
 	var friends = props.friends;
 	var key = props.k;
-	console.log(props.email)
 	return (
 		<>	
-			<li className="item-container">
-				<div className="pic-info-mix">
-					<div className="pic-container">
-						<img className="friend-profile-pic" src={friends[key].profile_pic_url}/>
-					</div>	
-					<div className="friend-info">
-						<h2>{friends[key].name}</h2>
-						<p>{key}</p>
+			{props.email === key ? null : 
+				<li className="item-container">
+					<div className="pic-info-mix">
+						<div className="pic-container">
+							<img className="friend-profile-pic" src={friends[key].profile_pic_url}/>
+						</div>	
+						<div className="friend-info">
+							<h2>{friends[key].name}</h2>
+							<p style={{fontSize: "0.9rem"}}>{key}</p>
+						</div>
 					</div>
-				</div>
-				<div className="friend-button">
-				{props.email === key ?  null :
-					 friends[key].status === "pending" ?
-						<button>Pending</button>
-						: <button onClick={() => props.edit_friends("remove", key, friends[key])}>Remove</button>	
-				}
-				</div>
-			</li>
+					<div className="friend-button">
+					{props.email === key ?  null :
+						friends[key].status === "pending" ?
+							<button onClick={() => props.edit_friends("remove pending", key, friends[key])}>Remove Request</button> 
+							: <button onClick={() => props.edit_friends("remove", key, friends[key])}>Remove</button>	
+					}
+					</div>
+				</li>
+			}
 		</>
 	)
 }
