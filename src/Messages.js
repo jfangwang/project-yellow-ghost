@@ -21,12 +21,15 @@ export default function Messages(props) {
 				{Object.keys(props.friends).sort().map((key) => (
 					<Message
 						friend={props.friends[key]}
+						friends={props.friends}
 						streak_emoji={props.streak_emoji}
 						k={key}
 						pic={props.pic}
 						email={props.email}
 						showNavbar={props.showNavbar}
       			showFooter={props.showFooter}
+						loggedIn={props.loggedIn}
+						setLocalDict={props.setLocalDict}
 					/>
 				))}	
 			</ul>

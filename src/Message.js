@@ -26,66 +26,83 @@ export default function Message(props) {
 		props.showNavbar(false)
     props.showFooter(false)
 		setimgid(tempimg)
-		db.collection("Photos").doc(tempimg).get().then((doc) => {
-			setImg(doc.data()["image_url"]);
-			setSent(doc.data()["sent"]);
-			setOpened(doc.data()["opened"]);
-		})
-		
-		// Update the User's (Receiver) doc
-		const time = new Date().toLocaleString();
-		var receiver_dict = {};
-		var user_doc = db.collection("Users").doc(props.email);
-		user_doc.get().then((doc) => {
-			receiver_dict = doc.data();
 
-			if (receiver_dict["friends"][props.k]["snaps"].length <= 1) {
-				receiver_dict["friends"][props.k]["status"] = "received";
-				receiver_dict["friends"][props.k]["last_time_stamp"] = time;
-			} else {
-				receiver_dict["friends"][props.k]["status"] = "new";
-			}
-			receiver_dict["friends"][props.k]["snaps"]
-			.splice(receiver_dict["friends"][props.k]["snaps"].length - 1, 1);
+		if (props.loggedIn) {
+			db.collection("Photos").doc(tempimg).get().then((doc) => {
+				setImg(doc.data()["image_url"]);
+				setSent(doc.data()["sent"]);
+				setOpened(doc.data()["opened"]);
+			})
+			// Update the User's (Receiver) doc
+			const time = new Date().toLocaleString();
+			var receiver_dict = {};
+			var user_doc = db.collection("Users").doc(props.email);
+			user_doc.get().then((doc) => {
+				receiver_dict = doc.data();
 
-			// Update Sender's doc
-			var sender_doc = db.collection("Users").doc(props.k);
-			sender_doc.get().then((doc) => {
-				var sender_dict = doc.data();
-				
-				sender_dict["friends"][props.email]["profile_pic_url"] = props.pic;
-				if (receiver_dict["friends"][props.k]["status"] == "received") {
-					sender_dict["friends"][props.email]["status"] = "opened";
-					sender_dict["friends"][props.email]["last_time_stamp"] = time;
+				if (receiver_dict["friends"][props.k]["snaps"].length <= 1) {
+					receiver_dict["friends"][props.k]["status"] = "received";
+					receiver_dict["friends"][props.k]["last_time_stamp"] = time;
+				} else {
+					receiver_dict["friends"][props.k]["status"] = "new";
 				}
-				
-				sender_doc.update({
-					friends: sender_dict["friends"],
-				})
-				user_doc.update({
-					friends: receiver_dict["friends"],
+				receiver_dict["friends"][props.k]["snaps"]
+				.splice(receiver_dict["friends"][props.k]["snaps"].length - 1, 1);
+
+				// Update Sender's doc
+				var sender_doc = db.collection("Users").doc(props.k);
+				sender_doc.get().then((doc) => {
+					var sender_dict = doc.data();
+					
+					sender_dict["friends"][props.email]["profile_pic_url"] = props.pic;
+					if (receiver_dict["friends"][props.k]["status"] == "received") {
+						sender_dict["friends"][props.email]["status"] = "opened";
+						sender_dict["friends"][props.email]["last_time_stamp"] = time;
+					}
+					
+					sender_doc.update({
+						friends: sender_dict["friends"],
+					})
+					user_doc.update({
+						friends: receiver_dict["friends"],
+					})
 				})
 			})
-			
-		})
+		} else {
+			// Guest Account
+			setImg(tempimg);
+			var newDict = props.friends;
+
+			if (newDict[props.k]["snaps"].length == 1) {
+				newDict[props.k]["status"] = "received";
+			} else {
+				newDict[props.k]["status"] = "new";
+			}
+			newDict[props.k]["last_time_stamp"] = new Date().toLocaleString();
+			newDict[props.k]["snaps"] = newDict[props.k]["snaps"].splice(newDict[props.k]["snaps"].length - 1);
+			props.setLocalDict(newDict);
+
+		}
 	}
 	const delete_photo = () => {
-		// Delete photo if it is the last user to see it
-		if (sent.length <= 1) {
-			// Delete from storage
-			storage.ref(`posts/${imgid}`).delete().catch((error) => {});
-			// Delete from Firestore
-			db.collection("Photos").doc(imgid).delete().catch((error) => {});
-			console.log("deleted")
-		} else {
-			// Update Photo document
-			var newSent = sent;
-			var newOpened = opened;
-			db.collection("Photos").doc(imgid).update({
-				sent: newSent.splice(newSent.indexOf(props.email), 1),
-				opened: newOpened.push(props.email),
-			})
-			console.log("updated")
+		if (props.loggedIn) {
+			// Delete photo if it is the last user to see it
+			if (sent.length <= 1) {
+				// Delete from storage
+				storage.ref(`posts/${imgid}`).delete().catch((error) => {});
+				// Delete from Firestore
+				db.collection("Photos").doc(imgid).delete().catch((error) => {});
+				console.log("deleted")
+			} else {
+				// Update Photo document
+				var newSent = sent;
+				var newOpened = opened;
+				db.collection("Photos").doc(imgid).update({
+					sent: newSent.splice(newSent.indexOf(props.email), 1),
+					opened: newOpened.push(props.email),
+				})
+				console.log("updated")
+			}
 		}
 	}
 	const close = () => {

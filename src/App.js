@@ -14,15 +14,6 @@ import Footer from './Footer.js';
 
 const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
 var default_pic = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png"
-// var dummy_dict = {
-//   email: "Guest@project-yellow-ghost.com",
-//   name:"Guest",
-//   photoURL: default_pic,
-//   streak_emoji:"\u{1F525}",
-//   imgs_sent: 0,
-//   imgs_received: 0,
-//   friends: ['Guest@project-yellow-ghost.com'],
-// }
 
 class App extends React.Component {
   constructor(props) {
@@ -51,8 +42,6 @@ class App extends React.Component {
       streak_emoji: null,
       received: null,
       sent: null,
-      // Guest Info
-      local_img: null,
       // Lists
       strangers: {},
       everyone: {},
@@ -239,24 +228,26 @@ class App extends React.Component {
   }
   start_snapshot = () => {
     const user_doc = db.collection("Users").doc(this.state.email);
-    user_doc.onSnapshot((doc) => {
-      this.setState({
-        name: doc.data()["name"],
-        pic: doc.data()["profile_pic_url"],
-        received: doc.data()["total_received"],
-        sent: doc.data()["total_sent"],
-        streak_emoji: doc.data()["streak_emoji"],
-        created: doc.data()["created"],
-        friends: doc.data()["friends"],
-        pending: doc.data()["pending"],
-        added_me: doc.data()["added_me"],
+    if (this.state.loggedIn) {
+      user_doc.onSnapshot((doc) => {
+        this.setState({
+          name: doc.data()["name"],
+          pic: doc.data()["profile_pic_url"],
+          received: doc.data()["total_received"],
+          sent: doc.data()["total_sent"],
+          streak_emoji: doc.data()["streak_emoji"],
+          created: doc.data()["created"],
+          friends: doc.data()["friends"],
+          pending: doc.data()["pending"],
+          added_me: doc.data()["added_me"],
+        })
+        console.log("snapshot created");
+        this.update_people_list();
+      }, (error) => {
+        alert("Problem with real time firebase, cannot get live updates.");
+        console.log(error);
       })
-      console.log("snapshot created");
-      this.update_people_list();
-    }, (error) => {
-      alert("Problem with real time firebase, cannot get live updates.");
-      console.log(error);
-    })
+    }
   }
   end_snapshot = () => {
     this.start_snapshot();
@@ -264,36 +255,38 @@ class App extends React.Component {
   }
   // Updates user's Friends, Strangers, and Everyone list
   update_people_list = () => {
-    var f = {}
-    var strangers = {}
-    var everyone = {}
-    var added_me = {}
-    db.collection("Users").get().then((doc) => {
-      doc.docs.forEach((user) => {
-        // console.log("This.friends: ", this.state.friends, user.id);
-        if (!Object.keys(this.state.friends).includes(user.id)) {
-          strangers[user.id] = user.data()
-        } else {
-          f[user.id] = user.data()
-        }
-        everyone[user.id] = user.data();
+    if (this.state.loggedIn) {
+      var f = {}
+      var strangers = {}
+      var everyone = {}
+      var added_me = {}
+      db.collection("Users").get().then((doc) => {
+        doc.docs.forEach((user) => {
+          // console.log("This.friends: ", this.state.friends, user.id);
+          if (!Object.keys(this.state.friends).includes(user.id)) {
+            strangers[user.id] = user.data()
+          } else {
+            f[user.id] = user.data()
+          }
+          everyone[user.id] = user.data();
+          
+          if (this.state.email == user.id) {
+            added_me = user.data()["added_me"]
+            console.log("Added me", user.data()["added_me"])
+          }
+        })
+        // console.log("Friends: ", f)
+        // console.log("Strangers: ", strangers)
+        // console.log("Everyone: ", everyone)
         
-        if (this.state.email == user.id) {
-          added_me = user.data()["added_me"]
-          console.log("Added me", user.data()["added_me"])
-        }
+        this.setState({
+          // friends: f,
+          added_me: added_me,
+          strangers: strangers,
+          everyone: everyone,
+        })
       })
-      // console.log("Friends: ", f)
-      // console.log("Strangers: ", strangers)
-      // console.log("Everyone: ", everyone)
-      
-      this.setState({
-        // friends: f,
-        added_me: added_me,
-        strangers: strangers,
-        everyone: everyone,
-      })
-    })
+    } 
   }
   // Add or Remove Friend from this.state.friends
   edit_friends = (action, friend, value) => {
@@ -308,8 +301,7 @@ class App extends React.Component {
     var pending = this.state.pending;
     var added_me = this.state.added_me;
 
-    if (action == "pending") {
-
+    if (action == "pending" && this.state.loggedIn) {
       // Check if potential friend still has user on their friend list (unfriended situation)
       friend_doc.get().then((doc) => {
         if (Object.keys(doc.data()["friends"]).includes(this.state.email)) {
@@ -373,7 +365,7 @@ class App extends React.Component {
           }, this.update_people_list)
         }
       })
-    } else if (action === "add") {
+    } else if (action === "add" && this.state.loggedIn) {
 
       // Add a entry for new friend under user's friends
       var new_friend_entry = {
@@ -407,7 +399,7 @@ class App extends React.Component {
         friends: dict,
       }, this.update_people_list)
 
-    } else if (action == "remove pending") {
+    } else if (action == "remove pending" && this.state.loggedIn) {
       delete dict[friend]
       user_doc.update({friends: dict})
       friend_doc.get().then((doc) => {
@@ -458,6 +450,11 @@ class App extends React.Component {
   }
   showFooter = (status) => {
     this.setState({showFooter: status})
+  }
+  setLocalDict = (dict) => {
+    if (dict != null) {
+      this.setState({friends: dict})
+    }
   }
 
   login = () => {
@@ -535,6 +532,7 @@ class App extends React.Component {
             email={this.state.email}
             showNavbar={this.showNavbar.bind(this)}
             showFooter={this.showFooter.bind(this)}
+            setLocalDict={this.setLocalDict.bind(this)}
           />
         </div>
         <div style={Object.assign({backgroundColor: 'Plum'})} >
@@ -548,6 +546,7 @@ class App extends React.Component {
             disable_swiping={this.setDisabledSwiping.bind(this)}
             showNavbar={this.showNavbar.bind(this)}
             showFooter={this.showFooter.bind(this)}
+            setLocalDict={this.setLocalDict.bind(this)}
             // Camera
             faceMode={this.state.faceMode}
             // User Info

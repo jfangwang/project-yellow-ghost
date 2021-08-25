@@ -55,16 +55,15 @@ function Camera(props) {
   }
 
   const send_pic = () => {
+    var time_sent = new Date().toLocaleString();
+    var newDict = props.friends;
+    var total_sent = 0;
+    var good_status = [];
+    var count = 0;
+    const id = uuid();
+    const user_doc = db.collection("Users").doc(props.email);
     if (props.email != "Guest@Guest.com") {
       // User is logged in
-      
-      var time_sent = new Date().toLocaleString();
-      var newDict = props.friends;
-      var total_sent = 0;
-      var good_status = [];
-      var count = 0;
-      const id = uuid();
-      const user_doc = db.collection("Users").doc(props.email);
 
       // Update Sender's Doc: Friends -> Receiver_Name -> Status -> Sent
       // Last_Time_Stamp, Sent: +1, Total_Sent: +1
@@ -165,7 +164,26 @@ function Camera(props) {
       setImg(null);
     } else {
       // User is a guest
-      console.log("Guest is logged in")
+
+      // Update Sender's dictionary
+      sendList.forEach((user) => {
+        count = count + 1;
+        if (!bad_status_arr.includes(props.friends[user]["status"])) {
+          total_sent = total_sent + 1;
+          newDict[user]["status"] = "sent";
+          newDict[user]["last_time_stamp"] = time_sent;
+          newDict[user]["sent"] = newDict[user]["sent"] + 1;
+        }
+      })
+
+      // Update Receiver's Dictionary (Guest)
+      if (!bad_status_arr.includes(props.friends[props.email]["status"])) {
+        newDict[props.email]["status"] = "new";
+        newDict[props.email]["last_time_stamp"] = time_sent;
+        newDict[props.email]["received"] = newDict[props.email]["received"] + 1;
+        newDict[props.email]["snaps"].push(img)
+      }
+      props.setLocalDict(newDict);
       setImg(null);
       setSendList([]);
     }
