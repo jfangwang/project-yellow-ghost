@@ -7,6 +7,7 @@ import PhotoLibIcon from './images/photo-library-icon.png';
 import FaceFilterIcon from './images/face-filter-icon.png';
 import CloseIcon from './images/close.png';
 import DownArrowIcon from './images/down-arrow-icon.png';
+import CameraClick from './sound/camera-shutter-click.mp3';
 import {storage, db} from './Firebase.js';
 import firebase from 'firebase/app';
 import { v4 as uuid } from "uuid";
@@ -191,6 +192,7 @@ function Camera(props) {
   const webcamRef = React.useRef(null);
   const capture = React.useCallback(
     () => {
+      document.getElementById("capture-audio").play()
       // const img = webcamRef.current.getScreenshot({width:props.width, height:props.height});
       setImg(webcamRef.current.getScreenshot());
       setScreen("captured")
@@ -266,7 +268,7 @@ function Camera(props) {
           <div className="camera-footer">
             <div className="camera-footer-buttons">
               <img className="photo-lib-icon" src={PhotoLibIcon} onClick="" />
-              <button className="capture-button" onClick={capture}></button>
+              <button className="capture-button" onClick={capture}><audio id="capture-audio" src={CameraClick}></audio></button>
               <img className="face-filter-icon" src={FaceFilterIcon} onClick="" />
             </div>
             
@@ -326,7 +328,7 @@ function Camera(props) {
           {sendList.length > 0 ? 
             <div className="send-footer">
               <h3 className="send-label">Send to...</h3>
-              <button className="send-to " onClick={send}>Send</button>
+              <button className="send-to" onClick={send}>Send</button>
             </div>
             : null
           }
