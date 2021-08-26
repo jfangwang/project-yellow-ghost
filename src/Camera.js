@@ -184,6 +184,7 @@ function Camera(props) {
       // User is a guest
 
       // Update Sender's dictionary
+      console.log(sendList)
       sendList.forEach((user) => {
         count = count + 1;
         if (!bad_status_arr.includes(props.friends[user]["status"])) {
@@ -195,7 +196,7 @@ function Camera(props) {
       })
 
       // Update Receiver's Dictionary (Guest)
-      if (!bad_status_arr.includes(props.friends[props.email]["status"])) {
+      if (!bad_status_arr.includes(props.friends[props.email]["status"]) && sendList.includes(props.email)) {
         newDict[props.email]["status"] = "new";
         newDict[props.email]["last_time_stamp"] = time_sent;
         newDict[props.email]["received"] = newDict[props.email]["received"] + 1;
@@ -238,7 +239,7 @@ function Camera(props) {
         forceScreenshotSourceSize={false}
         screenshotFormat="image/png"
         screenshotQuality={1}
-        videoConstraints={{facingMode: props.faceMode, aspectRatio: 16/9}}
+        videoConstraints={{facingMode: props.faceMode, aspectRatio: ar}}
       />
        {/* <Flippy
           flipOnHover={false} // default false
