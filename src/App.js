@@ -9,13 +9,13 @@ import Messages from './Messages.js';
 import {Camera} from './Camera.js';
 import {NavBar} from './Navbar.js';
 import Footer from './Footer.js';
+import Guest from './images/guest-profile-pic.png';
 import Rick from './images/rick-profile-pic.jpg';
 import Morty from './images/morty-profile-pic.jpg';
 
 // All the firebase calls will occur here to minimize usage
 
 const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
-var default_pic = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Circle-icons-profile.svg/2048px-Circle-icons-profile.svg.png"
 
 class App extends React.Component {
   constructor(props) {
@@ -108,7 +108,7 @@ class App extends React.Component {
           created: creation,
           name: "Guest",
           email: "Guest@Guest.com",
-          pic: default_pic,
+          pic: Guest,
           streak_emoji:  "\u{1F525}",
           total_sent: 0,
           total_received: 0,
@@ -117,7 +117,7 @@ class App extends React.Component {
           friends: {
             ["Guest@Guest.com"]: {
                 created: creation,
-                profile_pic_url: default_pic,
+                profile_pic_url: Guest,
                 name: "Guest",
                 status: "new-friend",
                 streak: 0,
@@ -157,7 +157,7 @@ class App extends React.Component {
           everyone: {
             ["Guest@Guest.com"]: {
                 created: creation,
-                profile_pic_url: default_pic,
+                profile_pic_url: Guest,
                 name: "Guest",
                 status: "new-friend",
                 streak: 0,
@@ -339,11 +339,27 @@ class App extends React.Component {
     var pending = this.state.pending;
     var added_me = this.state.added_me;
 
-    // if (action == "add" && !this.state.loggedIn) {
-    //   this.state.friend
-    // }
+    if (action == "pending" && !this.state.loggedIn) {
+      this.state.friends[friend] = value
+      delete this.state.strangers[friend]
+      this.setState({
+        friends:this.state.friends,
+        strangers: this.state.strangers,
+      })
+    } else if (action == "remove" && !this.state.loggedIn) {
+      value["received"] = 0
+      value["snaps"] = []
+      value["status"] = "new-friend";
+      value["last_time_stamp"] = null;
 
-    if (action == "pending" && this.state.loggedIn) {
+      this.state.strangers[friend] = value
+
+      delete this.state.friends[friend]
+      this.setState({
+        friends:this.state.friends,
+        strangers: this.state.strangers,
+      })
+    } else if (action == "pending" && this.state.loggedIn) {
       // Check if potential friend still has user on their friend list (unfriended situation)
       friend_doc.get().then((doc) => {
         if (Object.keys(doc.data()["friends"]).includes(this.state.email)) {
@@ -450,7 +466,7 @@ class App extends React.Component {
         friend_doc.update({added_me: friend_dict["added_me"]})
       })
     
-    }else if (action === "remove") {
+    }else if (action === "remove" && this.state.loggedIn) {
       delete dict[friend]
       // update user dict
       user_doc.update({friends: dict})
@@ -516,7 +532,7 @@ class App extends React.Component {
       loggedIn: false,
       name: "Guest",
       email: "Guest@Guest.com",
-      pic: default_pic,
+      pic: Guest,
       sent: 0,
       received: 0,
       pending: {},
