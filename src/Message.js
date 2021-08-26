@@ -79,9 +79,8 @@ export default function Message(props) {
 				newDict[props.k]["status"] = "new";
 			}
 			newDict[props.k]["last_time_stamp"] = new Date().toLocaleString();
-			newDict[props.k]["snaps"] = newDict[props.k]["snaps"].splice(newDict[props.k]["snaps"].length - 1);
+			newDict[props.k]["snaps"].splice(newDict[props.k]["snaps"].length - 1, 1);
 			props.setLocalDict(newDict);
-
 		}
 	}
 	const delete_photo = () => {
@@ -150,9 +149,10 @@ export default function Message(props) {
 								{emoji ? <p>{emoji}</p> : <div className={icon_class}></div>}
 								<h5>{status} </h5>
 							</div>
-							<h5>{props.friend["last_time_stamp"] ? <> - <TimeAgo date={props.friend["last_time_stamp"]} /> - </> : null}</h5>
+							<h5 className="time-stamp">{props.friend["last_time_stamp"] ? <> <div className="separator"></div> <TimeAgo date={props.friend["last_time_stamp"]} /> </> : null}</h5>
 							<div className="streak-container">
 									{props.friend["streak"] === null ? null : <>
+										<div className="separator" style={{marginRight:"0.3rem"}}></div>
 										<h5>{props.friend["streak"]}</h5>
 										<h5>{props.streak_emoji}</h5>
 										</>
