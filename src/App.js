@@ -9,6 +9,8 @@ import Messages from './Messages.js';
 import {Camera} from './Camera.js';
 import {NavBar} from './Navbar.js';
 import Footer from './Footer.js';
+import Rick from './images/rick-profile-pic.jpg';
+import Morty from './images/morty-profile-pic.jpg';
 
 // All the firebase calls will occur here to minimize usage
 
@@ -127,18 +129,30 @@ class App extends React.Component {
             }
           },
           strangers: {
-            ["Guest@Guest.com"]: {
-                created: creation,
-                profile_pic_url: default_pic,
-                name: "Guest",
-                status: "new-friend",
-                streak: 0,
-                streak_ref: null,
-                sent: 0,
-                received: 0,
-                last_time_stamp: null,
-                snaps: []
-            }
+            ["Rick@Guest.com"]: {
+              created: creation,
+              profile_pic_url: Rick,
+              name: "Rick",
+              status: "new-friend",
+              streak: 0,
+              streak_ref: null,
+              sent: 0,
+              received: 0,
+              last_time_stamp: null,
+              snaps: []
+            },
+            ["Morty@Guest.com"]: {
+              created: creation,
+              profile_pic_url: Morty,
+              name: "Morty",
+              status: "new-friend",
+              streak: 0,
+              streak_ref: null,
+              sent: 0,
+              received: 0,
+              last_time_stamp: null,
+              snaps: []
+            },
           },
           everyone: {
             ["Guest@Guest.com"]: {
@@ -152,6 +166,30 @@ class App extends React.Component {
                 received: 0,
                 last_time_stamp: null,
                 snaps: []
+            },
+            ["Rick@Guest.com"]: {
+              created: creation,
+              profile_pic_url: Rick,
+              name: "Rick",
+              status: "new-friend",
+              streak: 0,
+              streak_ref: null,
+              sent: 0,
+              received: 0,
+              last_time_stamp: null,
+              snaps: []
+            },
+            ["Morty@Guest.com"]: {
+              created: creation,
+              profile_pic_url: Morty,
+              name: "Morty",
+              status: "new-friend",
+              streak: 0,
+              streak_ref: null,
+              sent: 0,
+              received: 0,
+              last_time_stamp: null,
+              snaps: []
             }
           },
         })
@@ -300,6 +338,10 @@ class App extends React.Component {
     var dict = this.state.friends;
     var pending = this.state.pending;
     var added_me = this.state.added_me;
+
+    // if (action == "add" && !this.state.loggedIn) {
+    //   this.state.friend
+    // }
 
     if (action == "pending" && this.state.loggedIn) {
       // Check if potential friend still has user on their friend list (unfriended situation)
