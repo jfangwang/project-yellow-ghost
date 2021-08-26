@@ -15,11 +15,28 @@ import Flippy, { FrontSide, BackSide } from 'react-flippy';
 
 
 function Camera(props) {
+  const [ar, setar] = useState(null)
   const [img, setImg] = useState(null);
   const [screen, setScreen] = useState("camera");
-  const [aspectRatio, setAspectRatio] = useState(16/9);
   const [sendList, setSendList] = useState([]);
   const bad_status_arr = ["pending", "not-friends", "blocked"];
+
+  useEffect(() => {
+    if (window.innerHeight < window.innerWidth) {
+      setar(16/9)
+      if (window.innerHeight/window.innerWidth <= 0.60) {
+        document.getElementById("webcam").style.height = "100%";
+        document.getElementById("webcam").style.width = "auto";
+      } else {
+        document.getElementById("webcam").style.width = "100%";
+        document.getElementById("webcam").style.height = "auto";
+      }
+    } else {
+      setar(9/16)
+      document.getElementById("webcam").style.height = "100%";
+      document.getElementById("webcam").style.width = "auto";
+    }
+  })
 
   const sendTo = () => {
     setScreen("send");
@@ -211,18 +228,17 @@ function Camera(props) {
   return (
     <>
     <div className="webcam-screen">
-      <div className="navbar" />
+      {/* <div className="navbar" /> */}
 
       <Webcam
         id="webcam"
-        className="image-desktop"
         ref={webcamRef}
         audio={false}
         mirrored={true}
         forceScreenshotSourceSize={false}
         screenshotFormat="image/png"
         screenshotQuality={1}
-        videoConstraints={{facingMode: props.faceMode}}
+        videoConstraints={{facingMode: props.faceMode, aspectRatio: 16/9}}
       />
        {/* <Flippy
           flipOnHover={false} // default false
@@ -272,7 +288,7 @@ function Camera(props) {
               <img className="face-filter-icon" src={FaceFilterIcon} onClick="" />
             </div>
             
-            <div className="footer"/>
+            {/* <div className="footer"/> */}
             <div className="footer"/>
           </div>
         </div>
@@ -287,9 +303,10 @@ function Camera(props) {
               <img className="close" onClick={close} src={CloseIcon}></img>
             </div>
           </div>
-          {img ? <img className="image-desktop" src={img} /> :
+          {img ? <img id="webcam" src={img} /> :
             <h1 style={{textAlign: "center"}}>Camera did not capture anything {"\u{1F61E}"}</h1>
           }
+          <div className="footer"/>
           <div className="captured-footer">
             {img ? <button className="save">Save</button> : <button className="save" disabled>Save</button> }
             {img ? <button className="send-to" onClick={sendTo}><b>Send To</b><img className="send-to-icon" src={sent} /></button>
@@ -305,7 +322,7 @@ function Camera(props) {
         <div className="send-overlay">
           <div className="navbar">
             <img className="close-icon" src={DownArrowIcon} onClick={back}></img>
-            <input className="send-search" type="search"></input>
+            <input className="send-search" type="search" placeholder="Search"></input>
             <button>...</button>
           </div>
 

@@ -1,12 +1,13 @@
 .webcam-screen {
     height:100vh;
+    width:100%;
     /* overflow-y: hidden;
     overflow-x: hidden; */
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: white;
+    background-color: black;
     flex-direction: column;
 }
 .webcam-overlay, .captured-overlay {
@@ -66,7 +67,7 @@
     background-color: white;
 }
 .image-desktop {
-    width: 100%;
+
 }
 
 /* UI Buttons */
