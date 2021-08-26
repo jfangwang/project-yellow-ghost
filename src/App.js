@@ -33,6 +33,7 @@ class App extends React.Component {
       // Navbar
       showNavbar: true,
       showFooter: true,
+      navbarBackground: null,
       // User Info
       loggedIn: null,
       email: null,
@@ -87,6 +88,11 @@ class App extends React.Component {
   setDisabledSwiping(e) {
     this.setState({
       disable_swiping: e,
+    })
+  }
+  onSwitching = index => {
+    this.setState({
+      navbarBackground: index,
     })
   }
 
@@ -581,10 +587,12 @@ class App extends React.Component {
           friends={this.state.friends}
           strangers={this.state.strangers}
           everyone={this.state.everyone}
+          // Navbar
+          navbarBackground={this.state.navbarBackground}
         />
         : null
       }
-      <BindKeyboardSwipeableViews disabled={this.state.disable_swiping} enableMouseEvents index={index} onChangeIndex={this.handleChangeIndex} style={Object.assign({width: this.state.width, height: this.state.height, position: 'absolute', top: '0%', left: '0%'})}>
+      <BindKeyboardSwipeableViews onSwitching={this.onSwitching} disabled={this.state.disable_swiping} enableMouseEvents index={index} onChangeIndex={this.handleChangeIndex} style={Object.assign({width: this.state.width, height: this.state.height, position: 'absolute', top: '0%', left: '0%'})}>
         <div style={Object.assign({backgroundColor: 'white', minHeight: '100vh', width: '100%'})}>
           <Helmet>
             <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"></meta>

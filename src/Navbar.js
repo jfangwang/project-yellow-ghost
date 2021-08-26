@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect, useRef } from 'react';
+import React, { Component, useState, useEffect, ReactDOM, useRef } from 'react';
 import './Navbar.css';
 import {auth, storage, db, provider} from './Firebase.js';
 import firebase from 'firebase/app';
@@ -8,7 +8,7 @@ import AddFriendIcon from './images/add-friend-icon.png';
 import ChatIcon from './images/chat-icon.png';
 import FlipIcon from './images/flip-icon.png';
 import DownArrowIcon from './images/down-arrow-icon.png';
-import { isObjectLiteralElement } from 'typescript';
+import { InvalidatedProjectKind, isObjectLiteralElement } from 'typescript';
 
 
 function NavBar(props) {
@@ -81,7 +81,14 @@ function NavBar(props) {
 			setShowFlipCam(true);
 			setShowTitle(false);
 		}
-  },[props.index]);
+		
+		// document.getElementById("nav-item-search").style.opacity = 1.3 - props.navbarBackground;
+		// document.getElementById("nav-item-add-friend").style.opacity = 1.3 - props.navbarBackground;
+		// document.getElementById("nav-item-new-chat").style.opacity = 1.3 - props.navbarBackground;
+		// document.getElementById("nav-item-flip-cam").style.opacity = 1.3 - props.navbarBackground;
+	
+
+  },[props.navbarBackground]);
 
 	return (
 		<>
@@ -99,7 +106,7 @@ function NavBar(props) {
 					: null
 				}
 				
-				{showSearch ? <li className="nav-item"><img className="search-icon" src={SearchIcon} /></li> : null}
+				{showSearch ? <li id="nav-item-search" className="nav-item"><img className="search-icon" src={SearchIcon} /></li> : null}
 			</ul>
 		</div>
 		<div className="nav-box-2">
@@ -119,10 +126,10 @@ function NavBar(props) {
 		</div>
 		<div className="nav-box-3">
 				<ul>
-					{showAddFriend ? <li className="nav-item" onClick={toggleAddFriend}><img className="add-friend-icon" src={AddFriendIcon} /></li> : null}
-					{showNewChat ? <li className="nav-item"><img src={ChatIcon} className="chat-icon"/></li> : null}
+					{showAddFriend ? <li id="nav-item-add-friend" className="nav-item" onClick={toggleAddFriend}><img className="add-friend-icon" src={AddFriendIcon} /></li> : null}
+					{showNewChat ? <li id="nav-item-new-chat" className="nav-item"><img src={ChatIcon} className="chat-icon"/></li> : null}
 					{showMore ? <li><a><b>. . .</b></a></li> : null}
-					{showFlipCam ? <li className="nav-item" onClick={props.flipCamera}><img className="flip-icon" src={FlipIcon} /></li> : null}
+					{showFlipCam ? <li id="nav-item-flip-cam" className="nav-item" onClick={props.flipCamera}><img className="flip-icon" src={FlipIcon} /></li> : null}
 				</ul>
 			</div>
 		</div>

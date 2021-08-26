@@ -72,12 +72,10 @@ ul[class*="add-list"] li:not(:last-child) {
     margin-right: 0.3rem;
 }
 .separator {
-    height: 0.01rem;
-    width: 0.01rem;
-    background-color: lightgrey;
-    border: 0.19rem solid lightgrey;
+    background-size: 100%;
+    border: 2px solid rgb(170, 170, 170);
     border-radius: 100%;
-    opacity: 70%;
+    background-repeat: no-repeat;
 }
 .time-stamp {
     display:flex;

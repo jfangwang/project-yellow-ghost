@@ -44,8 +44,13 @@ function Camera(props) {
       } else {
         setar(9/16)
       }
-      document.getElementById("webcam").style.height = "100%";
-      document.getElementById("webcam").style.width = "auto";
+      if (window.innerHeight/window.innerWidth >= 1.856) {
+        document.getElementById("webcam").style.width = "100%";
+        document.getElementById("webcam").style.height = "auto";
+      } else {
+        document.getElementById("webcam").style.height = "100%";
+        document.getElementById("webcam").style.width = "auto";
+      }
     }
   })
 
