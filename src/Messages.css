@@ -18,6 +18,9 @@ ul[class*="messages-list"] li {
 ul[class*="add-list"] li:not(:last-child) {
     border-bottom: 1px rgb(170, 170, 170) solid;
 }
+.messages-screen {
+    /* border: 4px solid lightgreen; */
+}
 /* Message */
 .message-new {
     height: 0.95rem;

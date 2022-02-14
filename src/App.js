@@ -592,11 +592,8 @@ class App extends React.Component {
         />
         : null
       }
-      <BindKeyboardSwipeableViews onSwitching={this.onSwitching} disabled={this.state.disable_swiping} enableMouseEvents index={index} onChangeIndex={this.handleChangeIndex} style={Object.assign({width: this.state.width, height: this.state.height, position: 'absolute', top: '0%', left: '0%'})}>
-        <div style={Object.assign({backgroundColor: 'white', minHeight: '100vh', width: '100%'})}>
-          <Helmet>
-            <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"></meta>
-          </Helmet>
+      <BindKeyboardSwipeableViews onSwitching={this.onSwitching} disabled={this.state.disable_swiping} enableMouseEvents index={index} onChangeIndex={this.handleChangeIndex} style={Object.assign({width: '100%', height: '100%', position: 'absolute', top: '0%', left: '0%'})}>
+        <div style={Object.assign({backgroundColor: 'white'})}>
           <Messages
             // User Info
             loggedIn={this.state.loggedIn}
@@ -610,9 +607,6 @@ class App extends React.Component {
           />
         </div>
         <div style={Object.assign({backgroundColor: 'Plum'})} >
-          <Helmet>
-            <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"></meta>
-          </Helmet>
           <Camera
             index={index}
             // Functions
@@ -635,7 +629,7 @@ class App extends React.Component {
           />
         </div>
       </BindKeyboardSwipeableViews>
-      {this.state.showFooter ? 
+      {this.state.showFooter ?
         <Footer
           index={index}
           changeToIndex={this.changeToIndex.bind(this)}

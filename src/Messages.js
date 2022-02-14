@@ -6,9 +6,8 @@ import Message from './Message';
 
 export default function Messages(props) {
     return (
-    <div className="messages-screen">
+    <div className="messages-screen" >
 			<div className="navbar">
-					{/* Placeholder */}
 			</div>
 			<ul className="messages-list">
 				{props.loggedIn ? 
@@ -31,11 +30,11 @@ export default function Messages(props) {
 						loggedIn={props.loggedIn}
 						setLocalDict={props.setLocalDict}
 					/>
-				))}	
+				))}
 			</ul>
-			<div className="footer app-foot">
-				{/* Placeholder */}
-			</div>
+			{/* <div className="footer app-foot">
+			</div> */}
+
     </div>
     );
 }

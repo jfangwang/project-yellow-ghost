@@ -1,5 +1,5 @@
 .webcam-screen {
-    height:100vh;
+    height:100%;
     width:100%;
     overflow-y: hidden;
     overflow-x: hidden;
@@ -38,11 +38,16 @@
 }
 .camera-footer, .captured-footer, .send-footer {
     position: absolute;
-    bottom: 0;
     width:100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+.captured-footer, .send-footer {
+    bottom: 0;
+}
+.camera-footer {
+    bottom: 2.5rem;
 }
 .camera-footer-buttons {
     display: flex;
@@ -50,7 +55,7 @@
     justify-content: center;
     width: auto;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 0em;
 }
 .captured-footer {
     flex-direction: row;
@@ -134,8 +139,8 @@
     filter: invert(50%);
 }
 .capture-button {
-    width: 7em;
-    height: 7em;
+    width: 6em;
+    height: 6em;
     background: none;
     border: 0.5rem solid lightgrey;
     border-radius: 50%;

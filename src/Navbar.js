@@ -49,6 +49,7 @@ function NavBar(props) {
 		setShowMore(true);
 		setShowClose(true);
 		setNavTitle("Add Friends");
+		setShowFlipCam(false);
 		props.disable_swiping(true);
 	}
 
@@ -62,6 +63,8 @@ function NavBar(props) {
 		setShowAddFriend(true);
 		if (props.index == 0) {
 			setShowNewChat(true);
+		} else if (props.index == 1) {
+			setShowFlipCam(true);
 		}
 		setShowMore(false);
 		setShowClose(false);

@@ -244,7 +244,7 @@ function Camera(props) {
 
   return (
     <>
-    <div className="webcam-screen">
+    <div className="webcam-screen" style={{height:window.innerHeight}}>
       {/* <div className="navbar" /> */}
 
       <Webcam
@@ -304,8 +304,6 @@ function Camera(props) {
               <button className="capture-button" onClick={capture}><audio id="capture-audio" src={CameraClick}></audio></button>
               <img className="face-filter-icon" src={FaceFilterIcon} onClick="" />
             </div>
-            
-            {/* <div className="footer"/> */}
             <div className="footer"/>
           </div>
         </div>
