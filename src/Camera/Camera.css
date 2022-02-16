@@ -1,0 +1,176 @@
+.webcam-screen {
+    height:100%;
+    width:100%;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    flex-direction: column;
+}
+.webcam-overlay, .captured-overlay {
+    height: 100%;
+    width:100%;
+    position: absolute;
+    top:0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.send-overlay {
+    height: 100%;
+    width:100%;
+    position: absolute;
+    top:0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: lightgrey;
+}
+.camera-nav {
+    position: absolute;
+    top: 0;
+    width:100%;
+}
+.camera-footer, .captured-footer, .send-footer {
+    position: absolute;
+    width:100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.captured-footer, .send-footer {
+    bottom: 0;
+}
+.camera-footer {
+    bottom: 2.5rem;
+}
+.camera-footer-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: auto;
+    align-items: center;
+    margin-bottom: 0em;
+}
+.captured-footer {
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: lightgrey;
+    padding: 0.5rem 0 1rem 0;
+}
+.send-footer {
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: lightblue;
+    padding: 1rem 0 1rem 0;
+}
+.captured-overlay {
+    background-color: white;
+}
+.image-desktop {
+
+}
+
+/* UI Buttons */
+.send-to {
+    background-color: yellow;
+    border-radius: 1rem;
+    margin-right: 0.5rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.send-to-icon {
+    height: 0.9rem;
+    filter: grayscale(100%);
+    /* filter: invert(60%); */
+    margin-left: 0.3rem;
+}
+.send-search {
+    width: 100%;
+    height: 100%;
+    outline: none;
+    border: 2px solid lightblue;
+    background: light-grey;
+    border-radius: 1rem;
+    padding: 0 1rem 0 1rem;
+    margin: 0 1rem 0 1rem;
+}
+.send-list {
+    background-color: white;
+}
+.selected {
+    color: rgb(31, 168, 247);
+}
+.selected-circle {
+    background-color: rgb(31, 168, 247);
+    height: 2.5rem;
+    width: 2.5rem;
+    border-radius: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.unselected-circle {
+    height: 2.1rem;
+    width: 2.1rem;
+    border-radius: 100%;
+    border: 0.2rem solid lightgrey;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.checkmark {
+    height:1.7rem;
+    width: 1.7rem;
+    filter: invert(100%);
+}
+.save, .close, .back, .send-label {
+    border-radius: 1rem;
+    margin-left: 0.5rem;
+}
+.close {
+    filter: invert(50%);
+}
+.capture-button {
+    width: 6em;
+    height: 6em;
+    background: none;
+    border: 0.5rem solid lightgrey;
+    border-radius: 50%;
+}
+.face-filter-icon {
+    height: 3.5rem;
+    width: 3.5rem;
+    margin-left: 0.9rem;
+    padding: 0;
+    filter: invert(70%)
+}
+.photo-lib-icon {
+    height: 2.5rem;
+    width: 2.5rem;
+    margin-right: 1.3rem;
+    padding: 0;
+    filter: invert(70%)
+}
+.streak-container {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: center;
+    margin-left: 0.2rem;
+}
+.streak-container > *:not(:last-child) {
+    margin-right: 0.1rem;
+}
+
+/* FLIPPY */
+.flippy-front, .flippy-back {
+    padding: 0 !important;
+}

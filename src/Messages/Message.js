@@ -1,0 +1,171 @@
+import { React, useState } from 'react';
+import { storage, db} from '../util/Firebase.js';
+import TimeAgo from 'react-timeago';
+import './Messages.css';
+
+/*
+ * Function - Message(sender_name)
+ * @sender_name: Name of person who sent the image
+ * Return: Loaded images requested from Firebase
+ * 
+ * Description:
+ * A request (/post/current_user/) is sent to Firebase to get current_user's received images.
+*/
+
+export default function Message(props) {
+	const [img, setImg] = useState(null);
+	const [sent, setSent] = useState([]);
+	const [opened, setOpened] = useState([]);
+	const [imgid, setimgid] = useState([]);
+	
+
+	const open = () => {
+		// Gets the latest snap
+		var tempimg = props.friend["snaps"][props.friend["snaps"].length - 1];
+		props.showNavbar(false)
+    props.showFooter(false)
+		setimgid(tempimg)
+
+		if (props.loggedIn) {
+			db.collection("Photos").doc(tempimg).get().then((doc) => {
+				setImg(doc.data()["image_url"]);
+				setSent(doc.data()["sent"]);
+				setOpened(doc.data()["opened"]);
+			})
+			// Update the User's (Receiver) doc
+			const time = new Date().toLocaleString();
+			var receiver_dict = {};
+			var user_doc = db.collection("Users").doc(props.email);
+			user_doc.get().then((doc) => {
+				receiver_dict = doc.data();
+				if (receiver_dict["friends"][props.k]["snaps"].length <= 1) {
+					receiver_dict["friends"][props.k]["status"] = "received";
+					receiver_dict["friends"][props.k]["last_time_stamp"] = time;
+				} else {
+					receiver_dict["friends"][props.k]["status"] = "new";
+				}
+				receiver_dict["friends"][props.k]["snaps"]
+				.splice(receiver_dict["friends"][props.k]["snaps"].length - 1, 1);
+
+				// Update Sender's doc
+				var sender_doc = db.collection("Users").doc(props.k);
+				sender_doc.get().then((doc) => {
+					var sender_dict = doc.data();
+					
+					sender_dict["friends"][props.email]["profile_pic_url"] = props.pic;
+					if (receiver_dict["friends"][props.k]["status"] === "received") {
+						sender_dict["friends"][props.email]["status"] = "opened";
+						sender_dict["friends"][props.email]["last_time_stamp"] = time;
+					}
+					
+					sender_doc.update({
+						friends: sender_dict["friends"],
+					})
+					user_doc.update({
+						friends: receiver_dict["friends"],
+					})
+				})
+			})
+		} else {
+			// Guest Account
+			setImg(tempimg);
+			var newDict = props.friends;
+
+			if (newDict[props.k]["snaps"].length === 1) {
+				newDict[props.k]["status"] = "received";
+			} else {
+				newDict[props.k]["status"] = "new";
+			}
+			newDict[props.k]["last_time_stamp"] = new Date().toLocaleString();
+			newDict[props.k]["snaps"].splice(newDict[props.k]["snaps"].length - 1, 1);
+			props.setLocalDict(newDict);
+		}
+	}
+	const delete_photo = () => {
+		if (props.loggedIn) {
+			// Delete photo if it is the last user to see it
+			if (sent.length <= 1) {
+				// Delete from storage
+				storage.ref(`posts/${imgid}`).delete().catch((error) => {});
+				// Delete from Firestore
+				db.collection("Photos").doc(imgid).delete().catch((error) => {});
+				console.log("deleted")
+			} else {
+				// Update Photo document
+				var newSent = sent;
+				var newOpened = opened;
+				db.collection("Photos").doc(imgid).update({
+					sent: newSent.splice(newSent.indexOf(props.email), 1),
+					opened: newOpened.push(props.email),
+				})
+				console.log("updated")
+			}
+		}
+	}
+	const close = () => {
+		props.showNavbar(true)
+    props.showFooter(true)
+		setImg(null);
+		delete_photo();
+	}
+
+	var icon_class = "message-" + props.friend["status"]
+	var emoji = null;
+	var status_dict = {
+		["new-friend"]: "New Friend!",
+		new: "New Snap",
+		received: "Received",
+		sent: "Sent",
+		opened: "Opened",
+		pending: "Pending",
+		["not-friends"]: "Unfriended You",
+		blocked: "Blocked",
+	}
+	var emoji_dict = {
+		["not-friends"]: "\u{1F494}",
+		blocked: "\u{26D4}",
+		pending: "\u{23F3}"
+	}
+	var status = status_dict[props.friend["status"]]
+	emoji = emoji_dict[props.friend["status"]]
+	// console.log(status);
+	return (
+			<>
+			{img ?
+				<div className="background-opened-image" onClick={close}>
+					<img className="opened-image" src={img} alt="opened image"/>
+				</div>
+				:
+				<li className="list-container" onClick={props.friend["status"] === "new" ? open : null}>
+					<div className="pic-container">
+						<img className="friend-profile-pic" src={props.friend["profile_pic_url"]} alt="friend-profile-pic"></img>
+					</div>
+					<div className="friend-info">
+						<h3>{props.friend["name"]}</h3>
+						<div className="message-info">
+							<div className="message-info-container">
+								{emoji ? <p>{emoji}</p> : <div className={icon_class}></div>}
+								<h5>{status} </h5>
+							</div>
+							<h5 className="time-stamp">{props.friend["last_time_stamp"] ? <> <div className="separator"></div> <TimeAgo date={props.friend["last_time_stamp"]} /> </> : null}</h5>
+							<div className="streak-container">
+									{props.friend["streak"] === null ? null : <>
+										<div className="separator" style={{marginRight:"0.3rem"}}></div>
+										<h5>{props.friend["streak"]}</h5>
+										<h5>{props.streak_emoji}</h5>
+										</>
+									}
+							</div>
+						</div>
+					</div>
+					<div className="friend-info">
+						
+					</div>
+				</li>
+			}
+			
+			
+			</>
+	)
+
+}
