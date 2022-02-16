@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import Webcam from "react-webcam";
 import './Camera.css';
 import sent from '../images/sent-vid-icon.png';
@@ -10,15 +10,13 @@ import DownArrowIcon from '../images/down-arrow-icon.png';
 import CameraClick from '../sound/camera-shutter-click.mp3';
 import {storage, db} from '../util/Firebase.js';
 import { isMobile } from 'react-device-detect';
-import firebase from 'firebase/app';
 import { v4 as uuid } from "uuid";
-import Flippy, { FrontSide, BackSide } from 'react-flippy';
 
 
 function Camera(props) {
   const [ar, setar] = useState(null)
   const [img, setImg] = useState(null);
-  const [mirror, setMirror] = useState(true);
+  // const [mirror, setMirror] = useState(true);
   const [screen, setScreen] = useState("camera");
   const [sendList, setSendList] = useState([]);
   const bad_status_arr = ["pending", "not-friends", "blocked"];
@@ -95,7 +93,7 @@ function Camera(props) {
     var count = 0;
     const id = uuid();
     const user_doc = db.collection("Users").doc(props.email);
-    if (props.email != "Guest@Guest.com") {
+    if (props.email !== "Guest@Guest.com") {
       // User is logged in
 
       // Update Sender's Doc: Friends -> Receiver_Name -> Status -> Sent
@@ -430,8 +428,8 @@ function Receiver(props) {
               </div>
             }
           {added ?
-            <div className="selected-circle"><img className="checkmark" src={checkmark} alt="U+2713" alt="selected checkmark"></img></div>
-            : <div className="unselected-circle"><img className="checkmark" src={checkmark} alt="U+2713" alt="unselected checkmark"></img></div>
+            <div className="selected-circle"><img className="checkmark" src={checkmark} alt="U+2713" ></img></div>
+            : <div className="unselected-circle"><img className="checkmark" src={checkmark} alt="U+2713"></img></div>
           }
         </div>
       </button>
