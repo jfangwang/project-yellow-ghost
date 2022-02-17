@@ -29,6 +29,7 @@ export default function Messages(props) {
       					showFooter={props.showFooter}
 						loggedIn={props.loggedIn}
 						setLocalDict={props.setLocalDict}
+						disable_swiping={props.disable_swiping}
 					/>
 				))}
 			</ul>

@@ -23,7 +23,6 @@ export default function Message(props) {
 	useEffect(() => {
 		if (img !== null) {
 			if (isMobile === false) {
-				console.log("asdf")
 				if (window.innerHeight/window.innerWidth > 16/9) {
 				  document.getElementById('opened-image').style.height = 'auto';
 				  document.getElementById('opened-image').style.width = '100%';
@@ -44,6 +43,7 @@ export default function Message(props) {
 		props.showNavbar(false)
     	props.showFooter(false)
 		setimgid(tempimg)
+		props.disable_swiping(true);
 
 
 		if (props.loggedIn) {
@@ -124,7 +124,8 @@ export default function Message(props) {
 	}
 	const close = () => {
 		props.showNavbar(true)
-    props.showFooter(true)
+    	props.showFooter(true)
+		props.disable_swiping(false);
 		setImg(null);
 		delete_photo();
 	}

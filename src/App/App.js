@@ -13,6 +13,7 @@ import Rick from '../images/rick-profile-pic.jpg';
 import Morty from '../images/morty-profile-pic.jpg';
 import { isMobile } from 'react-device-detect';
 import MetaTags from 'react-meta-tags';
+import Flippy, { FrontSide, BackSide } from 'react-flippy';
 
 // All the firebase calls will occur here to minimize usage
 
@@ -31,6 +32,7 @@ class App extends React.Component {
       // Camera
       faceMode: "user",
       mirrored: "true",
+      flip_counter: 0,
       // Navbar
       showNavbar: true,
       showFooter: true,
@@ -498,23 +500,26 @@ class App extends React.Component {
   }
 
   flipCamera = () => {
-    if (this.state.faceMode === "user") {
-      if(isMobile) { 
+    this.setState({flip_counter: this.state.flip_counter + 1});
+    setTimeout(function() { //Start the timer
+      if (this.state.faceMode === "user") {
+        if(isMobile) { 
+          this.setState({
+            faceMode: "environment",
+            mirrored: true
+          })
+        }
         this.setState({
           faceMode: "environment",
+          mirrored: false
+        })
+      } else {
+        this.setState({
+          faceMode: "user",
           mirrored: true
         })
       }
-      this.setState({
-        faceMode: "environment",
-        mirrored: false
-      })
-    } else {
-      this.setState({
-        faceMode: "user",
-        mirrored: true
-      })
-    }
+    }.bind(this), 0)
   }
 
   showNavbar = (status) => {
@@ -609,6 +614,7 @@ class App extends React.Component {
               showNavbar={this.showNavbar.bind(this)}
               showFooter={this.showFooter.bind(this)}
               setLocalDict={this.setLocalDict.bind(this)}
+              disable_swiping={this.setDisabledSwiping.bind(this)}
             />
           </div>
           <div style={Object.assign({backgroundColor: 'Plum', height: window.innerHeight})} >
@@ -620,9 +626,11 @@ class App extends React.Component {
               showNavbar={this.showNavbar.bind(this)}
               showFooter={this.showFooter.bind(this)}
               setLocalDict={this.setLocalDict.bind(this)}
+              flipCamera={this.flipCamera.bind(this)}
               // Camera
               faceMode={this.state.faceMode}
               mirrored={this.state.mirrored}
+              flip_counter={this.state.flip_counter}
               // User Info
               friends={this.state.friends}
               email={this.state.email}
