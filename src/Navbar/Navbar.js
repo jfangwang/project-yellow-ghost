@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Navbar.css';
 // import {auth, storage, db, provider} from './Firebase.js';
 // import firebase from 'firebase/app';
@@ -25,8 +25,6 @@ function NavBar(props) {
 	const [showFlipCam, setShowFlipCam] = useState(null);
 	// Navbar content
 	const [navTitle, setNavTitle] = useState("Chat");
-	const [deviceId, setDeviceId] = useState({});
-  const [devices, setDevices] = useState([]);
 
 
 	const toggleProfile = () => {
@@ -72,15 +70,6 @@ function NavBar(props) {
 		setNavTitle("Chat");
 		props.disable_swiping(false);
 	}
-	const handleDevices = useCallback(
-		mediaDevices => setDevices(mediaDevices.filter(({ kind }) => kind === 'videoinput')),
-		[setDevices]
-	  );
-	
-	useEffect(() => {
-		navigator.mediaDevices.enumerateDevices().then(handleDevices);
-	}, [handleDevices]);
-
 	useEffect(() => {
     // check_user();
 		// console.log("index: ", props.index);
@@ -99,7 +88,7 @@ function NavBar(props) {
 		// document.getElementById("nav-item-flip-cam").style.opacity = 1.3 - props.navbarBackground;
 	
 
-  },[props.navbarBackground]);
+  },[props.navbarBackground, props.index]);
 
 	return (
 		<>
@@ -109,7 +98,7 @@ function NavBar(props) {
 				{showLogin ?
 					props.loggedIn ?
 						<li className="nav-item"><img className="nav-item" onClick={toggleProfile} src={props.pic} alt="nav-item"/></li>
-						: <li className="sign-in"><a onClick={props.login}>Sign In</a></li>
+						: <li className="sign-in"><a onClick={props.login} href="/#">Sign In</a></li>
 					: null}
 				
 				{showClose ? 
@@ -139,7 +128,7 @@ function NavBar(props) {
 				<ul>
 					{showAddFriend ? <li id="nav-item-add-friend" className="nav-item" onClick={toggleAddFriend}><img className="add-friend-icon" src={AddFriendIcon} alt="add friend icon"/></li> : null}
 					{showNewChat ? <li id="nav-item-new-chat" className="nav-item"><img src={ChatIcon} className="chat-icon" alt="chat icon"/></li> : null}
-					{showMore ? <li><a><b>. . .</b></a></li> : null}
+					{showMore ? <li><a href="/#"><b>. . .</b></a></li> : null}
 					{showFlipCam ? <li id="nav-item-flip-cam" className="nav-item" onClick={props.flipCamera}><img className="flip-icon" src={FlipIcon} alt="flip icon"/></li>
 					: null
 					}

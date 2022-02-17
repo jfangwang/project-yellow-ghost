@@ -134,17 +134,17 @@ export default function Message(props) {
 	var icon_class = "message-" + props.friend["status"]
 	var emoji = null;
 	var status_dict = {
-		["new-friend"]: "New Friend!",
+		"new-friend": "New Friend!",
 		new: "New Snap",
 		received: "Received",
 		sent: "Sent",
 		opened: "Opened",
 		pending: "Pending",
-		["not-friends"]: "Unfriended You",
+		"not-friends": "Unfriended You",
 		blocked: "Blocked",
 	}
 	var emoji_dict = {
-		["not-friends"]: "\u{1F494}",
+		"not-friends": "\u{1F494}",
 		blocked: "\u{26D4}",
 		pending: "\u{23F3}"
 	}
@@ -155,7 +155,7 @@ export default function Message(props) {
 			<>
 			{img ?
 				<div className="background-opened-image" onClick={close}>
-					<img id="opened-image" src={img} alt="opened image"/>
+					<img id="opened-image" src={img} alt="opened"/>
 				</div>
 				:
 				<li className="list-container" onClick={props.friend["status"] === "new" ? open : null}>

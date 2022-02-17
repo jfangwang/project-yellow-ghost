@@ -1,10 +1,10 @@
-import React, { useEffect, useLayoutEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import Webcam from "react-webcam";
 import './Camera.css';
 import sent from '../images/sent-vid-icon.png';
 import checkmark from '../images/black-checkmark.png';
-import PhotoLibIcon from '../images/photo-library-icon.png';
-import FaceFilterIcon from '../images/face-filter-icon.png';
+// import PhotoLibIcon from '../images/photo-library-icon.png';
+// import FaceFilterIcon from '../images/face-filter-icon.png';
 import CloseIcon from '../images/close.png';
 import DownArrowIcon from '../images/down-arrow-icon.png';
 import CameraClick from '../sound/camera-shutter-click.mp3';
@@ -41,7 +41,6 @@ function Camera(props) {
 				document.getElementById('captured_pic').style.height = 'auto';
 				document.getElementById('captured_pic').style.width = '100%';
 			}
-			
 		} else {
 			document.getElementById('webcam').style.height = '100%';
 			document.getElementById('webcam').style.width = 'auto';
@@ -69,7 +68,7 @@ function Camera(props) {
 			}
 		}
 	}
-	}, [window.innerHeight, window.innerWidth, screen, props.faceMode])
+	}, [window.innerHeight, window.innerWidth, screen, props.faceMode, img])
 
 	const sendTo = () => {
 	setScreen("send");
@@ -243,8 +242,6 @@ function Camera(props) {
 	}
 	}
 	const webcamRef = React.useRef(null);
-	const webcamRef1 = React.useRef(null);
-	const webcamRef2 = React.useRef(null);
 	const capture = React.useCallback(
 	() => {
 		// document.getElementById("capture-audio").play()
@@ -425,17 +422,17 @@ function Receiver(props) {
 	}
 
 	var status_dict = {
-		["new-friend"]: "New Friend!",
+		"new-friend": "New Friend!",
 		new: "New Snap",
 		received: "Received",
 		sent: "Sent",
 		opened: "Opened",
 		pending: "Pending",
-		["not-friends"]: "Unfriended You",
+		"not-friends": "Unfriended You",
 		blocked: "Blocked",
 	}
 	var emoji_dict = {
-		["not-friends"]: "\u{1F494}",
+		"not-friends": "\u{1F494}",
 		blocked: "\u{26D4}",
 		pending: "\u{23F3}"
 	}

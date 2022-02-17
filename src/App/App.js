@@ -13,7 +13,6 @@ import Rick from '../images/rick-profile-pic.jpg';
 import Morty from '../images/morty-profile-pic.jpg';
 import { isMobile } from 'react-device-detect';
 import MetaTags from 'react-meta-tags';
-import Flippy, { FrontSide, BackSide } from 'react-flippy';
 
 // All the firebase calls will occur here to minimize usage
 
@@ -125,7 +124,7 @@ class App extends React.Component {
           added_me: {},
           pending: {},
           friends: {
-            ["Guest@Guest.com"]: {
+            "Guest@Guest.com": {
                 created: creation,
                 profile_pic_url: Guest,
                 name: "Guest",
@@ -139,7 +138,7 @@ class App extends React.Component {
             }
           },
           strangers: {
-            ["Rick@Guest.com"]: {
+            "Rick@Guest.com": {
               created: creation,
               profile_pic_url: Rick,
               name: "Rick",
@@ -151,7 +150,7 @@ class App extends React.Component {
               last_time_stamp: null,
               snaps: []
             },
-            ["Morty@Guest.com"]: {
+            "Morty@Guest.com": {
               created: creation,
               profile_pic_url: Morty,
               name: "Morty",
@@ -165,7 +164,7 @@ class App extends React.Component {
             },
           },
           everyone: {
-            ["Guest@Guest.com"]: {
+            "Guest@Guest.com": {
                 created: creation,
                 profile_pic_url: Guest,
                 name: "Guest",
@@ -177,7 +176,7 @@ class App extends React.Component {
                 last_time_stamp: null,
                 snaps: []
             },
-            ["Rick@Guest.com"]: {
+            "Rick@Guest.com": {
               created: creation,
               profile_pic_url: Rick,
               name: "Rick",
@@ -189,7 +188,7 @@ class App extends React.Component {
               last_time_stamp: null,
               snaps: []
             },
-            ["Morty@Guest.com"]: {
+            "Morty@Guest.com": {
               created: creation,
               profile_pic_url: Morty,
               name: "Morty",
@@ -346,8 +345,9 @@ class App extends React.Component {
     // New friends entire document in dictionary form
     var friend_dict = {};
     var dict = this.state.friends;
-    var pending = this.state.pending;
+    // var pending = this.state.pending;
     var added_me = this.state.added_me;
+    var new_friend_entry = {}
 
     if (action === "pending" && !this.state.loggedIn) {
       this.state.friends[friend] = value
@@ -404,7 +404,7 @@ class App extends React.Component {
           }, this.update_people_list)
         } else {
            // Add user's pending friend to user's friends list and change status to pending
-          var new_friend_entry = {
+          new_friend_entry = {
             created: value.created,
             profile_pic_url: value.profile_pic_url,
             name: value.name,
@@ -436,7 +436,7 @@ class App extends React.Component {
     } else if (action === "add" && this.state.loggedIn) {
 
       // Add a entry for new friend under user's friends
-      var new_friend_entry = {
+      new_friend_entry = {
         created: value.created,
         profile_pic_url: value.profile_pic_url,
         name: value.name,
