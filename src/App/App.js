@@ -320,7 +320,7 @@ class App extends React.Component {
           
           if (this.state.email === user.id) {
             added_me = user.data()["added_me"]
-            console.log("Added me", user.data()["added_me"])
+            // console.log("Added me", user.data()["added_me"])
           }
         })
         // console.log("Friends: ", f)

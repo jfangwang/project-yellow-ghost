@@ -48,6 +48,7 @@ export default function Message(props) {
 
 		if (props.loggedIn) {
 			db.collection("Photos").doc(tempimg).get().then((doc) => {
+				console.log("tempimg ", tempimg);
 				setImg(doc.data()["image_url"]);
 				setSent(doc.data()["sent"]);
 				setOpened(doc.data()["opened"]);

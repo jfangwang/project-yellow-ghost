@@ -78,12 +78,14 @@ function Camera(props) {
 	}
 	}
 	const send = () => {
-	setScreen("camera");
 	send_pic()
-	props.changeToIndex(0);
-	props.disable_swiping(false)
-	props.showNavbar(true)
-	props.showFooter(true)
+	setTimeout(function(){
+		props.changeToIndex(0);
+		setScreen("camera");
+		props.disable_swiping(false)
+		props.showNavbar(true)
+		props.showFooter(true)
+	}, 1000);
 	}
 	const back = () => {
 	setScreen("captured")
