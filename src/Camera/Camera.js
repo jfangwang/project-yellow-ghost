@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import Webcam from "react-webcam";
 import './Camera.css';
 import sent from '../images/sent-vid-icon.png';
@@ -20,36 +20,36 @@ function Camera(props) {
   const [screen, setScreen] = useState("camera");
   const [sendList, setSendList] = useState([]);
   const bad_status_arr = ["pending", "not-friends", "blocked"];
+  // const [bh, setbh] = useState(null);
+  // const [bw, setbw] = useState(null);
 
   useEffect(() => {
-    if (window.innerHeight < window.innerWidth) {
-      if(isMobile) { 
-        setar(9/16)
+    if (isMobile === false) {
+      setar(9/16);
+      // setbh(null);
+      // setbw(null);
+      if (window.innerHeight/window.innerWidth > 16/9) {
+        document.getElementById('webcam').style.height = 'auto';
+        document.getElementById('webcam').style.width = '100%';
       } else {
-        setar(16/9)
-      }
-      if (window.innerHeight/window.innerWidth <= 0.60) {
-        document.getElementById("webcam").style.height = "100%";
-        document.getElementById("webcam").style.width = "auto";
-      } else {
-        document.getElementById("webcam").style.width = "100%";
-        document.getElementById("webcam").style.height = "auto";
+        document.getElementById('webcam').style.height = '100%';
+        document.getElementById('webcam').style.width = 'auto';
       }
     } else {
-      if(isMobile) { 
-        setar(16/9)
+      if (window.innerHeight > window.innerWidth) {
+        setar(window.innerHeight/window.innerWidth * 0.99);
+        document.getElementById('webcam').style.height = '100%';
+        document.getElementById('webcam').style.width = 'auto';
+        // setbh(window.innerHeight);
+        // setbw(window.innerWidth);
       } else {
-        setar(9/16)
+        setar(window.innerWidth/window.innerHeight * 0.99);
+        document.getElementById('webcam').style.height = 'auto';
+        document.getElementById('webcam').style.width = '100%';
       }
-      if (window.innerHeight/window.innerWidth >= 1.856) {
-        document.getElementById("webcam").style.width = "100%";
-        document.getElementById("webcam").style.height = "auto";
-      } else {
-        document.getElementById("webcam").style.height = "100%";
-        document.getElementById("webcam").style.width = "auto";
-      }
+      
     }
-  })
+  }, [window.innerHeight, window.innerWidth])
 
   const sendTo = () => {
     setScreen("send");
@@ -223,7 +223,7 @@ function Camera(props) {
   const webcamRef = React.useRef(null);
   const capture = React.useCallback(
     () => {
-      document.getElementById("capture-audio").play()
+      // document.getElementById("capture-audio").play()
       // const img = webcamRef.current.getScreenshot({width:props.width, height:props.height});
       setImg(webcamRef.current.getScreenshot());
       setScreen("captured")
@@ -364,7 +364,6 @@ function Camera(props) {
         </div>
         : null
       }
-        <div className="footer"/>
     </div>
     </>
   );
