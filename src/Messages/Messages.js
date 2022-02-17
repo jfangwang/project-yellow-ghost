@@ -22,10 +22,11 @@ export default function Messages(props) {
 						friends={props.friends}
 						streak_emoji={props.streak_emoji}
 						k={key}
+						key={key}
 						pic={props.pic}
 						email={props.email}
 						showNavbar={props.showNavbar}
-      			showFooter={props.showFooter}
+      					showFooter={props.showFooter}
 						loggedIn={props.loggedIn}
 						setLocalDict={props.setLocalDict}
 					/>
@@ -37,3 +38,4 @@ export default function Messages(props) {
     </div>
     );
 }
+

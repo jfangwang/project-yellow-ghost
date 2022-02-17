@@ -12,6 +12,7 @@ import Guest from '../images/guest-profile-pic.png';
 import Rick from '../images/rick-profile-pic.jpg';
 import Morty from '../images/morty-profile-pic.jpg';
 import { isMobile } from 'react-device-detect';
+import MetaTags from 'react-meta-tags';
 
 // All the firebase calls will occur here to minimize usage
 
@@ -564,78 +565,82 @@ class App extends React.Component {
     const { index } = this.state;
     return (
       <>
-      {this.state.showNavbar ?
-        <NavBar
-          index={index}
-          // Functions
-          login={this.login.bind(this)}
-          logout={this.logout.bind(this)}
-          disable_swiping={this.setDisabledSwiping.bind(this)}
-          edit_friends={this.edit_friends.bind(this)}
-          flipCamera={this.flipCamera.bind(this)}
-          // User Info
-          loggedIn={this.state.loggedIn}
-          name={this.state.name}
-          email={this.state.email}
-          pic={this.state.pic}
-          received={this.state.received}
-          sent={this.state.sent}
-          created={this.state.created}
-          pending={this.state.pending}
-          added_me={this.state.added_me}
-          friends={this.state.friends}
-          strangers={this.state.strangers}
-          everyone={this.state.everyone}
-          // Navbar
-          navbarBackground={this.state.navbarBackground}
-        />
-        : null
-      }
-      <BindKeyboardSwipeableViews onSwitching={this.onSwitching} disabled={this.state.disable_swiping} enableMouseEvents index={index} onChangeIndex={this.handleChangeIndex} style={Object.assign({width: '100%', height: '100%', position: 'absolute', top: '0%', left: '0%'})}>
-        <div style={Object.assign({backgroundColor: 'white'})}>
-          <Messages
-            // User Info
-            loggedIn={this.state.loggedIn}
-            friends={this.state.friends}
-            streak_emoji={this.state.streak_emoji}
-            pic={this.state.pic}
-            email={this.state.email}
-            showNavbar={this.showNavbar.bind(this)}
-            showFooter={this.showFooter.bind(this)}
-            setLocalDict={this.setLocalDict.bind(this)}
-          />
-        </div>
-        <div style={Object.assign({backgroundColor: 'Plum'})} >
-          <Camera
+        <MetaTags>
+          <title>Yellow Ghost</title>
+          <meta name="description" content="A webapp version of SnapChat. No affiliation with SnapChat Inc, powered by Google Firebase and React.js." />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        </MetaTags>
+        {this.state.showNavbar ?
+          <NavBar
             index={index}
             // Functions
-            changeToIndex={this.changeToIndex.bind(this)}
+            login={this.login.bind(this)}
+            logout={this.logout.bind(this)}
             disable_swiping={this.setDisabledSwiping.bind(this)}
-            showNavbar={this.showNavbar.bind(this)}
-            showFooter={this.showFooter.bind(this)}
-            setLocalDict={this.setLocalDict.bind(this)}
-            // Camera
-            faceMode={this.state.faceMode}
-            mirrored={this.state.mirrored}
+            edit_friends={this.edit_friends.bind(this)}
+            flipCamera={this.flipCamera.bind(this)}
             // User Info
-            friends={this.state.friends}
+            loggedIn={this.state.loggedIn}
+            name={this.state.name}
             email={this.state.email}
+            pic={this.state.pic}
+            received={this.state.received}
             sent={this.state.sent}
-            emoji={this.state.streak_emoji}
-            // Increment this.sent
-            // Add person to pending list
-
+            created={this.state.created}
+            pending={this.state.pending}
+            added_me={this.state.added_me}
+            friends={this.state.friends}
+            strangers={this.state.strangers}
+            everyone={this.state.everyone}
+            // Navbar
+            navbarBackground={this.state.navbarBackground}
           />
-        </div>
-      </BindKeyboardSwipeableViews>
-      {this.state.showFooter ?
-        <Footer
-          index={index}
-          changeToIndex={this.changeToIndex.bind(this)}
-        />
-        : null
-      }
-      
+          : null
+        }
+        <BindKeyboardSwipeableViews onSwitching={this.onSwitching} disabled={this.state.disable_swiping} enableMouseEvents index={index} onChangeIndex={this.handleChangeIndex} style={Object.assign({width: '100%', height: '100vh', position: 'absolute', top: '0%', left: '0%'})}>
+          <div style={Object.assign({backgroundColor: 'white'})}>
+            <Messages
+              // User Info
+              loggedIn={this.state.loggedIn}
+              friends={this.state.friends}
+              streak_emoji={this.state.streak_emoji}
+              pic={this.state.pic}
+              email={this.state.email}
+              showNavbar={this.showNavbar.bind(this)}
+              showFooter={this.showFooter.bind(this)}
+              setLocalDict={this.setLocalDict.bind(this)}
+            />
+          </div>
+          <div style={Object.assign({backgroundColor: 'Plum', height: window.innerHeight})} >
+            <Camera
+              index={index}
+              // Functions
+              changeToIndex={this.changeToIndex.bind(this)}
+              disable_swiping={this.setDisabledSwiping.bind(this)}
+              showNavbar={this.showNavbar.bind(this)}
+              showFooter={this.showFooter.bind(this)}
+              setLocalDict={this.setLocalDict.bind(this)}
+              // Camera
+              faceMode={this.state.faceMode}
+              mirrored={this.state.mirrored}
+              // User Info
+              friends={this.state.friends}
+              email={this.state.email}
+              sent={this.state.sent}
+              emoji={this.state.streak_emoji}
+              // Increment this.sent
+              // Add person to pending list
+
+            />
+          </div>
+        </BindKeyboardSwipeableViews>
+        {this.state.showFooter ?
+          <Footer
+            index={index}
+            changeToIndex={this.changeToIndex.bind(this)}
+          />
+          : null
+        }
       </>
     );
   }

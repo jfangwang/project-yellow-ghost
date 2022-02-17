@@ -94,7 +94,7 @@ function NavBar(props) {
 
 	return (
 		<>
-		<div className="navbar app-nav">
+		<div className="app-nav">
 		<div className="nav-box-1">
 			<ul>
 				{showLogin ?
@@ -205,9 +205,7 @@ function AddFriend(props) {
 
 	return (
 		<div className="screen">
-			<div className="navbar">
-					{/* Placeholder */}
-			</div>
+			<div className="navbar"/>
 			<input type="search" placeholder="Find Friends" className="friend-search" />
 			<h3 className="friend-head">Quick Add ({Object.keys(props.strangers).length})</h3>
 			<ul className="friend-list-container">

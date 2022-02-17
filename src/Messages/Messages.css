@@ -92,14 +92,11 @@ ul[class*="add-list"] li:not(:last-child) {
 .background-opened-image {
     position: absolute;
     top: 0;
-    height: 100vh;
+    height: 100%;
     width: 100%;
     z-index: 10;
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: black;
-}
-.opened-image {
-    width: 100%;
 }

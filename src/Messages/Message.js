@@ -1,7 +1,9 @@
-import { React, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { storage, db} from '../util/Firebase.js';
 import TimeAgo from 'react-timeago';
+import { isMobile } from 'react-device-detect';
 import './Messages.css';
+import PropTypes from 'prop-types';
 
 /*
  * Function - Message(sender_name)
@@ -17,14 +19,32 @@ export default function Message(props) {
 	const [sent, setSent] = useState([]);
 	const [opened, setOpened] = useState([]);
 	const [imgid, setimgid] = useState([]);
-	
+
+	useEffect(() => {
+		if (img !== null) {
+			if (isMobile === false) {
+				console.log("asdf")
+				if (window.innerHeight/window.innerWidth > 16/9) {
+				  document.getElementById('opened-image').style.height = 'auto';
+				  document.getElementById('opened-image').style.width = '100%';
+				} else {
+				  document.getElementById('opened-image').style.height = '100%';
+				  document.getElementById('opened-image').style.width = 'auto';
+				}
+			} else {
+				document.getElementById('opened-image').style.height = '100%';
+				document.getElementById('opened-image').style.width = 'auto';
+			}
+		}
+	}, [window.innerHeight, window.innerWidth, img])
 
 	const open = () => {
 		// Gets the latest snap
 		var tempimg = props.friend["snaps"][props.friend["snaps"].length - 1];
 		props.showNavbar(false)
-    props.showFooter(false)
+    	props.showFooter(false)
 		setimgid(tempimg)
+
 
 		if (props.loggedIn) {
 			db.collection("Photos").doc(tempimg).get().then((doc) => {
@@ -133,7 +153,7 @@ export default function Message(props) {
 			<>
 			{img ?
 				<div className="background-opened-image" onClick={close}>
-					<img className="opened-image" src={img} alt="opened image"/>
+					<img id="opened-image" src={img} alt="opened image"/>
 				</div>
 				:
 				<li className="list-container" onClick={props.friend["status"] === "new" ? open : null}>
@@ -168,4 +188,36 @@ export default function Message(props) {
 			</>
 	)
 
+}
+Message.requiredProps = {
+	friend: PropTypes.shape({
+		created: PropTypes.string,
+		profile_pic_url: PropTypes.string,
+		name: PropTypes.string,
+		status: PropTypes.string,
+		streak: PropTypes.number,
+		streak_ref: PropTypes.string,
+		sent: PropTypes.number,
+		received: PropTypes.number,
+		last_time_stamp: PropTypes.string,
+		snaps: PropTypes.arrayOf(PropTypes.string)
+	}),
+	friends: PropTypes.objectOf(PropTypes.shape({
+		created: PropTypes.string,
+		profile_pic_url: PropTypes.string,
+		name: PropTypes.string,
+		status: PropTypes.string,
+		streak: PropTypes.number,
+		streak_ref: PropTypes.string,
+		sent: PropTypes.number,
+		received: PropTypes.number,
+		last_time_stamp: PropTypes.string,
+		snaps: PropTypes.arrayOf(PropTypes.string)
+	})),
+	streak_emoji: PropTypes.string,
+	k: PropTypes.string,
+	pic: PropTypes.string,
+	email: PropTypes.string,
+	loggedIn: PropTypes.bool,
+	key: PropTypes.string
 }
