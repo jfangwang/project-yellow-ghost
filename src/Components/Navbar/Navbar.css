@@ -10,7 +10,7 @@
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
   justify-content: space-between;
-  /* background-color: coral; */
+  background-color: white;
 }
 .screen {
   overflow: auto;

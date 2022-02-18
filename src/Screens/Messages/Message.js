@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { storage, db} from '../util/Firebase.js';
+import { storage, db} from '../../Util/Firebase.js';
 import TimeAgo from 'react-timeago';
 import { isMobile } from 'react-device-detect';
 import './Messages.css';

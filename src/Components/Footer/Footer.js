@@ -1,7 +1,7 @@
 import React from 'react'
 import './Footer.css';
-import CameraIcon from '../images/camera-icon.png';
-import ChatIcon from '../images/chat.png';
+import CameraIcon from '../../Assets/images/camera-icon.png';
+import ChatIcon from '../../Assets/images/chat.png';
 
 
 export default function Footer(props) {

@@ -1,16 +1,16 @@
 import React from 'react';
 import SwipeableViews from 'react-swipeable-views';
 import { bindKeyboard } from 'react-swipeable-views-utils';
-import {auth, db, provider} from '../util/Firebase.js';
+import {auth, db, provider} from '../Util/Firebase.js';
 import firebase from 'firebase/app';
 import './App.css';
-import Messages from '../Messages/Messages.js';
-import {Camera} from '../Camera/Camera.js';
-import {NavBar} from '../Navbar/Navbar.js';
-import Footer from '../Footer/Footer.js';
-import Guest from '../images/guest-profile-pic.png';
-import Rick from '../images/rick-profile-pic.jpg';
-import Morty from '../images/morty-profile-pic.jpg';
+import Messages from '../Screens/Messages/Messages.js';
+import {Camera} from '../Screens/Camera/Camera.js';
+import {NavBar} from '../Components/Navbar/Navbar.js';
+import Footer from '../Components/Footer/Footer.js';
+import Guest from '../Assets/images/guest-profile-pic.png';
+import Rick from '../Assets/images/rick-profile-pic.jpg';
+import Morty from '../Assets/images/morty-profile-pic.jpg';
 import { isMobile } from 'react-device-detect';
 import MetaTags from 'react-meta-tags';
 
@@ -24,10 +24,9 @@ class App extends React.Component {
     this.state = {
       // For swiping screen
       index: 0,
+      disable_swiping: false,
       height: window.innerHeight,
       width: window.innerWidth,
-      orientation: "Landscape",
-      disable_swiping: false,
       // Camera
       faceMode: "user",
       mirrored: "true",
@@ -35,7 +34,6 @@ class App extends React.Component {
       // Navbar
       showNavbar: true,
       showFooter: true,
-      navbarBackground: null,
       // User Info
       loggedIn: null,
       email: null,
@@ -51,7 +49,6 @@ class App extends React.Component {
       // Lists
       strangers: {},
       everyone: {},
-
     }
 
     this.check_user = this.check_user.bind(this);
@@ -59,46 +56,6 @@ class App extends React.Component {
     window.addEventListener("beforeunload", this.end_snapshot);
     window.addEventListener("onbeforeunload", this.end_snapshot);
   }
-
-  set_device = () => {
-    if (this.state.width > this.state.height) {
-      this.setState({
-        orientation: "Landscape"
-      })
-    } else {
-      this.setState({
-        orientation: "Mobile"
-      })
-    }
-  }
-  update = () => {
-    this.setState({
-      width: window.innerWidth,
-      height: window.innerHeight
-    },this.set_device)
-  };
-  handleChangeIndex = index => {
-    this.setState({
-      index,
-    });
-  };
-  changeToIndex(e) {
-    this.setState({
-      index: e,
-    })
-  }
-  setDisabledSwiping(e) {
-    this.setState({
-      disable_swiping: e,
-    })
-  }
-  onSwitching = index => {
-    this.setState({
-      navbarBackground: index,
-    })
-  }
-
-  
   check_user = () => {
 		firebase.auth().onAuthStateChanged(function(user) {
 			if (user) {
@@ -135,7 +92,9 @@ class App extends React.Component {
                 received: 0,
                 last_time_stamp: null,
                 snaps: []
-            }
+            },
+            
+
           },
           strangers: {
             "Rick@Guest.com": {
@@ -521,18 +480,30 @@ class App extends React.Component {
       }
     }.bind(this), 0)
   }
-
-  showNavbar = (status) => {
-    this.setState({showNavbar: status})
+  handleChangeIndex = index => {
+    this.setState({
+      index,
+    });
+  };
+  changeToIndex(e) {
+    this.setState({
+      index: e,
+    })
   }
-  showFooter = (status) => {
-    this.setState({showFooter: status})
+  setDisabledSwiping(e) {
+    this.setState({
+      disable_swiping: e,
+    })
   }
-  setLocalDict = (dict) => {
-    if (dict !== null) {
-      this.setState({friends: dict})
-    }
+  update = () => {
+    this.setState({
+      width: window.innerWidth,
+      height: window.innerHeight
+    },this.set_device)
   }
+  showNavbar = (status) => { this.setState({showNavbar: status}) }
+  showFooter = (status) => { this.setState({showFooter: status}) }
+  setLocalDict = (dict) => { if (dict !== null) { this.setState({friends: dict}) }}
 
   login = () => {
     auth.signInWithPopup(provider)
@@ -568,6 +539,19 @@ class App extends React.Component {
 
   render() {
     const { index } = this.state;
+    const list = [];
+    const styles = {
+      slideContainer: {
+        height: '100vh',
+        WebkitOverflowScrolling: 'touch', // iOS momentum scrolling
+      },
+      slide: {
+        padding: 0,
+      }
+    };
+    for (let i = 0; i < 100; i += 1) {
+      list.push(<div key={i}>{`item n°${i + 1}`}</div>);
+    }
     return (
       <>
         <MetaTags>
@@ -602,8 +586,14 @@ class App extends React.Component {
           />
           : null
         }
-        <BindKeyboardSwipeableViews onSwitching={this.onSwitching} disabled={this.state.disable_swiping} enableMouseEvents index={index} onChangeIndex={this.handleChangeIndex} style={Object.assign({width: '100%', height: '100vh', position: 'absolute', top: '0%', left: '0%'})}>
-          <div style={Object.assign({backgroundColor: 'white'})}>
+        <BindKeyboardSwipeableViews
+          onSwitching={this.onSwitching}
+          disabled={this.state.disable_swiping}
+          enableMouseEvents
+          index={index}
+          onChangeIndex={this.handleChangeIndex}
+          containerStyle={styles.slideContainer}>
+          <div style={Object.assign({}, styles.slide, styles.slide1)}>
             <Messages
               // User Info
               loggedIn={this.state.loggedIn}
@@ -617,7 +607,7 @@ class App extends React.Component {
               disable_swiping={this.setDisabledSwiping.bind(this)}
             />
           </div>
-          <div style={Object.assign({backgroundColor: 'Plum', height: window.innerHeight})} >
+          <div style={Object.assign({}, styles.slide, styles.slide2)}>
             <Camera
               index={index}
               // Functions

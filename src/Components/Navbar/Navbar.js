@@ -3,11 +3,11 @@ import './Navbar.css';
 // import {auth, storage, db, provider} from './Firebase.js';
 // import firebase from 'firebase/app';
 // import {Test2} from './Camera.js';
-import SearchIcon from '../images/search-icon.png';
-import AddFriendIcon from '../images/add-friend-icon.png';
-import ChatIcon from '../images/chat-icon.png';
-import FlipIcon from '../images/flip-icon.png';
-import DownArrowIcon from '../images/down-arrow-icon.png';
+import SearchIcon from '../../Assets/images/search-icon.png';
+import AddFriendIcon from '../../Assets/images/add-friend-icon.png';
+import ChatIcon from '../../Assets/images/chat-icon.png';
+import FlipIcon from '../../Assets/images/flip-icon.png';
+import DownArrowIcon from '../../Assets/images/down-arrow-icon.png';
 
 
 function NavBar(props) {
@@ -77,10 +77,12 @@ function NavBar(props) {
 			setShowNewChat(true);
 			setShowFlipCam(false);
 			setShowTitle(true);
+			document.querySelector('.app-nav').style.backgroundColor = 'white';
 		} else if (props.index === 1) {
 			setShowNewChat(false);
 			setShowFlipCam(true);
 			setShowTitle(false);
+			document.querySelector('.app-nav').style.backgroundColor = 'transparent';
 		}
 		// document.getElementById("nav-item-search").style.opacity = 1.3 - props.navbarBackground;
 		// document.getElementById("nav-item-add-friend").style.opacity = 1.3 - props.navbarBackground;

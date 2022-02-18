@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import Webcam from "react-webcam";
 import './Camera.css';
-import sent from '../images/sent-vid-icon.png';
-import checkmark from '../images/black-checkmark.png';
-// import PhotoLibIcon from '../images/photo-library-icon.png';
-// import FaceFilterIcon from '../images/face-filter-icon.png';
-import CloseIcon from '../images/close.png';
-import DownArrowIcon from '../images/down-arrow-icon.png';
-import CameraClick from '../sound/camera-shutter-click.mp3';
-import logo from '../images/snapchat-logo.png';
-import {storage, db} from '../util/Firebase.js';
+import sent from '../../Assets/images/sent-vid-icon.png';
+import checkmark from '../../Assets/images/black-checkmark.png';
+// import PhotoLibIcon from '../../Assets/images/photo-library-icon.png';
+// import FaceFilterIcon from '../../Assets/images/face-filter-icon.png';
+import CloseIcon from '../../Assets/images/close.png';
+import DownArrowIcon from '../../Assets/images/down-arrow-icon.png';
+import CameraClick from '../../Assets/sound/camera-shutter-click.mp3';
+import logo from '../../Assets/images/snapchat-logo.png';
+import {storage, db} from '../../Util/Firebase.js';
 import { isMobile } from 'react-device-detect';
 import { v4 as uuid } from "uuid";
 import Flippy, { FrontSide, BackSide } from 'react-flippy';
@@ -37,6 +37,8 @@ function Camera(props) {
 		if (window.innerHeight/window.innerWidth > 16/9) {
 			document.getElementById('webcam').style.height = 'auto';
 			document.getElementById('webcam').style.width = '100%';
+			document.getElementById('webcam2').style.height = 'auto';
+			document.getElementById('webcam2').style.width = '100%';
 			if (screen === "captured" && img !== null) {
 				document.getElementById('captured_pic').style.height = 'auto';
 				document.getElementById('captured_pic').style.width = '100%';
@@ -44,6 +46,8 @@ function Camera(props) {
 		} else {
 			document.getElementById('webcam').style.height = '100%';
 			document.getElementById('webcam').style.width = 'auto';
+			document.getElementById('webcam2').style.height = '100%';
+			document.getElementById('webcam2').style.width = 'auto';
 			if (screen === "captured" && img !== null) {
 				document.getElementById('captured_pic').style.height = '100%';
 				document.getElementById('captured_pic').style.width = 'auto';
@@ -294,6 +298,8 @@ function Camera(props) {
 			ref={flippy}
 			style={{height:window.innerHeight, width: window.innerWidth}} /// these are optional style, it is not necessary
 		>
+			{isMobile ?
+			<>
 			<FrontSide id="flip" style={{backgroundImage: `url(${logo})`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center', padding:0, display:'flex', justifyContent:'center', alignItems:'center'}} >
 				{props.faceMode === "environment" &&
 					<Webcam
@@ -322,6 +328,35 @@ function Camera(props) {
 					/>
 				}
 			</BackSide>
+			</> 
+			:
+			<>
+			<FrontSide id="flip" style={{backgroundImage: `url(${logo})`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center', padding:0, display:'flex', justifyContent:'center', alignItems:'center'}} >
+					<Webcam
+						id="webcam"
+						ref={webcamRef}
+						audio={false}
+						mirrored={props.mirrored}
+						forceScreenshotSourceSize={false}
+						screenshotFormat="image/png"
+						screenshotQuality={1}
+						videoConstraints={{facingMode: "environment", aspectRatio: ar}}
+					/>
+			</FrontSide>
+			<BackSide id="flip" style={{backgroundImage: `url(${logo})`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center',  padding:0, display:'flex', justifyContent:'center', alignItems:'center'}}>
+					<Webcam
+						id="webcam2"
+						ref={webcamRef}
+						audio={false}
+						mirrored={props.mirrored}
+						forceScreenshotSourceSize={false}
+						screenshotFormat="image/png"
+						screenshotQuality={1}
+						videoConstraints={{facingMode: "user", aspectRatio: ar}}
+					/>
+			</BackSide>
+			</>
+			}
 		</Flippy>
 
 		{screen === "camera" ? 
@@ -339,7 +374,7 @@ function Camera(props) {
 		  </div>
 		</div>
 		: null
-	  }
+	  	}
 
 		{screen === "captured" ?
 		<>
