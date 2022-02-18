@@ -1,0 +1,90 @@
+{
+    "loggedIn": "false,",
+    "created": "creation,",
+    "name": "Guest,",
+    "email": "Guest@Guest.com,",
+    "pic": "Guest,",
+    "streak_emoji": "\\u{1F525},",
+    "total_sent": "0,",
+    "total_received": "0,",
+    "added_me": "{},",
+    "pending": "{},",
+    "friends": {
+      "Guest@Guest": {
+        "created": "creation",
+        "profile_pic_url": "Guest",
+        "name": "Guest",
+        "status": "new-friend",
+        "streak": "0",
+        "streak_ref": "null",
+        "sent": "0",
+        "received": "0",
+        "last_time_stamp": "null",
+        "snaps": []
+      }
+    },
+    "strangers": {
+      "Rick@Guest": {
+        "created": "creation",
+        "profile_pic_url": "Rick",
+        "name": "Rick",
+        "status": "new-friend",
+        "streak": "0",
+        "streak_ref": "null",
+        "sent": "0",
+        "received": "0",
+        "last_time_stamp": "null",
+        "snaps": []
+      },
+      "Morty@Guest": {
+        "created": "creation",
+        "profile_pic_url": "Morty",
+        "name": "Morty",
+        "status": "new-friend",
+        "streak": "0",
+        "streak_ref": "null",
+        "sent": "0",
+        "received": "0",
+        "last_time_stamp": "null",
+        "snaps": []
+      }
+    },
+    "everyone": {
+      "Guest@Guest": {
+        "created": "creation",
+        "profile_pic_url": "Guest",
+        "name": "Guest",
+        "status": "new-friend",
+        "streak": "0",
+        "streak_ref": "null",
+        "sent": "0",
+        "received": "0",
+        "last_time_stamp": "null",
+        "snaps": []
+      },
+      "Rick@Guest": {
+        "created": "creation",
+        "profile_pic_url": "Rick",
+        "name": "Rick",
+        "status": "new-friend",
+        "streak": "0",
+        "streak_ref": "null",
+        "sent": "0",
+        "received": "0",
+        "last_time_stamp": "null",
+        "snaps": []
+      },
+      "Morty@Guest": {
+        "created": "creation",
+        "profile_pic_url": "Morty",
+        "name": "Morty",
+        "status": "new-friend",
+        "streak": "0",
+        "streak_ref": "null",
+        "sent": "0",
+        "received": "0",
+        "last_time_stamp": "null",
+        "snaps": []
+      }
+    }
+  }
