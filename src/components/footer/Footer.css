@@ -1,0 +1,13 @@
+.floating-bottom {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+.relative {
+    position: relative;
+    opacity: 0;
+}
+.main-footer {
+    z-index: 1;
+    justify-content: space-around;
+}

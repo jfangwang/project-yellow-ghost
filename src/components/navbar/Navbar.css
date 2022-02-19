@@ -1,0 +1,16 @@
+.floating {
+    position: absolute;
+    top: 0;
+    left:0;
+    width: 100%;
+}
+.relative {
+    position: relative;
+    opacity: 1;
+    border: 1px solid red;
+}
+.main-navbar {
+    z-index: 1;
+    display:flex;
+    justify-content: center;
+}
