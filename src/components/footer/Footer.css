@@ -8,6 +8,14 @@
     opacity: 0;
 }
 .main-footer {
+    align-items: center;
     z-index: 1;
     justify-content: space-around;
+    height: 3rem;
+    opacity: 1;
+    background-color: lightcoral;
+}
+.main-footer li button {
+    height: 2.5rem;
+    width: 2.5rem;
 }

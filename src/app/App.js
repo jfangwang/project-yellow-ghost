@@ -40,7 +40,12 @@ export default class App extends Component {
     this.setState({
       index,
     });
-  };
+  }
+  changeToIndex(e) {
+    this.setState({
+      index: e,
+    })
+  }
   render() {
 		const { index } = this.state;
     return (
@@ -54,7 +59,7 @@ export default class App extends Component {
 					<div className="slide">slide n°2</div>
 					<div className="slide">slide n°3</div>
 				</BindKeyboardSwipeableViews>
-				<Footer index={index}/>
+				<Footer index={index} changeToIndex={this.changeToIndex.bind(this)}/>
       </>
     );
   }
