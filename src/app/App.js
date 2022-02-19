@@ -9,6 +9,7 @@ import './App.css'
 import Navbar from '../components/navbar/Navbar'
 import Footer from '../components/footer/Footer'
 import Messages from '../screens/messages/Messages'
+import Camera from '../screens/camera/Camera'
 
 
 const list = [];
@@ -48,6 +49,8 @@ export default class App extends Component {
   }
   render() {
 		const { index } = this.state;
+    const { height } = this.state;
+    const { width } = this.state;
     return (
       <>
         <MetaTags>
@@ -56,8 +59,8 @@ export default class App extends Component {
 				<Navbar position="absolute" index={index}/>
 				<BindKeyboardSwipeableViews className="slide_container" index={index} onChangeIndex={this.handleChangeIndex} containerStyle={{height: this.state.height, WebkitOverflowScrolling: 'touch'}} enableMouseEvents>
 					<div className="slide"><Navbar index={index}/><Messages /></div>
-					<div className="slide">slide n°2</div>
-					<div className="slide">slide n°3</div>
+					<div className="slide"><Camera index={index} height={height} width={width}/></div>
+					<div className="slide"><Navbar index={index}/></div>
 				</BindKeyboardSwipeableViews>
 				<Footer index={index} changeToIndex={this.changeToIndex.bind(this)}/>
       </>
