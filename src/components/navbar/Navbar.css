@@ -22,7 +22,7 @@
     flex-wrap: wrap;
     padding: 0.5rem 0 0.5rem 0;
 }
-.main-navbar button {
+.main-navbar li button {
     height: 3rem;
     width: 3rem;
     margin: 0 0.3rem 0 0.3rem;

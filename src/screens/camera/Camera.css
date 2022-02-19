@@ -1,6 +1,17 @@
 .webcam-screen {
-    background-color:   lightgreen;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+#webcam {
+    height: 100vh;
+}
+#flip1, #flip2 {
+    background-repeat: no-repeat;
+    background-position: center;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-size: 30%;
 }

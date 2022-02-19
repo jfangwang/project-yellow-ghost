@@ -6,15 +6,17 @@ import SearchIcon from '@mui/icons-material/Search';
 import FlipCameraIosIcon from '@mui/icons-material/FlipCameraIos';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import { isMobile } from 'react-device-detect';
 
-function Navbar({position, index, width}) {
+
+function Navbar({position, index, incFlipCam}) {
 	let title = "";
-	let dynamic = <button><MoreHorizIcon/></button>
+	let dynamic = <button onClick={() => console.log("settings")}><MoreHorizIcon/></button>
 	if (index === 0) {
 		title = "Chat";
 	}
 	if (index === 1) {
-		dynamic = <button><FlipCameraIosIcon/></button>
+		dynamic = <button onClick={incFlipCam}><FlipCameraIosIcon/></button>
 	}
 	if (index === 2) {
 		title = "Discover";
@@ -62,4 +64,4 @@ Navbar.propTypes = {
 	position: PropTypes.string
 }
 
-export default Navbar
+export default Navbar;

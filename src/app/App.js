@@ -26,16 +26,14 @@ export default class App extends Component {
       height: window.innerHeight,
       width: window.innerWidth,
       index: 0,
+      flipCamCounter: 0,
     }
   }
   updateDimensions = () => {
     this.setState({ width: window.innerWidth, height: window.innerHeight });
   };
-  componentDidMount() {
+  componentDidUpdate() {
     window.addEventListener('resize', this.updateDimensions);
-  }
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.updateDimensions);
   }
 	handleChangeIndex = index => {
     this.setState({
@@ -47,19 +45,20 @@ export default class App extends Component {
       index: e,
     })
   }
+  incFlipCam = () => {
+    this.setState({flipCamCounter: this.state.flipCamCounter + 1})
+  }
   render() {
-		const { index } = this.state;
-    const { height } = this.state;
-    const { width } = this.state;
+		const { index, height, width, flipCamCounter, } = this.state;
     return (
       <>
         <MetaTags>
           <title>Yellow Ghost</title>
         </MetaTags>
-				<Navbar position="absolute" index={index}/>
+				<Navbar position="absolute" index={index} incFlipCam={this.incFlipCam}/>
 				<BindKeyboardSwipeableViews className="slide_container" index={index} onChangeIndex={this.handleChangeIndex} containerStyle={{height: this.state.height, WebkitOverflowScrolling: 'touch'}} enableMouseEvents>
 					<div className="slide"><Navbar index={index}/><Messages /></div>
-					<div className="slide"><Camera index={index} height={height} width={width}/></div>
+					<div className="slide"><Camera index={index} height={height} width={width} flipCamCounter={flipCamCounter}/></div>
 					<div className="slide"><Navbar index={index}/></div>
 				</BindKeyboardSwipeableViews>
 				<Footer index={index} changeToIndex={this.changeToIndex.bind(this)}/>
