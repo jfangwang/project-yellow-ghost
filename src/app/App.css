@@ -7,7 +7,7 @@
     padding-inline-start: 0;
 }
 body {
-    
+    touch-action: none;
 }
 .slide {
     min-height: 100%;

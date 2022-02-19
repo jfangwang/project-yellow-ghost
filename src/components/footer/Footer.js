@@ -13,7 +13,7 @@ export default function Footer({index}) {
         discover = <li><b>Discover</b></li>
     }
   return (
-    <ul className="main-footer floating-bottom">
+    <ul className="main-footer floating-footer">
         {chat}
         {camera}
         {discover}

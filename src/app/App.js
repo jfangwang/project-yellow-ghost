@@ -24,6 +24,7 @@ export default class App extends Component {
     this.state = {
       height: window.innerHeight,
       width: window.innerWidth,
+      index: 0,
     }
   }
   updateDimensions = () => {
@@ -35,10 +36,6 @@ export default class App extends Component {
   componentWillUnmount() {
     window.removeEventListener('resize', this.updateDimensions);
   }
-
-	state = {
-    index: 0,
-  };
 	handleChangeIndex = index => {
     this.setState({
       index,

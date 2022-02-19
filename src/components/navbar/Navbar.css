@@ -1,16 +1,25 @@
-.floating {
+.floating-navbar {
     position: absolute;
     top: 0;
     left:0;
     width: 100%;
+    opacity: 0.3;
+    background-color: white;
 }
-.relative {
+.navbar-relative {
     position: relative;
-    opacity: 1;
-    border: 1px solid red;
+    opacity: 0;
+    background-color: lightgoldenrodyellow;
 }
 .main-navbar {
     z-index: 1;
     display:flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
+    height: 3.5rem;
+}
+.main-navbar button {
+    height: 3rem;
+    width: 3rem;
+    margin: 0 0.3rem 0 0.3rem;
 }

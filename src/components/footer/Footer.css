@@ -1,9 +1,9 @@
-.floating-bottom {
+.floating-footer {
     position: absolute;
     bottom: 0;
     width: 100%;
 }
-.relative {
+.footer-relative {
     position: relative;
     opacity: 0;
 }
