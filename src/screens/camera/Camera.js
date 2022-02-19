@@ -39,12 +39,12 @@ function Camera({index, height, width, flipCamCounter}) {
 	}, [flipCamCounter]);
 
 	useEffect(() => {
-		if (isMobile === false && document.getElementById('webcam') !== null) {
-			setar(9/16);
+		setar(9/16);
+		if (isMobile === false) {
 			// setbh(null);
 			// setbw(null);
 			// console.log(window.innerHeight/window.innerWidth, 16/9)
-			if (window.innerHeight/window.innerWidth > 16/9 && document.getElementById('webcam2') !== null) {
+			if (window.innerHeight/window.innerWidth > 16/9) {
 				document.getElementById('webcam').style.height = 'auto';
 				document.getElementById('webcam').style.width = '100%';
 				document.getElementById('webcam2').style.height = 'auto';
@@ -56,8 +56,8 @@ function Camera({index, height, width, flipCamCounter}) {
 				document.getElementById('webcam2').style.width = 'auto';
 			}
 		} else if (document.getElementById('webcam') !== null) {
-			if (height > width && document.getElementById('webcam2') !== null) {
-				setar(height/width);
+			if (height > width) {
+				setar(height/width * 1.1);
 				document.getElementById('webcam').style.height = '100%';
 				document.getElementById('webcam').style.width = 'auto';
 			} else {
@@ -70,6 +70,7 @@ function Camera({index, height, width, flipCamCounter}) {
 
   return (
 	<div className='webcam-screen' style={{height:height, width:width}}>
+		{/* <div id="webcam"></div><div id="webcam2"></div> */}
 		<Flippy
 			flipOnHover={false} // default false
 			flipOnClick={true} // default false
@@ -135,8 +136,7 @@ function Camera({index, height, width, flipCamCounter}) {
 			</>
 			}
 		</Flippy>
-		<div style={{height: height, width: width, position: 'absolute', backgroundColor: 'transparent'}} {...double_tap}>
-
+		<div id='flip1' style={{height: height, width: width, position: 'absolute', backgroundColor: 'transparent'}} {...double_tap}>
 		</div>
 	</div>
   )
