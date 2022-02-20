@@ -27,14 +27,23 @@
 .row {
     display: flex;
     flex-direction: row;
+    padding-right: 0.5rem;
+    align-items: center;
 }
 .col {
     display: flex;
     flex-direction: column;
+    justify-content: center;
 }
 .message-main {
     height: 4rem;
-    border:1px red solid;
+    border-bottom:1px grey solid;
+    align-items: center;
+}
+.friend-profile-pic {
+    height: 3rem;
+    width: 3rem;
+    border-radius: 25%;
 }
 
 /* Message Types */

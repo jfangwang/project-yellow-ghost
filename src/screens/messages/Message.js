@@ -53,7 +53,7 @@ export default function Message({friend, streak_emoji}) {
 Message.defaultProps = {
     friend: {
         created: "today",
-        profile_pic_url: "https://lh3.googleusercontent.com/a/AATXAJzhN3c3pCL9tAjrwZSqSpz8V2R_ACeZmiwbXXfJ=s96-c",
+        profile_pic_url: Guest,
         name: "Guest",
         status: "new-friend",
         streak: 0,
@@ -69,21 +69,20 @@ Message.defaultProps = {
 
 
 }
-// Message.requiredProps = {
-// 	friend: PropTypes.shape({
-// 		created: PropTypes.string,
-// 		profile_pic_url: PropTypes.string,
-// 		name: PropTypes.string,
-// 		status: PropTypes.string,
-// 		streak: PropTypes.number,
-// 		streak_ref: PropTypes.string,
-// 		sent: PropTypes.number,
-// 		received: PropTypes.number,
-// 		last_time_stamp: PropTypes.string,
-// 		snaps: PropTypes.arrayOf(PropTypes.string)
-// 	}),
-// 	streak_emoji: PropTypes.string,
-// 	pic: PropTypes.string,
-// 	email: PropTypes.string,
-// 	key: PropTypes.string
-// }
+Message.requiredProps = {
+	friend: PropTypes.shape({
+		created: PropTypes.string,
+		profile_pic_url: PropTypes.string,
+		name: PropTypes.string,
+		status: PropTypes.string,
+		streak: PropTypes.number,
+		sent: PropTypes.number,
+		received: PropTypes.number,
+		last_time_stamp: PropTypes.string,
+		snaps: PropTypes.arrayOf(PropTypes.string)
+	}),
+	streak_emoji: PropTypes.string,
+	pic: PropTypes.string,
+	email: PropTypes.string,
+	key: PropTypes.string
+}
