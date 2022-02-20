@@ -1,0 +1,92 @@
+.separator {
+    background-size: 100%;
+    border: 2px solid rgb(170, 170, 170);
+    border-radius: 100%;
+    background-repeat: no-repeat;
+}
+.time-stamp {
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+}
+.time-stamp > * {
+    margin-left: 0.2rem;
+    margin-right: 0.2rem;
+}
+.background-opened-image {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+}
+.row {
+    display: flex;
+    flex-direction: row;
+}
+.col {
+    display: flex;
+    flex-direction: column;
+}
+.message-main {
+    height: 4rem;
+    border:1px red solid;
+}
+
+/* Message Types */
+.message-new {
+    height: 0.95rem;
+    width: 0.95rem;
+    background-color: red;
+    color: red;
+    border-radius: 0.2rem;
+}
+.message-received {
+    height: 0.6rem;
+    width: 0.6rem;
+    background-color: none;
+    border: 0.17rem solid red;
+    border-radius: 0.2rem;
+}
+.message-opened {
+    width: 0.9rem;
+	height: 0.9rem;
+    background-image: url('../../assets/images/opened-img-icon.png');
+    background-repeat: no-repeat;
+    background-size: 0.9rem 0.9rem;
+    background-position: center;
+	/* border-top: 0.5rem solid transparent;
+	border-left: 1rem solid black;
+	border-bottom: 0.5rem solid transparent; */
+}
+.message-sent {
+    width: 0.9rem;
+	height: 0.9rem;
+    background-image: url('../../assets/images/sent-img-icon.png');
+    background-repeat: no-repeat;
+    background-size: 0.9rem 0.9rem;
+    background-position: center;
+	/* border-top: 0.5rem solid transparent;
+	border-left: 1rem solid #664db1;
+	border-bottom: 0.5rem solid transparent; */
+}
+.message-new-friend {
+    height: 0.6rem;
+    width: 0.6rem;
+    background-color: none;
+    border: 0.17rem solid lightgrey;
+    border-radius: 0.2rem;
+}
+.message-info, .message-info-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.message-info-container > *:not(:first-child)  {
+    margin-left: 0.3rem;
+    margin-right: 0.3rem;
+}

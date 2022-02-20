@@ -1,3 +1,6 @@
+:root {
+    --snapchat-color: #feff00;
+}
 * {
     font-family: 'Montserrat', sans-serif;
     margin: 0;
@@ -11,10 +14,16 @@ body {
 }
 .slide {
     height: 100%;
-    background-color: lightblue;
+    background-color: var(--snapchat-color);
     touch-action: none;
 }
 ul {
     list-style: none;
     display: flex;
+}
+button, button:active {
+    /* background: none; */
+    outline: none;
+    border: none;
+    border-radius: 100%;
 }

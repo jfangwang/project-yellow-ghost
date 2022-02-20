@@ -4,7 +4,7 @@ import { isMobile } from 'react-device-detect';
 import Flippy, { FrontSide, BackSide } from 'react-flippy';
 import { useDoubleTap } from 'use-double-tap';
 import Webcam from 'react-webcam';
-import logo from '../../assets/images/snapchat-logo.png';
+import logo from '../../assets/images/snapchat-background.gif';
 import './Camera.css';
 
 
