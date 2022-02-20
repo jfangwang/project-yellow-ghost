@@ -11,19 +11,29 @@ import { isMobile } from 'react-device-detect';
 
 function Navbar({position, index, incFlipCam}) {
 	let title = "";
-	let dynamic = <button onClick={() => console.log("settings")}><MoreHorizIcon/></button>
+	let dynamic = <button onClick={() => console.log("settings")}><MoreHorizIcon/></button>;
+	const styles = {
+		shawdow: {
+			backgroundColor: 'white',
+			boxShadow: "0 0.1rem 1rem black"
+		},
+		transparent: {
+			backgroundColor: 'transparent',
+			boxShadow: "0 0rem 0rem black"
+		}
+	}
 	if (index === 0) {
 		title = "Chat";
 	}
 	if (index === 1) {
-		dynamic = <button onClick={incFlipCam}><FlipCameraIosIcon/></button>
+		dynamic = <button onClick={incFlipCam}><FlipCameraIosIcon/></button>;
 	}
 	if (index === 2) {
 		title = "Discover";
 	}
 	if (position === "absolute") {
 		return (
-			<ul className="main-navbar floating-navbar" >
+			<ul className="main-navbar floating-navbar" style={index === 1 ? styles.transparent : styles.shawdow} >
 				<li>
 					<ul>
 						<li><button><AccountCircleIcon/></button></li>

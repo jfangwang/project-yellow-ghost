@@ -14,8 +14,13 @@ body {
 }
 .slide {
     height: 100%;
-    background-color: var(--snapchat-color);
     touch-action: none;
+}
+.slide1 {
+    background-color: white;
+}
+.slide2 {
+    background-color: var(--snapchat-color);
 }
 ul {
     list-style: none;

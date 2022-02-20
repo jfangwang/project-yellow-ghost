@@ -57,9 +57,9 @@ export default class App extends Component {
         </MetaTags>
 				<Navbar position="absolute" index={index} incFlipCam={this.incFlipCam}/>
 				<BindKeyboardSwipeableViews className="slide_container" index={index} onChangeIndex={this.handleChangeIndex} containerStyle={{height: this.state.height, WebkitOverflowScrolling: 'touch'}} enableMouseEvents>
-					<div className="slide"><Navbar index={index}/><Messages /></div>
-					<div className="slide"><Camera index={index} height={height} width={width} flipCamCounter={flipCamCounter}/></div>
-					<div className="slide"><Navbar index={index}/></div>
+					<div className="slide slide1"><Navbar index={index}/><Messages /></div>
+					<div className="slide slide2"><Camera index={index} height={height} width={width} flipCamCounter={flipCamCounter}/></div>
+					<div className="slide slide3"><Navbar index={index}/></div>
 				</BindKeyboardSwipeableViews>
 				<Footer index={index} changeToIndex={this.changeToIndex.bind(this)}/>
       </>
