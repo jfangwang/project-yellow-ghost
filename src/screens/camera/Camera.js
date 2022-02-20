@@ -57,7 +57,7 @@ function Camera({index, height, width, flipCamCounter}) {
 			}
 		} else if (document.getElementById('webcam') !== null) {
 			if (height > width) {
-				setar(height/width * 1.1);
+				setar(height/width);
 				document.getElementById('webcam').style.height = '100%';
 				document.getElementById('webcam').style.width = 'auto';
 			} else {

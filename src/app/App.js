@@ -25,7 +25,7 @@ export default class App extends Component {
     this.state = {
       height: window.innerHeight,
       width: window.innerWidth,
-      index: 0,
+      index: 1,
       flipCamCounter: 0,
     }
   }
