@@ -27,7 +27,7 @@
 .row {
     display: flex;
     flex-direction: row;
-    padding-right: 0.5rem;
+    /* padding-right: 0.5rem; */
     align-items: center;
 }
 .col {
@@ -44,6 +44,7 @@
     height: 3rem;
     width: 3rem;
     border-radius: 25%;
+    padding: 0 0.5rem 0 0.5rem;
 }
 
 /* Message Types */
