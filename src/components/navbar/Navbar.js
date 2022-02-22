@@ -9,7 +9,7 @@ import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { isMobile } from 'react-device-detect';
 
 
-function Navbar({position, index, incFlipCam}) {
+function Navbar({position, index, incFlipCam, GsignIn, GsignOut}) {
 	let title = "";
 	let dynamic = <button onClick={() => console.log("settings")}><MoreHorizIcon/></button>;
 	const styles = {

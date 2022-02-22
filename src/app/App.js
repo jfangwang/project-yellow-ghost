@@ -1,15 +1,16 @@
-import React, { Component, useEffect } from 'react'
-import {auth, db, provider} from '../utils/Firebase'
-import firebase from 'firebase/app'
-import SwipeableViews from 'react-swipeable-views'
-import { bindKeyboard } from 'react-swipeable-views-utils'
-import {isMobile } from 'react-device-detect'
-import MetaTags from 'react-meta-tags'
-import './App.css'
-import Navbar from '../components/navbar/Navbar'
-import Footer from '../components/footer/Footer'
-import Messages from '../screens/messages/Messages'
-import Camera from '../screens/camera/Camera'
+import React, { Component, useEffect } from 'react';
+import {auth, db, provider} from '../utils/Firebase';
+import firebase from 'firebase/app';
+import { collection, onSnapshot } from "firebase/firestore";
+import SwipeableViews from 'react-swipeable-views';
+import { bindKeyboard } from 'react-swipeable-views-utils';
+import {isMobile } from 'react-device-detect';
+import MetaTags from 'react-meta-tags';
+import './App.css';
+import Navbar from '../components/navbar/Navbar';
+import Footer from '../components/footer/Footer';
+import Messages from '../screens/messages/Messages';
+import Camera from '../screens/camera/Camera';
 
 
 const list = [];
@@ -19,6 +20,9 @@ for (let i = 0; i < 30; i += 1) {
 }
 
 const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
+
+let userSnapshot;
+
 export default class App extends Component {
   constructor(props) {
     super(props);
@@ -27,14 +31,48 @@ export default class App extends Component {
       width: window.innerWidth,
       index: 1,
       flipCamCounter: 0,
+      snapshot: true
+    }
+    window.addEventListener('resize', this.updateDimensions);
+  }
+  componentWillMount() {
+    this.checkCurrentUser()
+  }
+  componentWillUnmount() {
+    this.endSnapShot();
+  }
+  checkCurrentUser= () => {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        console.log('user signed in ', user);
+      } else {
+        console.log('user signed out');
+      }
+    });
+  }
+  GoogleSignIn = () => {
+    auth.signInWithPopup(provider)
+  }
+  GoogleSignOut = () => {
+    firebase.auth().signOut();
+  }
+  startSnapShot = (name) => {
+    console.log(name);
+    userSnapshot = db.collection("Users").doc(name).onSnapshot(
+      { includeMetadataChanges: true },
+      (doc) => {
+      console.log("This is the document: ", doc.data());
+    });
+  }
+  endSnapShot = () => {
+    console.log("ending snapshot");
+    if (userSnapshot !== undefined) {
+      userSnapshot();
     }
   }
   updateDimensions = () => {
     this.setState({ width: window.innerWidth, height: window.innerHeight });
   };
-  componentDidUpdate() {
-    window.addEventListener('resize', this.updateDimensions);
-  }
 	handleChangeIndex = index => {
     this.setState({
       index,
@@ -55,11 +93,15 @@ export default class App extends Component {
         <MetaTags>
           <title>Yellow Ghost</title>
         </MetaTags>
-				<Navbar position="absolute" index={index} incFlipCam={this.incFlipCam}/>
+				<Navbar position="absolute" index={index} incFlipCam={this.incFlipCam} GsignIn={this.GoogleSignIn.bind(this)} GsignOut={this.GoogleSignOut.bind(this)}/>
 				<BindKeyboardSwipeableViews className="slide_container" index={index} onChangeIndex={this.handleChangeIndex} containerStyle={{height: this.state.height, WebkitOverflowScrolling: 'touch'}} enableMouseEvents>
-					<div className="slide slide1"><Navbar index={index}/><Messages /></div>
+					<div className="slide slide1">
+          {/* <Navbar index={index}/> */}
+          <Messages/></div>
 					<div className="slide slide2"><Camera index={index} height={height} width={width} flipCamCounter={flipCamCounter}/></div>
-					<div className="slide slide3"><Navbar index={index}/></div>
+					<div className="slide slide3">
+          {/* <Navbar index={index}/> */}
+          </div>
 				</BindKeyboardSwipeableViews>
 				<Footer index={index} changeToIndex={this.changeToIndex.bind(this)}/>
       </>
