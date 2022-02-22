@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import PropTypes from 'prop-types'
 import './Navbar.css'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -7,67 +7,58 @@ import FlipCameraIosIcon from '@mui/icons-material/FlipCameraIos';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { isMobile } from 'react-device-detect';
+import Settings from '../settings/Settings';
+import { lightGreen } from '@mui/material/colors';
+import SwipeableViews from 'react-swipeable-views';
+import { bindKeyboard } from 'react-swipeable-views-utils';
+import '../../app/App.css';
+import { FillerNavbar, FloatingNavbar } from './NavbarTypes';
 
+const styles = {
+	shawdow: {
+	  backgroundColor: 'white',
+	  boxShadow: "0 0.1rem 1rem black"
+	},
+	transparent: {
+	  backgroundColor: 'transparent',
+	  boxShadow: "0 0rem 0rem black"
+	}
+  }
 
-function Navbar({position, index, incFlipCam, GsignIn, GsignOut}) {
+function Navbar({position, index, incFlipCam, GsignIn, GsignOut, height, width}) {
+	const test = () => {
+		setSettings(!settings)
+	}
+	const [settings, setSettings] = useState(false);
 	let title = "";
 	let dynamic = <button onClick={() => console.log("settings")}><MoreHorizIcon/></button>;
-	const styles = {
-		shawdow: {
-			backgroundColor: 'white',
-			boxShadow: "0 0.1rem 1rem black"
-		},
-		transparent: {
-			backgroundColor: 'transparent',
-			boxShadow: "0 0rem 0rem black"
-		}
-	}
-	if (index === 0) {
-		title = "Chat";
-	}
-	if (index === 1) {
-		dynamic = <button onClick={incFlipCam}><FlipCameraIosIcon/></button>;
-	}
-	if (index === 2) {
-		title = "Discover";
+	let view = <FillerNavbar title={title} dynamic={dynamic}/>;
+	let settingsView = (
+		<div style={{height:height, width: width, overflow:'auto'}}>
+			<FillerNavbar title={title} dynamic={dynamic}/>
+			<h1>Name</h1>
+		</div>
+	)
+	if (settings) {
+		title="Settings"
 	}
 	if (position === "absolute") {
-		return (
-			<ul className="main-navbar floating-navbar" style={index === 1 ? styles.transparent : styles.shawdow} >
-				<li>
-					<ul>
-						<li><button><AccountCircleIcon/></button></li>
-						<li><button><SearchIcon/></button></li>
-					</ul>
-				</li>
-				<li><h1>{title}</h1></li>
-				<li>
-					<ul>
-						<li><button><PersonAddIcon/></button></li>
-						<li>{dynamic}</li>
-					</ul>
-				</li>
-			</ul>
-		)
-	} else {
-		return (
-			<ul className="main-navbar navbar-relative">
-				<li>
-					<ul>
-						<li><button><AccountCircleIcon/></button></li>
-						<li><button><SearchIcon/></button></li>
-					</ul>
-				</li>
-				<li><h1>{title}</h1></li>
-				<li>
-					<ul>
-						<li><button><PersonAddIcon/></button></li>
-						<li>{dynamic}</li>
-					</ul>
-				</li>
-			</ul>
-		)
+		view = <FloatingNavbar
+		incFlipCam={incFlipCam}
+		index={index}
+		title={title}
+		dynamic={dynamic}
+		GsignOut={GsignOut}
+		test={test}
+		settings={settings}
+		/>
 	}
+	return (
+		<>
+			{settings ? settingsView : null}
+			{view}
+		</>
+	)
 }
 
 Navbar.propTypes = {

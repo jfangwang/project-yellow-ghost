@@ -31,7 +31,7 @@ export default class App extends Component {
       width: window.innerWidth,
       index: 1,
       flipCamCounter: 0,
-      snapshot: true
+      snapshot: true,
     }
     window.addEventListener('resize', this.updateDimensions);
   }
@@ -41,7 +41,7 @@ export default class App extends Component {
   componentWillUnmount() {
     this.endSnapShot();
   }
-  checkCurrentUser= () => {
+  checkCurrentUser = () => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         console.log('user signed in ', user);
@@ -55,6 +55,7 @@ export default class App extends Component {
   }
   GoogleSignOut = () => {
     firebase.auth().signOut();
+    console.log("sign out");
   }
   startSnapShot = (name) => {
     console.log(name);
@@ -93,14 +94,31 @@ export default class App extends Component {
         <MetaTags>
           <title>Yellow Ghost</title>
         </MetaTags>
-				<Navbar position="absolute" index={index} incFlipCam={this.incFlipCam} GsignIn={this.GoogleSignIn.bind(this)} GsignOut={this.GoogleSignOut.bind(this)}/>
-				<BindKeyboardSwipeableViews className="slide_container" index={index} onChangeIndex={this.handleChangeIndex} containerStyle={{height: this.state.height, WebkitOverflowScrolling: 'touch'}} enableMouseEvents>
+				<Navbar
+          position="absolute"
+          height={height}
+          width={width}
+          index={index}
+          incFlipCam={this.incFlipCam}
+          GsignIn={this.GoogleSignIn.bind(this)}
+          GsignOut={this.GoogleSignOut.bind(this)}
+        />
+				<BindKeyboardSwipeableViews
+          className="slide_container"
+          index={index}
+          onChangeIndex={this.handleChangeIndex}
+          containerStyle={{height: this.state.height, WebkitOverflowScrolling: 'touch'}}
+          enableMouseEvents
+        >
 					<div className="slide slide1">
-          {/* <Navbar index={index}/> */}
-          <Messages/></div>
-					<div className="slide slide2"><Camera index={index} height={height} width={width} flipCamCounter={flipCamCounter}/></div>
+            <Navbar index={index}/>
+            <Messages/>
+          </div>
+					<div className="slide slide2">
+            <Camera index={index} height={height} width={width} flipCamCounter={flipCamCounter}/>
+          </div>
 					<div className="slide slide3">
-          {/* <Navbar index={index}/> */}
+            <Navbar index={index}/>
           </div>
 				</BindKeyboardSwipeableViews>
 				<Footer index={index} changeToIndex={this.changeToIndex.bind(this)}/>
