@@ -35,6 +35,7 @@ export default class App extends Component {
       snapshot: true,
       loggedIn: false,
       userInfo: {},
+      userDoc: {}
     }
   }
   componentDidMount() {
@@ -48,44 +49,6 @@ export default class App extends Component {
     var doc = document.documentElement;
     var top = (window.pageYOffset || doc.scrollTop)  - (doc.clientTop || 0);
     console.log(top);
-  }
-  checkCurrentUser = () => {
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        this.setState({
-          loggedIn: true,
-          userInfo: user,
-        })
-        console.log('user signed in ', this.state.userInfo);
-      } else {
-        this.setState({
-          loggedIn: false,
-          userInfo: {},
-        })
-        console.log('user signed out', this.state.userInfo);
-      }
-    });
-  }
-  GoogleSignIn = () => {
-    auth.signInWithPopup(provider)
-  }
-  GoogleSignOut = () => {
-    firebase.auth().signOut();
-    console.log("sign out");
-  }
-  startSnapShot = (name) => {
-    console.log(name);
-    userSnapshot = db.collection("Users").doc(name).onSnapshot(
-      { includeMetadataChanges: true },
-      (doc) => {
-      console.log("This is the document: ", doc.data());
-    });
-  }
-  endSnapShot = () => {
-    console.log("ending snapshot");
-    if (userSnapshot !== undefined) {
-      userSnapshot();
-    }
   }
   updateDimensions = () => {
     this.setState({ width: window.innerWidth, height: window.innerHeight });
@@ -102,6 +65,88 @@ export default class App extends Component {
   }
   incFlipCam = () => {
     this.setState({flipCamCounter: this.state.flipCamCounter + 1})
+  }
+  // Firebase Functions
+  checkCurrentUser = () => {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.setState({
+          loggedIn: true,
+          userInfo: user,
+        })
+        console.log('user signed in ', this.state.userInfo);
+        this.getUserOnFirebase(user);
+      } else {
+        this.setState({
+          loggedIn: false,
+          userInfo: {},
+        })
+        console.log('user signed out', this.state.userInfo);
+      }
+    });
+  }
+  GoogleSignIn = () => {
+    auth.signInWithPopup(provider)
+  }
+  GoogleSignOut = () => {
+    firebase.auth().signOut();
+    console.log("sign out");
+  }
+  // Firestore Functions
+  startSnapShot = (name) => {
+    console.log("Starting Snapshot")
+    userSnapshot = db.collection("Users").doc(name).onSnapshot(
+      { includeMetadataChanges: true },
+      (doc) => {
+        this.setState({userDoc: doc.data()})
+    });
+  }
+  endSnapShot = () => {
+    console.log("ending snapshot");
+    if (userSnapshot !== undefined) {
+      userSnapshot();
+    }
+  }
+  getUserOnFirebase = (user) => {
+    let query = db.collection("Users").doc(user.email);
+    query.get().then((doc) => {
+      if (!doc.exists) {
+        this.createUserOnFirebase(user)
+      } else {
+        this.startSnapShot(user.email);
+      }
+    })
+  }
+  createUserOnFirebase = (user) => {
+    const name = user.displayName;
+    const photo = user.photoURL;
+    const c = new Date().toLocaleString()
+    db.collection("Users").doc(user.email).set({
+      created: c,
+      name: name,
+      profile_pic_url: photo,
+      streak_emoji:  "\u{1F525}",
+      sent: 0,
+      received: 0,
+      added_me: {},
+      pending: {},
+      friends: {
+        [user.email]: {
+            created: c,
+            profile_pic_url: photo,
+            name: name,
+            status: "new-friend",
+            streak: 0,
+            sent: 0,
+            received: 0,
+            last_time_stamp: null,
+            snaps: []
+        }
+      },
+    })
+    .then(() => {
+      console.log("New user added to firebase!");
+    })
   }
   render() {
 		const { index, height, width, flipCamCounter, loggedIn, userInfo} = this.state;
