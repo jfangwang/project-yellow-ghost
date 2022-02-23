@@ -10,7 +10,7 @@ import '../../screens/messages/Message.css';
 
 const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
 
-export default function Settings({toggleSettings, loggedIn, userInfo}) {
+export default function Settings({toggleSettings, loggedIn, userInfo, userDoc}) {
   function GoogleSignIn() {
     auth.signInWithPopup(provider)
   }
@@ -29,8 +29,10 @@ export default function Settings({toggleSettings, loggedIn, userInfo}) {
           </div>
         </div>
         <div className="left container row">
-          <p>Received: 10</p>
-          <p>Send: 8</p>
+          <p>Received: {userDoc['received'] ? userDoc['received'] : 0}</p>
+          <p>Sent: {userDoc['sent'] ? userDoc['sent'] : 0}</p>
+          <p>Streak Emoji: {userDoc['streak_emoji'] ? userDoc['streak_emoji'] : "\u{1F525}"} </p>
+          <p>Created: {userDoc['created'] ? userDoc['created'] : "N/A"} </p>
         </div>
         <div className="center left container row">
           {loggedIn ? <button style={{backgroundColor: 'lightcoral', borderRadius:'0.5rem', padding: '1rem'}} onClick={GoogleSignOut}><h1>Logout</h1></button>

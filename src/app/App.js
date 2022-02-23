@@ -77,9 +77,11 @@ export default class App extends Component {
         console.log('user signed in ', this.state.userInfo);
         this.getUserOnFirebase(user);
       } else {
+        this.endSnapShot();
         this.setState({
           loggedIn: false,
           userInfo: {},
+          userDoc: {},
         })
         console.log('user signed out', this.state.userInfo);
       }
@@ -99,6 +101,7 @@ export default class App extends Component {
       { includeMetadataChanges: true },
       (doc) => {
         this.setState({userDoc: doc.data()})
+        console.log("User Doc", this.state.userDoc);
     });
   }
   endSnapShot = () => {
@@ -149,7 +152,7 @@ export default class App extends Component {
     })
   }
   render() {
-		const { index, height, width, flipCamCounter, loggedIn, userInfo} = this.state;
+		const { index, height, width, flipCamCounter, loggedIn, userInfo, userDoc} = this.state;
     return (
       <>
         <MetaTags>
@@ -165,6 +168,7 @@ export default class App extends Component {
           GsignOut={this.GoogleSignOut.bind(this)}
           loggedIn={loggedIn}
           userInfo={userInfo}
+          userDoc={userDoc}
         />
 				<BindKeyboardSwipeableViews
           className="slide_container"
