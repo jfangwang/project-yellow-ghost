@@ -8,7 +8,6 @@
     display: flex;
     flex-direction: row;
     width: 100%;
-    padding-bottom: 1rem;
 }
 .left {
     justify-content: left;
@@ -16,6 +15,6 @@
 .center {
     justify-content: center;
 }
-.row > * {
+.settings-screen .row > * {
     padding-right: 1rem;;
 }

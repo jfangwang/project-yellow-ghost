@@ -24,7 +24,7 @@ function FillerNavbar({title, dynamic, show, custom, type}) {
       <ul className="main-navbar navbar-show">
       <li>
         <ul>
-            {type === "Settings" ? <li><button><KeyboardArrowDownIcon onClick={custom}/></button></li> : <li><button><AccountCircleIcon onClick={custom}/></button></li>}
+            {type === "SlidingMenu" ? <li><button><KeyboardArrowDownIcon onClick={custom}/></button></li> : <li><button><AccountCircleIcon onClick={custom}/></button></li>}
             {/* <li><button style={{opacity: 0}} disabled={true}><SearchIcon/></button></li> */}
         </ul>
       </li>

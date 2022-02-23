@@ -38,7 +38,6 @@ export default class App extends Component {
   componentDidMount() {
     this.checkCurrentUser()
     window.addEventListener('resize', this.updateDimensions);
-    // window.addEventListener('scroll', this.handleScroll, true);
   }
   componentWillUnmount() {
     this.endSnapShot();
@@ -114,13 +113,12 @@ export default class App extends Component {
           incFlipCam={this.incFlipCam}
           GsignIn={this.GoogleSignIn.bind(this)}
           GsignOut={this.GoogleSignOut.bind(this)}
-          Yscroll={this.state.setYscroll}
         />
 				<BindKeyboardSwipeableViews
           className="slide_container"
           index={index}
           onChangeIndex={this.handleChangeIndex}
-          containerStyle={{height: this.state.height, WebkitOverflowScrolling: 'touch'}}
+          containerStyle={{height:height, WebkitOverflowScrolling: 'touch'}}
           enableMouseEvents
         >
 					<div className="slide slide1">
