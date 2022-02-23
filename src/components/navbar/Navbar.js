@@ -33,12 +33,6 @@ function Navbar({position, index, incFlipCam, GsignIn, GsignOut, height, width})
 	let title = "";
 	let dynamic = <button onClick={() => console.log("settings")}><MoreHorizIcon/></button>;
 	let view = <FillerNavbar title={title} dynamic={dynamic}/>;
-	let settingsView = (
-		<div style={{height:height, width: width, overflow:'auto'}}>
-			<FillerNavbar title={title} dynamic={dynamic}/>
-			<h1>Name</h1>
-		</div>
-	)
 	if (settings) {
 		title="Settings"
 	}
@@ -55,7 +49,7 @@ function Navbar({position, index, incFlipCam, GsignIn, GsignOut, height, width})
 	}
 	return (
 		<>
-			{settings ? settingsView : null}
+			{settings ? <Settings height={height} width={width}/> : null}
 			{view}
 		</>
 	)

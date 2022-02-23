@@ -33,10 +33,10 @@ export default class App extends Component {
       flipCamCounter: 0,
       snapshot: true,
     }
-    window.addEventListener('resize', this.updateDimensions);
   }
   componentWillMount() {
     this.checkCurrentUser()
+    window.addEventListener('resize', this.updateDimensions);
   }
   componentWillUnmount() {
     this.endSnapShot();
