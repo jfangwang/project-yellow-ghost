@@ -5,7 +5,7 @@ import Message from './Message'
 
 let item = <Message/>
 let list = []
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 30; i++) {
   list.push(item);
 }
 function Messages(props) {

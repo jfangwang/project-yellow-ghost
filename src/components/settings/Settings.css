@@ -1,0 +1,21 @@
+.settings-screen {
+    display: flex;
+    flex-direction: column;
+    /* border: 2px red solid; */
+    padding: 0.5rem;
+}
+.container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding-bottom: 1rem;
+}
+.left {
+    justify-content: left;
+}
+.center {
+    justify-content: center;
+}
+.row > * {
+    padding-right: 1rem;;
+}

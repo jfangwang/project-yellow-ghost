@@ -25,17 +25,17 @@ const styles = {
 	}
   }
 
-function Navbar({position, index, incFlipCam, GsignIn, GsignOut, height, width}) {
-	const test = () => {
+function Navbar({position, index, incFlipCam, GsignIn, GsignOut, height, width, Yscroll}) {
+	const toggleSettings = () => {
 		setSettings(!settings)
 	}
 	const [settings, setSettings] = useState(false);
 	let title = "";
 	let dynamic = <button onClick={() => console.log("settings")}><MoreHorizIcon/></button>;
 	let view = <FillerNavbar title={title} dynamic={dynamic}/>;
-	if (settings) {
-		title="Settings"
-	}
+	// if (settings) {
+	// 	title="Settings"
+	// }
 	if (position === "absolute") {
 		view = <FloatingNavbar
 		incFlipCam={incFlipCam}
@@ -43,13 +43,13 @@ function Navbar({position, index, incFlipCam, GsignIn, GsignOut, height, width})
 		title={title}
 		dynamic={dynamic}
 		GsignOut={GsignOut}
-		test={test}
+		toggleSettings={toggleSettings}
 		settings={settings}
 		/>
 	}
 	return (
 		<>
-			{settings ? <Settings height={height} width={width}/> : null}
+			{settings ? <Settings height={height} width={width} setSettings={setSettings} Yscroll={Yscroll}/> : null}
 			{view}
 		</>
 	)
