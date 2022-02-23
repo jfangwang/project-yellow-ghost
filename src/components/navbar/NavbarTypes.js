@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SearchIcon from '@mui/icons-material/Search';
 import FlipCameraIosIcon from '@mui/icons-material/FlipCameraIos';
@@ -18,7 +19,7 @@ const styles = {
   }
 }
 
-function FillerNavbar({title, dynamic, show, custom, type}) {
+function StaticNavbar({show, title, custom, dynamic, type}) {
   if (show === true) {
     return (
       <ul className="main-navbar navbar-show">
@@ -31,7 +32,7 @@ function FillerNavbar({title, dynamic, show, custom, type}) {
       <li><h1>{title}</h1></li>
       <li>
         <ul>
-            <li><button><PersonAddIcon/></button></li>
+            {type === "SlidingMenu" ? <li><button disabled={true} style={{opacity: 0}}><PersonAddIcon/></button></li> : <li><button><PersonAddIcon/></button></li>}
             {/* <li>{dynamic}</li> */}
         </ul>
       </li>
@@ -57,6 +58,7 @@ function FillerNavbar({title, dynamic, show, custom, type}) {
     )
   }
 }
+
 
 function FloatingNavbar({title, dynamic, index, GsignOut, toggleSettings, incFlipCam, settings}) {
     if (index === 0) {
@@ -86,4 +88,4 @@ function FloatingNavbar({title, dynamic, index, GsignOut, toggleSettings, incFli
       </ul>
     )
   }
-  export {FloatingNavbar, FillerNavbar};
+  export {FloatingNavbar, StaticNavbar};

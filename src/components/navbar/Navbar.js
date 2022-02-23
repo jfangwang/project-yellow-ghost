@@ -12,7 +12,7 @@ import { lightGreen } from '@mui/material/colors';
 import SwipeableViews from 'react-swipeable-views';
 import { bindKeyboard } from 'react-swipeable-views-utils';
 import '../../app/App.css';
-import { FillerNavbar, FloatingNavbar } from './NavbarTypes';
+import { StaticNavbar, FloatingNavbar } from './NavbarTypes';
 
 const styles = {
 	shawdow: {
@@ -35,7 +35,7 @@ function Navbar({position, index, incFlipCam, GsignIn, GsignOut, height, width, 
 	const [search, setSearch] = useState(false);
 	let title = "";
 	let dynamic = <button onClick={() => console.log("settings")}><MoreHorizIcon/></button>;
-	let view = <FillerNavbar title={title} dynamic={dynamic}/>;
+	let view = <StaticNavbar title={title} dynamic={dynamic}/>;
 	if (position === "absolute") {
 		view = <FloatingNavbar
 		incFlipCam={incFlipCam}

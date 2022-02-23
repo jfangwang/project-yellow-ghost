@@ -1,8 +1,9 @@
 import React from 'react'
-import TikTokAPI, { getRequestParams } from 'tiktok-api';
+import { StaticNavbar } from '../../components/navbar/NavbarTypes';
 
 export default function Discover() {
-  return (
+  return (<>
     <div>Discover</div>
+  </>
   )
 }

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import SwipeableViews from 'react-swipeable-views';
-import { FillerNavbar} from '../navbar/NavbarTypes';
+import { StaticNavbar} from '../navbar/NavbarTypes';
 import { bindKeyboard } from 'react-swipeable-views-utils';
 import '../settings/Settings.css';
 import '../../screens/messages/Message.css';
@@ -58,7 +58,7 @@ export default function SlidingDownMenu({title, closeMenu, children}) {
           <div style={{height:height, width:width}}>
           </div>
           <div style={{backgroundColor: 'lightgrey', height:height, width:width}}>
-            <FillerNavbar show={true} title={title} custom={close} type="SlidingMenu"/>
+            <StaticNavbar show={true} title={title} custom={close} type="SlidingMenu"/>
             <div onScroll={handleScroll} className="settings-screen">
               {children}
             </div>

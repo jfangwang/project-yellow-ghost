@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import SwipeableViews from 'react-swipeable-views';
-import { FillerNavbar} from '../navbar/NavbarTypes';
+import { StaticNavbar} from '../navbar/NavbarTypes';
 import { bindKeyboard } from 'react-swipeable-views-utils';
 import SlidingDownMenu from '../slidingDownMenu/SlidingDownMenu';
 import './Settings.css';

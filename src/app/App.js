@@ -11,6 +11,7 @@ import Navbar from '../components/navbar/Navbar';
 import Footer from '../components/footer/Footer';
 import Messages from '../screens/messages/Messages';
 import Camera from '../screens/camera/Camera';
+import Discover from '../screens/discover/Discover';
 
 
 const list = [];
@@ -130,6 +131,7 @@ export default class App extends Component {
           </div>
 					<div className="slide slide3">
             <Navbar index={index}/>
+            <Discover/>
           </div>
 				</BindKeyboardSwipeableViews>
 				<Footer index={index} changeToIndex={this.changeToIndex.bind(this)}/>
