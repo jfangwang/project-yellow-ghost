@@ -60,7 +60,7 @@ function StaticNavbar({show, title, custom, dynamic, type}) {
 }
 
 
-function FloatingNavbar({title, dynamic, index, GsignOut, toggleSettings, incFlipCam, settings}) {
+function FloatingNavbar({title, dynamic, index, GsignOut, toggleSettings, incFlipCam, settings, userInfo}) {
     if (index === 0) {
       title = "Chat";
     }
@@ -74,8 +74,8 @@ function FloatingNavbar({title, dynamic, index, GsignOut, toggleSettings, incFli
       <ul className="main-navbar floating-navbar" style={index === 1 ? styles.transparent : styles.shadow} >
           <li>
               <ul>
-                  <li><button><AccountCircleIcon onClick={toggleSettings}/></button></li>
-                  <li><button><SearchIcon onClick={GsignOut}/></button></li>
+                  <li><button onClick={toggleSettings}>{userInfo.photoURL ? <img src={userInfo.photoURL}/>:<AccountCircleIcon/>}</button></li>
+                  <li><button ><SearchIcon/></button></li>
               </ul>
           </li>
           <li><h1>{title}</h1></li>

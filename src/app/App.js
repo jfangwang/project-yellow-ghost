@@ -33,7 +33,8 @@ export default class App extends Component {
       index: 1,
       flipCamCounter: 0,
       snapshot: true,
-      Yscroll: 0,
+      loggedIn: false,
+      userInfo: {},
     }
   }
   componentDidMount() {
@@ -51,9 +52,17 @@ export default class App extends Component {
   checkCurrentUser = () => {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        console.log('user signed in ', user);
+        this.setState({
+          loggedIn: true,
+          userInfo: user,
+        })
+        console.log('user signed in ', this.state.userInfo);
       } else {
-        console.log('user signed out');
+        this.setState({
+          loggedIn: false,
+          userInfo: {},
+        })
+        console.log('user signed out', this.state.userInfo);
       }
     });
   }
@@ -94,13 +103,8 @@ export default class App extends Component {
   incFlipCam = () => {
     this.setState({flipCamCounter: this.state.flipCamCounter + 1})
   }
-  setYscroll = (e) => {
-    this.setState({
-      Yscroll: e
-    })
-  }
   render() {
-		const { index, height, width, flipCamCounter, } = this.state;
+		const { index, height, width, flipCamCounter, loggedIn, userInfo} = this.state;
     return (
       <>
         <MetaTags>
@@ -114,6 +118,8 @@ export default class App extends Component {
           incFlipCam={this.incFlipCam}
           GsignIn={this.GoogleSignIn.bind(this)}
           GsignOut={this.GoogleSignOut.bind(this)}
+          loggedIn={loggedIn}
+          userInfo={userInfo}
         />
 				<BindKeyboardSwipeableViews
           className="slide_container"

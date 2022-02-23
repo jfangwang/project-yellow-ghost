@@ -25,7 +25,7 @@ const styles = {
 	}
   }
 
-function Navbar({position, index, incFlipCam, GsignIn, GsignOut, height, width, Yscroll}) {
+function Navbar({position, index, incFlipCam, GsignIn, GsignOut, height, width, loggedIn, userInfo}) {
 	const toggleSettings = () => {
 		setSettings(!settings)
 	}
@@ -44,11 +44,12 @@ function Navbar({position, index, incFlipCam, GsignIn, GsignOut, height, width, 
 		dynamic={dynamic}
 		GsignOut={GsignOut}
 		toggleSettings={toggleSettings}
+		userInfo={userInfo}
 		/>
 	}
 	return (
 		<>
-			{settings ? <Settings height={height} width={width} toggleSettings={toggleSettings} Yscroll={Yscroll}/> : null}
+			{settings ? <Settings loggedIn={loggedIn} toggleSettings={toggleSettings} userInfo={userInfo}/> : null}
 			{view}
 		</>
 	)
