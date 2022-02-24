@@ -1,12 +1,11 @@
 import React, {useEffect} from 'react';
 import Footer from '../../components/footer/Footer';
 import { isMobile } from 'react-device-detect';
-import Send from './Send';
 import './Camera.css';
 import '../../components/navbar/Navbar.css'
 import '../../components/footer/Footer.css'
 
-export default function Capture({width, height, close, img, setScreen}) {
+export default function Capture({width, height, close, img, changedToSend, save}) {
     useEffect(() => {
 		if (isMobile === false) {
 			if (height/width > 16/9) {
@@ -32,10 +31,10 @@ export default function Capture({width, height, close, img, setScreen}) {
 			<ul><li><button onClick={close}>Close</button></li></ul>
 			<ul></ul>
 		</div>
-		{/* <div className="floating-footer main-navbar">
-			<ul><li><button>Save</button></li></ul>
-			<ul><li><button onClick={setScreen("send")}>Send</button></li></ul>
-		</div> */}
+		<div className="captured-footer main-footer">
+			<ul><li><button onClick={save}>Save</button></li></ul>
+			<ul><li><button onClick={changedToSend}>Send</button></li></ul>
+		</div>
         <img id="capturedImg" src={img} />
     </div>
   )

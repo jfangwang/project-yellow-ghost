@@ -1,27 +1,20 @@
-import React from 'react'
+import React, {useEffect} from 'react';
+import { isMobile } from 'react-device-detect';
 import './Camera.css';
 import '../../components/navbar/Navbar.css'
 import '../../components/footer/Footer.css'
-import Footer from '../../components/footer/Footer';
 
-export default function Send({width, height, img, setScreen}) {
+export default function Send({width, height, close, img, send, backToCapture}) {
   return (
-    // <div className="captured-screen" style={{height: height, width: width}}>
-		// <div className="floating-navbar main-navbar">
-		// 	<ul><li><button onClick={setScreen}>Go Back</button></li></ul>
-		// 	<ul></ul>
-		// </div>
-		// <div className="floating-footer main-navbar">
-		// 	<ul><li><button onClick={setScreen}>Go Back</button></li></ul>
-		// 	<ul><li><button>SEND</button></li></ul>
-		// </div>
-    //     <div>
-    //         <h1>USER</h1>
-    //         <h1>USER</h1>
-    //         <h1>USER</h1>
-    //         <h1>USER</h1>
-    //     </div>
-    // </div>
-    <></>
+    <div className="captured-screen" style={{height: height, width: width}}>
+      <div className="floating-navbar main-navbar">
+        <ul><li><button onClick={backToCapture}>Go Back</button></li></ul>
+        <ul></ul>
+      </div>
+      <div className="captured-footer main-footer">
+        <ul><li></li></ul>
+        <ul><li><button onClick={send}>SEND</button></li></ul>
+      </div>
+    </div>
   )
 }

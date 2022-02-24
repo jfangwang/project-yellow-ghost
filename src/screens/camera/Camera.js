@@ -35,7 +35,6 @@ function Camera({index, height, width, flipCamCounter, disable_swiping, toggleNa
 			// document.getElementById("capture-audio").play()
 			setImg(webcamRef.current.getScreenshot());
 			setScreen('captured');
-			console.log(screen);
 			disable_swiping(true);
 			toggleNavbar();
 			toggleFooter();
@@ -44,7 +43,10 @@ function Camera({index, height, width, flipCamCounter, disable_swiping, toggleNa
 		},
 		[webcamRef]
 	);
-
+	function changedToSend() { setScreen('send') }
+	function backToCapture() { setScreen('captured') }
+	function save() { close() }
+	function send() { close() }
 	function close() {
 		setImg(null);
 		disable_swiping(false);
@@ -100,7 +102,7 @@ function Camera({index, height, width, flipCamCounter, disable_swiping, toggleNa
 		{/* <div id="webcam"></div><div id="webcam2"></div> */}
 			<Flippy
 				flipOnHover={false} // default false
-				flipOnClick={true} // default false
+				flipOnClick={false} // default false
 				flipDirection="horizontal" // horizontal or vertical
 				ref={flippy}
 				style={{height:window.innerHeight, width: width}} /// these are optional style, it is not necessary
@@ -163,16 +165,19 @@ function Camera({index, height, width, flipCamCounter, disable_swiping, toggleNa
 				</>
 				}
 			</Flippy>
-		{screen === "camera" ?
+		{screen === "camera" &&
 			<div className="cam-overlay" style={{height: height, width: width, top: 0, position: 'absolute', backgroundColor: 'transparent'}} {...double_tap}>
 				<div className="cam-footer" style={{backgroundColor:'transparent'}}>
 					<button className="capture-button" onClick={capture}></button>
 				</div>
 				<Footer type="relative"/>
-			</div> : null
+			</div>
 		}
-		{screen === "captured" ?
-			<Capture height={height} width={width} img={img} close={close} setScreen={setScreen}/> : null
+		{screen === "captured" &&
+			<Capture height={height} width={width} img={img} close={close} changedToSend={changedToSend} save={save}/>
+		}
+		{screen === "send" &&
+			<Send height={height} width={width} img={img} close={close} send={send} backToCapture={backToCapture}/>
 		}
 	</div>
   )
