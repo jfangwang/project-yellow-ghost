@@ -3,10 +3,11 @@
     bottom: 0;
     width: 100%;
 }
-.footer-relative {
+.relative-footer {
     position: relative;
+    opacity: 0;
 }
-.footer-relative > * {
+.relative-footer > * {
     opacity: 0;
 }
 .main-footer {

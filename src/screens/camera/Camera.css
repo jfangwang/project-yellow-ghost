@@ -1,4 +1,4 @@
-.webcam-screen {
+.webcam-screen, .captured-screen {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -15,4 +15,27 @@
     justify-content: center;
     align-items: center;
     background-size: 20%;
+}
+.cam-overlay {
+    background-color: lightgreen;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+}
+.cam-footer {
+    margin-bottom: 1rem;
+}
+.capture-button {
+    width: 6em;
+    height: 6em;
+    background: none;
+    border: 0.5rem solid lightgrey;
+    border-radius: 50%;
+}
+.captured-screen {
+    background-color: white;
+    top: 0;
+    position: absolute;
+    display: flex;
 }

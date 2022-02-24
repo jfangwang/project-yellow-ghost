@@ -1,19 +1,27 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import PropTypes from 'prop-types'
 import './Messages.css'
 import Message from './Message'
 
-let item = <Message/>
-let list = []
-for (let i = 0; i < 30; i++) {
-  list.push(item);
-}
-function Messages(props) {
-  return (
-    <ul className="messages-container">
-      {list}
-    </ul>
-  )
+function Messages({userDoc}) {
+  let userList = Object.keys(userDoc);
+
+  if (userList.length > 0) {
+    let friendList = userDoc['friends'];
+    return (
+      <ul className="messages-container">
+        {Object.keys(friendList).sort().map((key) => (
+          <Message streak_emoji={userDoc[key]} friend={friendList[key]} />
+        ))}
+      </ul>
+    )
+  } else {
+    return (
+      <ul className="messages-container">
+        <Message />
+      </ul>
+    )
+  }
 }
 
 Messages.propTypes = {}

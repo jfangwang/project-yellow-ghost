@@ -27,7 +27,7 @@ export default function Message({friend, streak_emoji}) {
   return (
     <li className="message-main row" onClick={friend["status"] === "new" ? null : null}>
         <div className="row">
-            <img className="friend-profile-pic" src={friend["profile_pic_url"]} alt="friend-profile-pic"></img>
+            <img className="friend-profile-pic" src={friend["profile_pic_url"] === null ? Guest : friend["profile_pic_url"]} alt="friend-profile-pic"></img>
         </div>
         <div className="col">
             <h3>{friend["name"]}</h3>

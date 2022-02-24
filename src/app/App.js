@@ -12,6 +12,7 @@ import Footer from '../components/footer/Footer';
 import Messages from '../screens/messages/Messages';
 import Camera from '../screens/camera/Camera';
 import Discover from '../screens/discover/Discover';
+import Guest from './GuestInfo';
 
 
 const list = [];
@@ -35,7 +36,10 @@ export default class App extends Component {
       snapshot: true,
       loggedIn: false,
       userInfo: {},
-      userDoc: {}
+      userDoc: Guest,
+      disable_swiping: false,
+      showFooter: true,
+      showNavbar: true,
     }
   }
   componentDidMount() {
@@ -66,6 +70,15 @@ export default class App extends Component {
   incFlipCam = () => {
     this.setState({flipCamCounter: this.state.flipCamCounter + 1})
   }
+  disable_swiping(e) {
+    this.setState({disable_swiping: e});
+  }
+  toggleNavbar = () => {
+    this.setState({showNavbar: !this.state.showNavbar});
+  }
+  toggleFooter = () => {
+    this.setState({showFooter: !this.state.showFooter});
+  }
   // Firebase Functions
   checkCurrentUser = () => {
     firebase.auth().onAuthStateChanged((user) => {
@@ -81,7 +94,7 @@ export default class App extends Component {
         this.setState({
           loggedIn: false,
           userInfo: {},
-          userDoc: {},
+          userDoc: Guest,
         })
         console.log('user signed out', this.state.userInfo);
       }
@@ -152,13 +165,13 @@ export default class App extends Component {
     })
   }
   render() {
-		const { index, height, width, flipCamCounter, loggedIn, userInfo, userDoc} = this.state;
+		const { index, height, width, flipCamCounter, loggedIn, userInfo, userDoc, disable_swiping} = this.state;
     return (
       <>
         <MetaTags>
           <title>Yellow Ghost</title>
         </MetaTags>
-				<Navbar
+				{this.state.showNavbar ? <Navbar
           position="absolute"
           height={height}
           width={width}
@@ -169,27 +182,38 @@ export default class App extends Component {
           loggedIn={loggedIn}
           userInfo={userInfo}
           userDoc={userDoc}
-        />
+        /> : null}
 				<BindKeyboardSwipeableViews
           className="slide_container"
           index={index}
           onChangeIndex={this.handleChangeIndex}
           containerStyle={{height:height, WebkitOverflowScrolling: 'touch'}}
+          disabled={disable_swiping}
           enableMouseEvents
         >
 					<div className="slide slide1">
             <Navbar index={index}/>
-            <Messages/>
+            <Messages
+              userDoc={userDoc}
+            />
           </div>
 					<div className="slide slide2">
-            <Camera index={index} height={height} width={width} flipCamCounter={flipCamCounter}/>
+            <Camera
+              index={index}
+              height={height}
+              width={width}
+              flipCamCounter={flipCamCounter}
+              disable_swiping={this.disable_swiping.bind(this)}
+              toggleNavbar={this.toggleNavbar}
+              toggleFooter={this.toggleFooter}
+            />
           </div>
 					<div className="slide slide3">
             <Navbar index={index}/>
             <Discover/>
           </div>
 				</BindKeyboardSwipeableViews>
-				<Footer index={index} changeToIndex={this.changeToIndex.bind(this)}/>
+				{this.state.showFooter ? <Footer index={index} changeToIndex={this.changeToIndex.bind(this)}/> : null}
       </>
     );
   }
