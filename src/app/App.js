@@ -206,6 +206,7 @@ export default class App extends Component {
               disable_swiping={this.disable_swiping.bind(this)}
               toggleNavbar={this.toggleNavbar}
               toggleFooter={this.toggleFooter}
+              userDoc={userDoc}
             />
           </div>
 					<div className="slide slide3">
