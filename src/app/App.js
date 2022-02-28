@@ -207,6 +207,7 @@ export default class App extends Component {
               toggleNavbar={this.toggleNavbar}
               toggleFooter={this.toggleFooter}
               userDoc={userDoc}
+              userInfo={userInfo}
             />
           </div>
 					<div className="slide slide3">
