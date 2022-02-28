@@ -105,6 +105,7 @@ function Camera({index, height, width, flipCamCounter, disable_swiping, toggleNa
 				flipDirection="horizontal" // horizontal or vertical
 				ref={flippy}
 				style={{height:window.innerHeight, width: width}} /// these are optional style, it is not necessary
+				{...double_tap}
 			>
 				{isMobile ?
 				<>
@@ -135,7 +136,7 @@ function Camera({index, height, width, flipCamCounter, disable_swiping, toggleNa
 						/>
 					}
 				</BackSide>
-				</> 
+				</>
 				:
 				<>
 				<FrontSide id="flip1" style={{backgroundImage: `url(${logo})`}} >
@@ -165,10 +166,8 @@ function Camera({index, height, width, flipCamCounter, disable_swiping, toggleNa
 				}
 			</Flippy>
 		{screen === "camera" &&
-			<div className="cam-overlay" style={{height: height, width: width, top: 0, position: 'absolute', backgroundColor: 'transparent'}} {...double_tap}>
-				<div className="cam-footer" style={{backgroundColor:'transparent'}}>
-					<button className="capture-button" onClick={capture}></button>
-				</div>
+			<div className="cam-footer">
+				<button className="capture-button" onClick={capture}></button>
 				<Footer type="relative"/>
 			</div>
 		}

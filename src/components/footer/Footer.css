@@ -4,6 +4,8 @@
     width: 100%;
 }
 .relative-footer {
+    display: flex;
+    flex-direction: row;
     position: relative;
     opacity: 0;
 }

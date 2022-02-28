@@ -75,7 +75,7 @@ export default function Send({width, height, img, close, backToCapture, userDoc,
         console.error("Error writing document: ", error);
     });
   }
-  const getAllFriends
+  // const getAllFriends
   const updateFriendDoc = (friend) => {
     db.collection("Users").doc(friend).update({
       friends: {

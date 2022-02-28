@@ -1,5 +1,6 @@
 .webcam-screen, .captured-screen {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
@@ -17,14 +18,15 @@
     background-size: 20%;
 }
 .cam-overlay {
-    background-color: lightgreen;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
 }
 .cam-footer {
-    margin-bottom: 1rem;
+    position: absolute;
+    bottom: 0;
+    z-index: 10;
 }
 .capture-button {
     width: 6em;
