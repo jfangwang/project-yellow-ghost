@@ -65,7 +65,7 @@ class SlidingMenu extends Component {
 	}
 	render() {
 		const { height, width, index, top, hide, bgColor } = this.state;
-		const { children } = this.props;
+		const { children, title } = this.props;
 		return (
 			<>
 				{!hide && (
@@ -83,7 +83,10 @@ class SlidingMenu extends Component {
 							<div style={{ height:height, width:width }}></div>
 							<div onScroll={this.handleScroll} style={{ backgroundColor: 'white', height: height, width: width }}>
 								<div style={{ backgroundColor: 'lightcoral' }}>
-									<button onClick={this.close} style={{borderRadius: '1rem'}}><h1>Close</h1></button>
+									<ul style={{display:'flex', flexDirection:'row', justifyContent: 'space-around'}}>
+										<li><button onClick={this.close} style={{borderRadius: '1rem'}}><h1>Close</h1></button></li>
+										<li><h1>{title}</h1></li>
+									</ul>
 									{children}
 								</div>
 							</div>

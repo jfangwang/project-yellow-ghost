@@ -66,16 +66,16 @@ function Navbar({ position, index, incFlipCam }) {
 						</ul>
 					</li>
 				</ul>
-				<SlidingMenu open={showAccount}>
+				<SlidingMenu open={showAccount} title="Account">
 					<h1>Account</h1>
 				</SlidingMenu>
-				<SlidingMenu open={showSearch}>
+				<SlidingMenu open={showSearch} title="Search">
 					<h1>Searchs</h1>
 				</SlidingMenu>
-				<SlidingMenu open={showFriends}>
+				<SlidingMenu open={showFriends} title="Friends">
 					<h1>Friends</h1>
 				</SlidingMenu>
-				<SlidingMenu open={showExtra}>
+				<SlidingMenu open={showExtra} title="Extra">
 					<h1>Extra</h1>
 				</SlidingMenu>
 			</>
