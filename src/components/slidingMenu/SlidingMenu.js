@@ -5,11 +5,6 @@ import './SlidingMenu.css'
 
 const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
 
-let list = [];
-for (let i = 0; i < 50; i++) {
-	list.push(<h1>Settings Here</h1>)
-}
-
 class SlidingMenu extends Component {
 	constructor(props) {
 		super(props);
@@ -89,7 +84,7 @@ class SlidingMenu extends Component {
 							<div onScroll={this.handleScroll} style={{ backgroundColor: 'white', height: height, width: width }}>
 								<div style={{ backgroundColor: 'lightcoral' }}>
 									<button onClick={this.close} style={{borderRadius: '1rem'}}><h1>Close</h1></button>
-									{children} {list}
+									{children}
 								</div>
 							</div>
 						</BindKeyboardSwipeableViews>

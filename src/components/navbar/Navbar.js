@@ -12,8 +12,14 @@ import SlidingMenu from '../slidingMenu/SlidingMenu';
 
 function Navbar({ position, index, incFlipCam }) {
 	let title = "";
-	const [show, setShow] = useState(false)
-	let dynamic = <button onClick={() => console.log("settings")}><MoreHorizIcon /></button>;
+	const [showAccount, setAccount] = useState(false)
+	const [showFriends, setFriends] = useState(false)
+	const [showSearch, setSearch] = useState(false)
+	const [showExtra, setExtra] = useState(false)
+	const toggleExtra = () => {
+		setExtra(!showExtra);
+	}
+	let dynamic = <button onClick={toggleExtra}><MoreHorizIcon /></button>;
 	const styles = {
 		shawdow: {
 			backgroundColor: 'white',
@@ -33,8 +39,14 @@ function Navbar({ position, index, incFlipCam }) {
 	if (index === 2) {
 		title = "Discover";
 	}
-	const change = () => {
-		setShow(!show);
+	const toggleAccount = () => {
+		setAccount(!showAccount);
+	}
+	const toggleFriends = () => {
+		setFriends(!showFriends);
+	}
+	const toggleSearch = () => {
+		setSearch(!showSearch);
 	}
 	if (position === "absolute") {
 		return (
@@ -42,20 +54,29 @@ function Navbar({ position, index, incFlipCam }) {
 				<ul className="main-navbar floating-navbar" style={index === 1 ? styles.transparent : styles.shawdow} >
 					<li>
 						<ul>
-							<li><button onClick={change}><AccountCircleIcon /></button></li>
-							<li><button><SearchIcon /></button></li>
+							<li><button onClick={toggleAccount}><AccountCircleIcon /></button></li>
+							<li><button onClick={toggleSearch}><SearchIcon /></button></li>
 						</ul>
 					</li>
 					<li><h1>{title}</h1></li>
 					<li>
 						<ul>
-							<li><button><PersonAddIcon /></button></li>
+							<li><button onClick={toggleFriends}><PersonAddIcon /></button></li>
 							<li>{dynamic}</li>
 						</ul>
 					</li>
 				</ul>
-				<SlidingMenu open={show}>
-					<h1>Settings</h1>
+				<SlidingMenu open={showAccount}>
+					<h1>Account</h1>
+				</SlidingMenu>
+				<SlidingMenu open={showSearch}>
+					<h1>Searchs</h1>
+				</SlidingMenu>
+				<SlidingMenu open={showFriends}>
+					<h1>Friends</h1>
+				</SlidingMenu>
+				<SlidingMenu open={showExtra}>
+					<h1>Extra</h1>
 				</SlidingMenu>
 			</>
 		)
