@@ -27,7 +27,7 @@ class SlidingMenu extends Component {
 		this.handleScroll = this.handleScroll.bind(this);
 		this.changeOnSwitch = this.changeOnSwitch.bind(this);
 		this.checkIndex = this.checkIndex.bind(this);
-		this.close = this.close.bind(this);
+		this.closeMenu = this.closeMenu.bind(this);
 	}
 	updateDimensions = () => {
 		this.setState({ width: window.innerWidth, height: window.innerHeight });
@@ -38,7 +38,12 @@ class SlidingMenu extends Component {
 	}
 	componentDidUpdate(prevProps) {
 		if (prevProps.open !== this.props.open) {
-			this.setState({hide: false}, () => setTimeout(() => this.changeToIndex(1), 0));
+			if (this.props.open === true) {
+				this.setState({hide: false}, () => setTimeout(() => this.changeToIndex(1), 0));
+			}
+			if (this.props.open === false) {
+				this.changeToIndex(0);
+			}
 		}
 	}
 	changeToIndex(e) {
@@ -60,12 +65,15 @@ class SlidingMenu extends Component {
 	changeOnSwitch() {
 		this.setState({bgColor: 'transparent'});
 	}
-	close() {
+	closeMenu() {
 		this.changeToIndex(0);
 	}
 	checkIndex() {
 		if (this.state.index === 0) {
 			this.setState({hide:true});
+			if (this.props.open === true) {
+				this.props.close();
+			}
 		}
 		if (this.state.index >= 1) {
 			this.setState({bgColor: 'white'});
@@ -91,7 +99,7 @@ class SlidingMenu extends Component {
 							<div style={{ height:height, width:width }}></div>
 							<div onScroll={this.handleScroll} style={{ backgroundColor: 'white', height: height, width: width }}>
 								<div style={{ backgroundColor: 'white' }}>
-									<Navbar position="fixed" hidden={false} Parenttitle={title} close={this.close} axis={axis}/>	
+									<Navbar position="fixed" hidden={false} Parenttitle={title} close={this.closeMenu} axis={axis}/>	
 									{children}
 									{list}
 								</div>

@@ -4,6 +4,9 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import '../messages/Message.css'
 
 export default class Account extends Component {
+  constructor(props) {
+    super(props);
+  }
   render() {
     return (
       <main className="main">
@@ -35,7 +38,7 @@ export default class Account extends Component {
           <p>Joined Snap Chat</p>
         </div>
         <div className="section">
-          <button><h2>Logout</h2></button>
+          <button onClick={this.props.close}><h2>Logout</h2></button>
         </div>
       </main>
     )

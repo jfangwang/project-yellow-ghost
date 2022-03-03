@@ -98,19 +98,19 @@ function Navbar({ position, index, incFlipCam, close, Parenttitle, axis, hidden 
 				</ul>
 				{!hidden && (
 					<>
-						<SlidingMenu open={showAccount} title="Account" axis="x">
+						<SlidingMenu open={showAccount} close={toggleAccount} title="Account" axis="x">
 							<Navbar position="fixed"/>
-							<Account />
+							<Account close={toggleAccount}/>
 						</SlidingMenu>
-						<SlidingMenu open={showSearch} title="Search">
+						<SlidingMenu open={showSearch} close={toggleSearch} title="Search">
 							<Navbar position="fixed"/>
 							<h1>Searchs</h1>
 						</SlidingMenu>
-						<SlidingMenu open={showFriends} title="Add Friends">
+						<SlidingMenu open={showFriends} close={toggleFriends} title="Add Friends">
 							<Navbar position="fixed"/>
 							<h1>Add Friends</h1>
 						</SlidingMenu>
-						<SlidingMenu open={showExtra} title="Extra">
+						<SlidingMenu open={showExtra} close={toggleExtra} title="Extra">
 							<Navbar position="fixed"/>
 							<h1>Extra</h1>
 						</SlidingMenu>
