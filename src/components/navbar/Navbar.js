@@ -10,6 +10,7 @@ import { isMobile } from 'react-device-detect';
 import SlidingMenu from '../slidingMenu/SlidingMenu';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import Account from '../../screens/account/Account';
 
 
 function Navbar({ position, index, incFlipCam, close, Parenttitle, axis, hidden }) {
@@ -99,7 +100,7 @@ function Navbar({ position, index, incFlipCam, close, Parenttitle, axis, hidden 
 					<>
 						<SlidingMenu open={showAccount} title="Account" axis="x">
 							<Navbar position="fixed"/>
-							<h1>Account</h1>
+							<Account />
 						</SlidingMenu>
 						<SlidingMenu open={showSearch} title="Search">
 							<Navbar position="fixed"/>

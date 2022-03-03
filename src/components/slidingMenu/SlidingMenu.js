@@ -3,14 +3,13 @@ import SwipeableViews from 'react-swipeable-views'
 import { bindKeyboard } from 'react-swipeable-views-utils'
 import Navbar from '../navbar/Navbar';
 import PropTypes from 'prop-types';
-
 import './SlidingMenu.css'
 
 const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
 let list = [];
-for (var i =0; i < 50; i++) {
-	list.push(<h1>Filler Content</h1>)
-}
+// for (var i=0; i<20; i++) {
+// 	list.push(<h1>filler</h1>)
+// }
 
 class SlidingMenu extends Component {
 	constructor(props) {
@@ -38,7 +37,7 @@ class SlidingMenu extends Component {
 		window.addEventListener('scroll', this.handleScroll, true);
 	}
 	componentDidUpdate(prevProps) {
-		if (prevProps.open != this.props.open) {
+		if (prevProps.open !== this.props.open) {
 			this.setState({hide: false}, () => setTimeout(() => this.changeToIndex(1), 0));
 		}
 	}
@@ -50,10 +49,12 @@ class SlidingMenu extends Component {
 	}
 	handleScroll(e) {
 		const target = e.target;
-		if (target.scrollTop <= 0) {
-			this.setState({ top: true })
-		} else {
-			this.setState({ top: false })
+		if (this.props.axis === 'y') {
+			if (target.scrollTop <= 0) {
+				this.setState({ top: true })
+			} else {
+				this.setState({top: false})
+			}
 		}
 	}
 	changeOnSwitch() {
@@ -89,7 +90,7 @@ class SlidingMenu extends Component {
 						>
 							<div style={{ height:height, width:width }}></div>
 							<div onScroll={this.handleScroll} style={{ backgroundColor: 'white', height: height, width: width }}>
-								<div style={{ backgroundColor: 'lightcoral' }}>
+								<div style={{ backgroundColor: 'white' }}>
 									<Navbar position="fixed" hidden={false} Parenttitle={title} close={this.close} axis={axis}/>	
 									{children}
 									{list}
