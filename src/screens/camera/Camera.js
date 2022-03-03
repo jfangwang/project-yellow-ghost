@@ -1,4 +1,4 @@
-import {React, useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef} from 'react';
 import PropTypes from 'prop-types';
 import { isMobile } from 'react-device-detect';
 import Flippy, { FrontSide, BackSide } from 'react-flippy';
@@ -6,14 +6,18 @@ import { useDoubleTap } from 'use-double-tap';
 import Webcam from 'react-webcam';
 import logo from '../../assets/images/snapchat-background.gif';
 import './Camera.css';
+import Footer from '../../components/footer/Footer'
+import Capture from './Capture';
+import Send from './Send';
 
 
-function Camera({index, height, width, flipCamCounter}) {
+function Camera({index, height, width, flipCamCounter, disableNavFootSlide, userDoc, userInfo}) {
 	const [ar, setar] = useState(9/16);
 	const [img, setImg] = useState(null);
 	const [faceMode, setFaceMode] = useState('environment');
 	const flippy = useRef(null);
 	const webcamRef = useRef(null);
+	const [screen, setScreen] = useState("camera");
 
 	const double_tap = useDoubleTap(() => {
 		if (faceMode === 'user') {
@@ -25,6 +29,24 @@ function Camera({index, height, width, flipCamCounter}) {
 			flippy.current.toggle();
 		}
 	});
+
+	const capture = React.useCallback(
+		() => {
+			// document.getElementById("capture-audio").play()
+			setImg(webcamRef.current.getScreenshot());
+			setScreen('captured');
+			disableNavFootSlide(true);
+		},
+		[webcamRef]
+	);
+	function changedToSend() { setScreen('send') }
+	function backToCapture() { setScreen('captured') }
+	function save() { close() }
+	function close() {
+		setImg(null);
+		setScreen('camera');
+		disableNavFootSlide(false);
+	}
 
 	useEffect(() => {
 		if (faceMode === 'user') {
@@ -71,73 +93,84 @@ function Camera({index, height, width, flipCamCounter}) {
   return (
 	<div className='webcam-screen' style={{height:height, width:width}}>
 		{/* <div id="webcam"></div><div id="webcam2"></div> */}
-		<Flippy
-			flipOnHover={false} // default false
-			flipOnClick={true} // default false
-			flipDirection="horizontal" // horizontal or vertical
-			ref={flippy}
-			style={{height:window.innerHeight, width: width}} /// these are optional style, it is not necessary
-		>
-			{isMobile ?
-			<>
-			<FrontSide id="flip1" style={{backgroundImage: `url(${logo})`}} >
-				{faceMode === "environment" &&
-					<Webcam
-					id="webcam"
-					ref={webcamRef}
-					audio={false}
-					forceScreenshotSourceSize={false}
-					screenshotFormat="image/png"
-					screenshotQuality={1}
-					videoConstraints={{facingMode: faceMode, aspectRatio: ar}}
-				/>
-				}
-			</FrontSide>
-			<BackSide id="flip2" style={{backgroundImage: `url(${logo})`}}>
-				{faceMode === "user" &&
-					<Webcam
+			<Flippy
+				flipOnHover={false} // default false
+				flipOnClick={false} // default false
+				flipDirection="horizontal" // horizontal or vertical
+				ref={flippy}
+				style={{height:window.innerHeight, width: width}} /// these are optional style, it is not necessary
+				{...double_tap}
+			>
+				{isMobile ?
+				<>
+				<FrontSide id="flip1" style={{backgroundImage: `url(${logo})`}} >
+					{faceMode === "environment" &&
+						<Webcam
 						id="webcam"
 						ref={webcamRef}
 						audio={false}
-						mirrored={true}
 						forceScreenshotSourceSize={false}
 						screenshotFormat="image/png"
 						screenshotQuality={1}
 						videoConstraints={{facingMode: faceMode, aspectRatio: ar}}
 					/>
+					}
+				</FrontSide>
+				<BackSide id="flip2" style={{backgroundImage: `url(${logo})`}}>
+					{faceMode === "user" &&
+						<Webcam
+							id="webcam"
+							ref={webcamRef}
+							audio={false}
+							mirrored={true}
+							forceScreenshotSourceSize={false}
+							screenshotFormat="image/png"
+							screenshotQuality={1}
+							videoConstraints={{facingMode: faceMode, aspectRatio: ar}}
+						/>
+					}
+				</BackSide>
+				</>
+				:
+				<>
+				<FrontSide id="flip1" style={{backgroundImage: `url(${logo})`}} >
+						<Webcam
+							id="webcam"
+							ref={webcamRef}
+							audio={false}
+							forceScreenshotSourceSize={false}
+							screenshotFormat="image/png"
+							screenshotQuality={1}
+							videoConstraints={{facingMode: "environment", aspectRatio: ar}}
+						/>
+				</FrontSide>
+				<BackSide id="flip2" style={{backgroundImage: `url(${logo})`}}>
+						<Webcam
+							id="webcam2"
+							ref={webcamRef}
+							audio={false}
+							mirrored={true}
+							forceScreenshotSourceSize={false}
+							screenshotFormat="image/png"
+							screenshotQuality={1}
+							videoConstraints={{facingMode: "user", aspectRatio: ar}}
+						/>
+				</BackSide>
+				</>
 				}
-			</BackSide>
-			</> 
-			:
-			<>
-			<FrontSide id="flip1" style={{backgroundImage: `url(${logo})`}} >
-					<Webcam
-						id="webcam"
-						ref={webcamRef}
-						audio={false}
-						forceScreenshotSourceSize={false}
-						screenshotFormat="image/png"
-						screenshotQuality={1}
-						videoConstraints={{facingMode: "environment", aspectRatio: ar}}
-					/>
-			</FrontSide>
-			<BackSide id="flip2" style={{backgroundImage: `url(${logo})`}}>
-					<Webcam
-						id="webcam2"
-						ref={webcamRef}
-						audio={false}
-						mirrored={true}
-						forceScreenshotSourceSize={false}
-						screenshotFormat="image/png"
-						screenshotQuality={1}
-						videoConstraints={{facingMode: "user", aspectRatio: ar}}
-					/>
-			</BackSide>
-			</>
-			}
-		</Flippy>
-		<div id='flip1' style={{height: height, width: width, position: 'absolute', backgroundColor: 'transparent'}} {...double_tap}>
-		</div>
+			</Flippy>
+		{screen === "camera" &&
+			<div className="cam-footer">
+				<button className="capture-button" onClick={capture}></button>
+				<Footer type="relative"/>
+			</div>
+		}
+		{screen === "captured" &&
+			<Capture height={height} width={width} img={img} close={close} changedToSend={changedToSend} save={save}/>
+		}
+		{screen === "send" &&
+			<Send height={height} width={width} img={img} close={close} backToCapture={backToCapture} userDoc={userDoc} userInfo={userInfo}/>
+		}
 	</div>
   )
 }

@@ -6,14 +6,13 @@ import SearchIcon from '@mui/icons-material/Search';
 import FlipCameraIosIcon from '@mui/icons-material/FlipCameraIos';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import { isMobile } from 'react-device-detect';
 import SlidingMenu from '../slidingMenu/SlidingMenu';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Account from '../../screens/account/Account';
+import '../../app/App.css';
 
-
-function Navbar({ position, index, incFlipCam, close, Parenttitle, axis, hidden }) {
+function Navbar({ position, index, incFlipCam, close, Parenttitle, axis, hidden, GsignIn, GsignOut, userDoc }) {
 	let title = "";
 	let buttonDir = <KeyboardArrowDownIcon />
 	if (axis == "x") {

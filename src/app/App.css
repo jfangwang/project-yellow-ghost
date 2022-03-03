@@ -1,5 +1,6 @@
 :root {
     --snapchat-color: #feff00;
+    background-color: transparent;
 }
 * {
     font-family: 'Montserrat', sans-serif;
@@ -12,7 +13,7 @@
 body {
     touch-action: none;
     overflow: hidden;
-    -webkit-user-select: none;
+    user-select: none;
 }
 .slide {
     height: 100%;

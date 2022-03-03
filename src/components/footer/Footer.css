@@ -3,10 +3,13 @@
     bottom: 0;
     width: 100%;
 }
-.footer-relative {
+.relative-footer {
+    display: flex;
+    flex-direction: row;
     position: relative;
+    opacity: 0;
 }
-.footer-relative > * {
+.relative-footer > * {
     opacity: 0;
 }
 .main-footer {

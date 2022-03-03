@@ -1,15 +1,18 @@
-import React, { Component, useEffect } from 'react'
-import {auth, db, provider} from '../utils/Firebase'
-import firebase from 'firebase/app'
-import SwipeableViews from 'react-swipeable-views'
-import { bindKeyboard } from 'react-swipeable-views-utils'
-import {isMobile } from 'react-device-detect'
-import MetaTags from 'react-meta-tags'
-import './App.css'
-import Navbar from '../components/navbar/Navbar'
-import Footer from '../components/footer/Footer'
-import Messages from '../screens/messages/Messages'
-import Camera from '../screens/camera/Camera'
+import React, { Component, useEffect } from 'react';
+import {auth, db, provider} from '../utils/Firebase';
+import firebase from 'firebase/app';
+import { collection, onSnapshot } from "firebase/firestore";
+import SwipeableViews from 'react-swipeable-views';
+import { bindKeyboard } from 'react-swipeable-views-utils';
+import {isMobile } from 'react-device-detect';
+import MetaTags from 'react-meta-tags';
+import './App.css';
+import Navbar from '../components/navbar/Navbar';
+import Footer from '../components/footer/Footer';
+import Messages from '../screens/messages/Messages';
+import Camera from '../screens/camera/Camera';
+import Discover from '../screens/discover/Discover';
+import Guest from './GuestInfo';
 
 
 const list = [];
@@ -19,6 +22,9 @@ for (let i = 0; i < 30; i += 1) {
 }
 
 const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
+
+let userSnapshot;
+
 export default class App extends Component {
   constructor(props) {
     super(props);
@@ -27,41 +33,178 @@ export default class App extends Component {
       width: window.innerWidth,
       index: 1,
       flipCamCounter: 0,
+      snapshot: true,
+      loggedIn: false,
+      userInfo: {},
+      userDoc: Guest,
+      disable_swiping: false,
+      showFooter: true,
+      showNavbar: true,
     }
+    this.changeToIndex = this.changeToIndex.bind(this);
+    this.updateDimensions = this.updateDimensions.bind(this);
+    this.changeToIndex = this.changeToIndex.bind(this);
+    this.incFlipCam = this.incFlipCam.bind(this);
+    this.disable_swiping = this.disable_swiping.bind(this);
+    this.toggleNavbar = this.toggleNavbar.bind(this);
+    this.toggleFooter = this.toggleFooter.bind(this);
+    this.disableNavFootSlide = this.disableNavFootSlide.bind(this);
   }
-  updateDimensions = () => {
-    this.setState({ width: window.innerWidth, height: window.innerHeight });
-  };
   componentDidMount() {
+    this.checkCurrentUser()
     window.addEventListener('resize', this.updateDimensions);
   }
-	handleChangeIndex = index => {
-    this.setState({
-      index,
-    });
+  componentWillUnmount() {
+    this.endSnapShot();
   }
+  updateDimensions() {
+    this.setState({ width: window.innerWidth, height: window.innerHeight });
+  };
   changeToIndex(e) {
     this.setState({
       index: e,
     })
   }
-  incFlipCam = () => {
+  incFlipCam() {
     this.setState({flipCamCounter: this.state.flipCamCounter + 1})
   }
+  disable_swiping(e) {
+    this.setState({disable_swiping: e});
+  }
+  toggleNavbar() {
+    this.setState({showNavbar: !this.state.showNavbar});
+  }
+  toggleFooter() {
+    this.setState({showFooter: !this.state.showFooter});
+  }
+  disableNavFootSlide(e) {
+    this.disable_swiping(e)
+    this.toggleFooter();
+    this.toggleNavbar();
+  }
+
+  // Firebase Functions
+  checkCurrentUser = () => {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.setState({
+          loggedIn: true,
+          userInfo: user,
+        })
+        console.log('user signed in ', this.state.userInfo);
+        this.getUserOnFirebase(user);
+      } else {
+        this.endSnapShot();
+        this.setState({
+          loggedIn: false,
+          userInfo: {},
+          userDoc: Guest,
+        })
+        console.log('user signed out', this.state.userInfo);
+      }
+    });
+  }
+  GoogleSignIn = () => {
+    auth.signInWithPopup(provider)
+  }
+  GoogleSignOut = () => {
+    firebase.auth().signOut();
+    console.log("sign out");
+  }
+  // Firestore Functions
+  startSnapShot = (name) => {
+    console.log("Starting Snapshot")
+    userSnapshot = db.collection("Users").doc(name).onSnapshot(
+      { includeMetadataChanges: true },
+      (doc) => {
+        this.setState({userDoc: doc.data()})
+        console.log("User Doc", this.state.userDoc);
+    });
+  }
+  endSnapShot = () => {
+    console.log("ending snapshot");
+    if (userSnapshot !== undefined) {
+      userSnapshot();
+    }
+  }
+  getUserOnFirebase = (user) => {
+    let query = db.collection("Users").doc(user.email);
+    query.get().then((doc) => {
+      if (!doc.exists) {
+        this.createUserOnFirebase(user)
+      } else {
+        this.startSnapShot(user.email);
+      }
+    })
+  }
+  createUserOnFirebase = (user) => {
+    const name = user.displayName;
+    const photo = user.photoURL;
+    const c = new Date().toLocaleString()
+    db.collection("Users").doc(user.email).set({
+      created: c,
+      name: name,
+      profile_pic_url: photo,
+      streak_emoji:  "\u{1F525}",
+      sent: 0,
+      received: 0,
+      added_me: {},
+      pending: {},
+      friends: {
+        [user.email]: {
+            created: c,
+            profile_pic_url: photo,
+            name: name,
+            status: "new-friend",
+            streak: 0,
+            sent: 0,
+            received: 0,
+            last_time_stamp: null,
+            snaps: []
+        }
+      },
+    })
+    .then(() => {
+      console.log("New user added to firebase!");
+    })
+  }
   render() {
-		const { index, height, width, flipCamCounter, } = this.state;
+		const { index, height, width, flipCamCounter, loggedIn, userInfo, userDoc, disable_swiping, showNavbar, showFooter} = this.state;
     return (
       <>
         <MetaTags>
           <title>Yellow Ghost</title>
         </MetaTags>
-				<Navbar index={index} incFlipCam={this.incFlipCam} hidden={false}/>
-				<BindKeyboardSwipeableViews className="slide_container" index={index} onChangeIndex={this.handleChangeIndex} containerStyle={{height: this.state.height, WebkitOverflowScrolling: 'touch'}} enableMouseEvents>
-					<div className="slide slide1"><Navbar /><Messages /></div>
-					<div className="slide slide2"><Camera index={index} height={height} width={width} flipCamCounter={flipCamCounter}/></div>
+				{showNavbar && (<Navbar
+          index={index}
+          incFlipCam={this.incFlipCam}
+          hidden={false}
+          GsignIn={this.GoogleSignIn.bind(this)}
+          GsignOut={this.GoogleSignOut.bind(this)}
+          userDoc={userDoc}
+        />)}
+				<BindKeyboardSwipeableViews
+          className="slide_container"
+          index={index}
+          onChangeIndex={this.changeToIndex}
+          disabled={disable_swiping}
+          containerStyle={{height: this.state.height, WebkitOverflowScrolling: 'touch'}}
+          enableMouseEvents
+        >
+					<div className="slide slide1"><Navbar/><Messages/></div>
+					<div className="slide slide2">
+            <Camera
+              index={index}
+              height={height}
+              width={width}
+              flipCamCounter={flipCamCounter}
+              userDoc={userDoc}
+              disableNavFootSlide={this.disableNavFootSlide}
+            />
+          </div>
 					<div className="slide slide3"><Navbar /><h1>Discover</h1></div>
 				</BindKeyboardSwipeableViews>
-				<Footer index={index} changeToIndex={this.changeToIndex.bind(this)}/>
+				{showFooter ? <Footer index={index} changeToIndex={this.changeToIndex}/> : null}
       </>
     );
   }
