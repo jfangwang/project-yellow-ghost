@@ -22,6 +22,17 @@ const Guest = {
             received: 0,
             last_time_stamp: null,
             snaps: []
+        },
+        "Guest@Guest2.com": {
+            created: c,
+            profile_pic_url: null,
+            name: "Guest2",
+            status: "new-friend",
+            streak: 2,
+            sent: 0,
+            received: 0,
+            last_time_stamp: null,
+            snaps: []
         }
     },
 }
