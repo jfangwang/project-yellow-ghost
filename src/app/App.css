@@ -17,13 +17,13 @@ body {
 }
 .slide {
     height: 100%;
-    /* touch-action: none; */
 }
 .slide1 {
     background-color: white;
 }
 .slide2 {
     background-color: var(--snapchat-color);
+    touch-action: none;
 }
 ul {
     list-style: none;

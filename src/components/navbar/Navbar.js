@@ -99,7 +99,7 @@ function Navbar({ position, index, incFlipCam, close, Parenttitle, axis, hidden,
 					<>
 						<SlidingMenu open={showAccount} close={toggleAccount} title="Account" axis="x">
 							<Navbar position="fixed"/>
-							<Account close={toggleAccount}/>
+							<Account close={toggleAccount} GsignIn={GsignIn} GsignOut={GsignOut} userDoc={userDoc}/>
 						</SlidingMenu>
 						<SlidingMenu open={showSearch} close={toggleSearch} title="Search">
 							<Navbar position="fixed"/>

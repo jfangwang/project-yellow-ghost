@@ -33,9 +33,7 @@ export default class App extends Component {
       width: window.innerWidth,
       index: 1,
       flipCamCounter: 0,
-      snapshot: true,
       loggedIn: false,
-      userInfo: {},
       userDoc: Guest,
       disable_swiping: false,
       showFooter: true,
@@ -49,6 +47,13 @@ export default class App extends Component {
     this.toggleNavbar = this.toggleNavbar.bind(this);
     this.toggleFooter = this.toggleFooter.bind(this);
     this.disableNavFootSlide = this.disableNavFootSlide.bind(this);
+    this.checkCurrentUser = this.checkCurrentUser.bind(this);
+    this.GoogleSignIn = this.GoogleSignIn.bind(this);
+    this.GoogleSignOut = this.GoogleSignOut.bind(this);
+    this.startSnapShot = this.startSnapShot.bind(this);
+    this.endSnapShot = this.endSnapShot.bind(this);
+    this.getUserOnFirebase = this.getUserOnFirebase.bind(this);
+    this.createUserOnFirebase = this.createUserOnFirebase.bind(this);
   }
   componentDidMount() {
     this.checkCurrentUser()
@@ -84,23 +89,20 @@ export default class App extends Component {
   }
 
   // Firebase Functions
-  checkCurrentUser = () => {
+  checkCurrentUser() {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.setState({
           loggedIn: true,
-          userInfo: user,
         })
-        console.log('user signed in ', this.state.userInfo);
         this.getUserOnFirebase(user);
       } else {
         this.endSnapShot();
         this.setState({
           loggedIn: false,
-          userInfo: {},
           userDoc: Guest,
         })
-        console.log('user signed out', this.state.userInfo);
+        console.log('user signed out', this.state.userDoc);
       }
     });
   }
@@ -112,22 +114,21 @@ export default class App extends Component {
     console.log("sign out");
   }
   // Firestore Functions
-  startSnapShot = (name) => {
-    console.log("Starting Snapshot")
+  startSnapShot(name) {
     userSnapshot = db.collection("Users").doc(name).onSnapshot(
       { includeMetadataChanges: true },
       (doc) => {
         this.setState({userDoc: doc.data()})
-        console.log("User Doc", this.state.userDoc);
+        console.log('user signed in ', this.state.userDoc);
     });
   }
-  endSnapShot = () => {
+  endSnapShot() {
     console.log("ending snapshot");
     if (userSnapshot !== undefined) {
       userSnapshot();
     }
   }
-  getUserOnFirebase = (user) => {
+  getUserOnFirebase(user) {
     let query = db.collection("Users").doc(user.email);
     query.get().then((doc) => {
       if (!doc.exists) {
@@ -137,14 +138,15 @@ export default class App extends Component {
       }
     })
   }
-  createUserOnFirebase = (user) => {
-    const name = user.displayName;
-    const photo = user.photoURL;
+  createUserOnFirebase(user) {
     const c = new Date().toLocaleString()
     db.collection("Users").doc(user.email).set({
       created: c,
-      name: name,
-      profile_pic_url: photo,
+      name: user.displayName,
+      email: user.email,
+      username: user.email,
+      profile_pic_url: user.photoURL,
+      phoneNumber: user.phoneNumber,
       streak_emoji:  "\u{1F525}",
       sent: 0,
       received: 0,
@@ -153,8 +155,8 @@ export default class App extends Component {
       friends: {
         [user.email]: {
             created: c,
-            profile_pic_url: photo,
-            name: name,
+            profile_pic_url: user.photoURL,
+            name: user.displayName,
             status: "new-friend",
             streak: 0,
             sent: 0,
@@ -169,7 +171,7 @@ export default class App extends Component {
     })
   }
   render() {
-		const { index, height, width, flipCamCounter, loggedIn, userInfo, userDoc, disable_swiping, showNavbar, showFooter} = this.state;
+		const { index, height, width, flipCamCounter, loggedIn, userDoc, disable_swiping, showNavbar, showFooter} = this.state;
     return (
       <>
         <MetaTags>
@@ -179,8 +181,8 @@ export default class App extends Component {
           index={index}
           incFlipCam={this.incFlipCam}
           hidden={false}
-          GsignIn={this.GoogleSignIn.bind(this)}
-          GsignOut={this.GoogleSignOut.bind(this)}
+          GsignIn={this.GoogleSignIn}
+          GsignOut={this.GoogleSignOut}
           userDoc={userDoc}
         />)}
 				<BindKeyboardSwipeableViews
@@ -191,7 +193,13 @@ export default class App extends Component {
           containerStyle={{height: this.state.height, WebkitOverflowScrolling: 'touch'}}
           enableMouseEvents
         >
-					<div className="slide slide1"><Navbar/><Messages/></div>
+					<div className="slide slide1">
+            <Navbar/>
+            <Messages
+              userDoc={userDoc}
+              disableNavFootSlide={this.disableNavFootSlide}
+            />
+          </div>
 					<div className="slide slide2">
             <Camera
               index={index}
@@ -202,7 +210,10 @@ export default class App extends Component {
               disableNavFootSlide={this.disableNavFootSlide}
             />
           </div>
-					<div className="slide slide3"><Navbar /><h1>Discover</h1></div>
+					<div className="slide slide3">
+            <Navbar/>
+            <h1>Discover</h1>
+          </div>
 				</BindKeyboardSwipeableViews>
 				{showFooter ? <Footer index={index} changeToIndex={this.changeToIndex}/> : null}
       </>

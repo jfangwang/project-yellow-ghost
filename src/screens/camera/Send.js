@@ -7,7 +7,7 @@ import './Camera.css';
 import '../../components/navbar/Navbar.css'
 import '../../components/footer/Footer.css'
 
-export default function Send({width, height, img, close, backToCapture, userDoc, userInfo}) {
+export default function Send({width, height, img, close, backToCapture, userDoc}) {
   let view;
   let selected = ["qbs1864@gmail.com"];
   const [uploadComplete, setuploadComplete] = useState(false);
@@ -64,7 +64,7 @@ export default function Send({width, height, img, close, backToCapture, userDoc,
     db.collection("Photos").doc(id).set({
       image_url: imgURL,
       opened: [],
-      sender: userInfo.email,
+      sender: userDoc.email,
       sent: selected,
       time_stamp: timeStamp,
     })

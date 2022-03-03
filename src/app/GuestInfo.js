@@ -2,8 +2,11 @@ const c = new Date().toLocaleString()
 const Guest = {
     created: "N/A",
     name: "Guest",
+    email: "Guest@Guest.com",
+    username: "Guest123",
     profile_pic_url: null,
     streak_emoji:  "\u{1F525}",
+    phoneNumber: null,
     sent: 0,
     received: 0,
     added_me: {},

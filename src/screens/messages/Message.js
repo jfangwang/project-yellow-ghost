@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import TimeAgo from 'javascript-time-ago';
 import Guest from '../../assets/images/guest-profile-pic.png';
 
-export default function Message({friend, streak_emoji}) {
+export default function Message({friend, streak_emoji, disableNavFootSlide}) {
     var icon_class = "message-" + friend["status"]
 	var emoji = null;
 	var status_dict = {
