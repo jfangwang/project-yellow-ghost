@@ -12,7 +12,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 
-function Navbar({ position, index, incFlipCam, close, Parenttitle, axis}) {
+function Navbar({ position, index, incFlipCam, close, Parenttitle, axis, hidden }) {
 	let title = "";
 	let buttonDir = <KeyboardArrowDownIcon />
 	if (axis == "x") {
@@ -56,10 +56,31 @@ function Navbar({ position, index, incFlipCam, close, Parenttitle, axis}) {
 	const toggleSearch = () => {
 		setSearch(!showSearch);
 	}
-	if (position === "absolute") {
+	if (position === "fixed") {
 		return (
 			<>
-				<ul className="main-navbar floating-navbar" style={index === 1 ? styles.transparent : styles.shawdow} >
+				<ul className={"main-navbar " + (hidden ? "ghost" : "navbar-fixed")} >
+					<li>
+						<ul>
+							<li><button onClick={close}>{buttonDir}</button></li>
+						</ul>
+					</li>
+					<li><h1>{Parenttitle}</h1></li>
+					<li>
+						<ul>
+							<li style={{ opacity: 0 }}><button><PersonAddIcon /></button></li>
+						</ul>
+					</li>
+				</ul>
+			</>
+		)
+	} else {
+		return (
+			<>
+				<ul 
+					className={"main-navbar " + (hidden ? "ghost" : "floating-navbar")}
+					style={index === 1 ? styles.transparent : styles.shawdow}
+				>
 					<li>
 						<ul>
 							<li><button onClick={toggleAccount}><AccountCircleIcon /></button></li>
@@ -74,61 +95,37 @@ function Navbar({ position, index, incFlipCam, close, Parenttitle, axis}) {
 						</ul>
 					</li>
 				</ul>
-				<SlidingMenu open={showAccount} title="Account" axis="x">
-					<h1>Account</h1>
-				</SlidingMenu>
-				<SlidingMenu open={showSearch} title="Search">
-					<h1>Searchs</h1>
-				</SlidingMenu>
-				<SlidingMenu open={showFriends} title="Add Friends">
-					<h1>Add Friends</h1>
-				</SlidingMenu>
-				<SlidingMenu open={showExtra} title="Extra">
-					<h1>Extra</h1>
-				</SlidingMenu>
+				{!hidden && (
+					<>
+						<SlidingMenu open={showAccount} title="Account" axis="x">
+							<Navbar position="fixed"/>
+							<h1>Account</h1>
+						</SlidingMenu>
+						<SlidingMenu open={showSearch} title="Search">
+							<Navbar position="fixed"/>
+							<h1>Searchs</h1>
+						</SlidingMenu>
+						<SlidingMenu open={showFriends} title="Add Friends">
+							<Navbar position="fixed"/>
+							<h1>Add Friends</h1>
+						</SlidingMenu>
+						<SlidingMenu open={showExtra} title="Extra">
+							<Navbar position="fixed"/>
+							<h1>Extra</h1>
+						</SlidingMenu>
+					</>
+				)}
 			</>
-		)
-	} else if (position === "relative") {
-		return (
-			<>
-			<ul className="main-navbar navbar-relative">
-				<li>
-					<ul>
-						<li><button onClick={close}>{buttonDir}</button></li>
-					</ul>
-				</li>
-				<li><h1>{Parenttitle}</h1></li>
-				<li>
-					<ul>
-						<li style={{opacity:0}}><button><PersonAddIcon /></button></li>
-					</ul>
-				</li>
-			</ul>
-		</>
-		)
-	} else {
-		return (
-			<ul className="main-navbar navbar-ghost">
-				<li>
-					<ul>
-						<li><button><AccountCircleIcon /></button></li>
-						<li><button><SearchIcon /></button></li>
-					</ul>
-				</li>
-				<li><h1>{title}</h1></li>
-				<li>
-					<ul>
-						<li><button><PersonAddIcon /></button></li>
-						<li>{dynamic}</li>
-					</ul>
-				</li>
-			</ul>
 		)
 	}
 }
 
 Navbar.propTypes = {
-	position: PropTypes.string
+	position: PropTypes.string,
+	hidden: PropTypes.bool,
+}
+Navbar.defaultProps = {
+	hidden: true
 }
 
 export default Navbar;

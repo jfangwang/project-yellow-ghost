@@ -55,11 +55,11 @@ export default class App extends Component {
         <MetaTags>
           <title>Yellow Ghost</title>
         </MetaTags>
-				<Navbar position="absolute" index={index} incFlipCam={this.incFlipCam}/>
+				<Navbar index={index} incFlipCam={this.incFlipCam} hidden={false}/>
 				<BindKeyboardSwipeableViews className="slide_container" index={index} onChangeIndex={this.handleChangeIndex} containerStyle={{height: this.state.height, WebkitOverflowScrolling: 'touch'}} enableMouseEvents>
-					<div className="slide slide1"><Navbar index={index}/><Messages /></div>
+					<div className="slide slide1"><Navbar /><Messages /></div>
 					<div className="slide slide2"><Camera index={index} height={height} width={width} flipCamCounter={flipCamCounter}/></div>
-					<div className="slide slide3"><Navbar index={index}/></div>
+					<div className="slide slide3"><Navbar /><h1>Discover</h1></div>
 				</BindKeyboardSwipeableViews>
 				<Footer index={index} changeToIndex={this.changeToIndex.bind(this)}/>
       </>
