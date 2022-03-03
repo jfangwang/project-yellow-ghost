@@ -12,8 +12,12 @@
     width: 100%;
     /* border: 1px blue dashed; */
 }
-.main img {
+.main .info img {
     max-height: 8rem;
+}
+.main .snapMap img {
+    width: 100%;
+    border-radius: 0.5rem;
 }
 .main button {
     border-radius: 0.5rem;

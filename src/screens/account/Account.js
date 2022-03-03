@@ -10,7 +10,7 @@ export default class Account extends Component {
   render() {
     return (
       <main className="main">
-        <div className="section">
+        <div className="section info">
           <h1>Me</h1>
           <div className="row">
             <img src="https://cdn3.iconfinder.com/data/icons/dashboard-ui-element/32/Dashboard_icon_design_expanded-28-512.png" />
@@ -31,8 +31,9 @@ export default class Account extends Component {
             <h3>Friend 2</h3>
           </div>
         </div>
-        <div className="section">
+        <div className="section snapMap">
           <h1>Snap Map</h1>
+          <img src="https://media.npr.org/assets/img/2017/06/30/snapchat-world_custom-7763b62a81588d5def16ef6335a573d94e0dc908.jpg"/>
         </div>
         <div className="section">
           <p>Joined Snap Chat</p>
