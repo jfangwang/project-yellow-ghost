@@ -5,12 +5,14 @@
     width: 100%;
     opacity: 1;
 }
-.navbar-relative {
+.navbar-ghost .navbar-relative {
+    display:flex;
+    flex-direction: row;
     position: relative;
     background-color: white;
     color: white
 }
-.navbar-relative > * {
+.navbar-ghost > * {
     opacity: 0;
 }
 .main-navbar {

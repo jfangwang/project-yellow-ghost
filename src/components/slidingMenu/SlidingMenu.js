@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import SwipeableViews from 'react-swipeable-views'
 import { bindKeyboard } from 'react-swipeable-views-utils'
+import Navbar from '../navbar/Navbar';
+import PropTypes from 'prop-types';
+
 import './SlidingMenu.css'
 
 const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
@@ -65,14 +68,14 @@ class SlidingMenu extends Component {
 	}
 	render() {
 		const { height, width, index, top, hide, bgColor } = this.state;
-		const { children, title } = this.props;
+		const { children, title, axis } = this.props;
 		return (
 			<>
 				{!hide && (
 					<div className="sliding-menu" style={{ height: height, width: width, backgroundColor:bgColor }}>
 						<BindKeyboardSwipeableViews
 							containerStyle={{ height: height, width: width }}
-							axis="y"
+							axis={axis}
 							disabled={!top}
 							onSwitching={this.changeOnSwitch}
 							onChangeIndex={this.changeToIndex}
@@ -83,10 +86,7 @@ class SlidingMenu extends Component {
 							<div style={{ height:height, width:width }}></div>
 							<div onScroll={this.handleScroll} style={{ backgroundColor: 'white', height: height, width: width }}>
 								<div style={{ backgroundColor: 'lightcoral' }}>
-									<ul style={{display:'flex', flexDirection:'row', justifyContent: 'space-around'}}>
-										<li><button onClick={this.close} style={{borderRadius: '1rem'}}><h1>Close</h1></button></li>
-										<li><h1>{title}</h1></li>
-									</ul>
+									<Navbar position="relative" Parenttitle={title} close={this.close} axis={axis}/>
 									{children}
 								</div>
 							</div>
@@ -96,6 +96,17 @@ class SlidingMenu extends Component {
 			</>
 		);
 	}
+}
+
+SlidingMenu.propTypes = {
+	title: PropTypes.string,
+	open: PropTypes.func,
+	axis: PropTypes.string,
+}
+SlidingMenu.defaultProps = {
+	title: "",
+	open: () => {},
+	axis: 'y'
 }
 
 export default SlidingMenu;

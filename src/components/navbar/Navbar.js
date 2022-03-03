@@ -8,10 +8,18 @@ import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { isMobile } from 'react-device-detect';
 import SlidingMenu from '../slidingMenu/SlidingMenu';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 
-function Navbar({ position, index, incFlipCam }) {
+function Navbar({ position, index, incFlipCam, close, Parenttitle, axis}) {
 	let title = "";
+	let buttonDir = <KeyboardArrowDownIcon />
+	if (axis == "x") {
+		buttonDir = <ChevronRightIcon />
+	} else if (axis == "y") {
+		buttonDir = <KeyboardArrowDownIcon />
+	}
 	const [showAccount, setAccount] = useState(false)
 	const [showFriends, setFriends] = useState(false)
 	const [showSearch, setSearch] = useState(false)
@@ -66,23 +74,41 @@ function Navbar({ position, index, incFlipCam }) {
 						</ul>
 					</li>
 				</ul>
-				<SlidingMenu open={showAccount} title="Account">
+				<SlidingMenu open={showAccount} title="Account" axis="x">
 					<h1>Account</h1>
 				</SlidingMenu>
 				<SlidingMenu open={showSearch} title="Search">
 					<h1>Searchs</h1>
 				</SlidingMenu>
-				<SlidingMenu open={showFriends} title="Friends">
-					<h1>Friends</h1>
+				<SlidingMenu open={showFriends} title="Add Friends">
+					<h1>Add Friends</h1>
 				</SlidingMenu>
 				<SlidingMenu open={showExtra} title="Extra">
 					<h1>Extra</h1>
 				</SlidingMenu>
 			</>
 		)
+	} else if (position === "relative") {
+		return (
+			<>
+			<ul className="main-navbar navbar-relative">
+				<li>
+					<ul>
+						<li><button onClick={close}>{buttonDir}</button></li>
+					</ul>
+				</li>
+				<li><h1>{Parenttitle}</h1></li>
+				<li>
+					<ul>
+						<li style={{opacity:0}}><button><PersonAddIcon /></button></li>
+					</ul>
+				</li>
+			</ul>
+		</>
+		)
 	} else {
 		return (
-			<ul className="main-navbar navbar-relative">
+			<ul className="main-navbar navbar-ghost">
 				<li>
 					<ul>
 						<li><button><AccountCircleIcon /></button></li>
