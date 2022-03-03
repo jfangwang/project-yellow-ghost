@@ -7,9 +7,9 @@ import './SlidingMenu.css'
 
 const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
 let list = [];
-// for (var i=0; i<20; i++) {
-// 	list.push(<h1>filler</h1>)
-// }
+for (var i=0; i<200; i++) {
+	list.push(<h1>filler</h1>)
+}
 
 class SlidingMenu extends Component {
 	constructor(props) {
@@ -40,6 +40,7 @@ class SlidingMenu extends Component {
 		if (prevProps.open !== this.props.open) {
 			if (this.props.open === true) {
 				this.setState({hide: false}, () => setTimeout(() => this.changeToIndex(1), 0));
+				this.setState({ top: true })
 			}
 			if (this.props.open === false) {
 				this.changeToIndex(0);
@@ -101,7 +102,7 @@ class SlidingMenu extends Component {
 								<div style={{ backgroundColor: 'white' }}>
 									<Navbar position="fixed" hidden={false} Parenttitle={title} close={this.closeMenu} axis={axis}/>	
 									{children}
-									{list}
+									{/* {list} */}
 								</div>
 							</div>
 						</BindKeyboardSwipeableViews>
