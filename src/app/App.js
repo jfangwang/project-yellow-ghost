@@ -13,6 +13,7 @@ import Messages from '../screens/messages/Messages';
 import Camera from '../screens/camera/Camera';
 import Discover from '../screens/discover/Discover';
 import { Guest, Strangers, Everyone } from './GuestInfo';
+import { objectMethod } from '@babel/types';
 
 
 const list = [];
@@ -74,8 +75,7 @@ export default class App extends Component {
   };
   componentDidUpdate(prevProps, prevState) {
     if (prevState.userDoc !== this.state.userDoc) {
-      if (prevState.userDoc && (prevState.userDoc['added_me'] !== this.state.userDoc['added_me'])) {
-        console.log(prevState.userDoc['added_me'], this.state.userDoc['added_me'])
+      if (prevState.userDoc && ((Object.keys(prevState.userDoc['added_me']).length) !== (Object.keys(this.state.userDoc['added_me']).length))) {
         this.updatePeopleList();
       }
     }
