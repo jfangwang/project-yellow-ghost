@@ -38,7 +38,7 @@ export default function Message({ friend, streak_emoji, disableNavFootSlide, use
 								{emoji ? <p>{emoji}</p> : <div className={icon_class}></div>}
 								<h5>{status} </h5>
 							</div>
-							<h5 className="time-stamp">{friend["last_time_stamp"] ? <> <div className="separator"></div> <ReactTimeago date={friend["last_time_stamp"]}/> </> : null}</h5>
+							<h5 className="time-stamp">{friend["last_time_stamp"] && friend['status'] !== 'not-friends' ? <> <div className="separator"></div> <ReactTimeago date={friend["last_time_stamp"]}/> </> : null}</h5>
 							<div className="row">
 								{friend["streak"] === null ? null : <>
 									<div className="separator" style={{ marginRight: "0.3rem" }}></div>
