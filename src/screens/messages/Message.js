@@ -1,8 +1,8 @@
 import React from 'react';
 import './Message.css';
 import PropTypes from 'prop-types';
-import TimeAgo from 'javascript-time-ago';
 import Guest from '../../assets/images/guest-profile-pic.png';
+import ReactTimeago from 'react-timeago';
 
 export default function Message({ friend, streak_emoji, disableNavFootSlide, userDoc }) {
 	var icon_class = "message-" + friend["status"]
@@ -38,7 +38,7 @@ export default function Message({ friend, streak_emoji, disableNavFootSlide, use
 								{emoji ? <p>{emoji}</p> : <div className={icon_class}></div>}
 								<h5>{status} </h5>
 							</div>
-							{/* <h5 className="time-stamp">{friend["last_time_stamp"] ? <> <div className="separator"></div> <TimeAgo date={friend["last_time_stamp"]} /> </> : null}</h5> */}
+							<h5 className="time-stamp">{friend["last_time_stamp"] ? <> <div className="separator"></div> <ReactTimeago date={friend["last_time_stamp"]}/> </> : null}</h5>
 							<div className="row">
 								{friend["streak"] === null ? null : <>
 									<div className="separator" style={{ marginRight: "0.3rem" }}></div>
