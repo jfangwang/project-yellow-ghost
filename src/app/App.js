@@ -39,6 +39,7 @@ export default class App extends Component {
       showFooter: true,
       showNavbar: true,
       peopleList: {
+        latestFriends: {},
         strangers: Strangers,
         everyone: Everyone,
       }
@@ -108,7 +109,7 @@ export default class App extends Component {
           loggedIn: false,
           userDoc: Guest,
         })
-        console.log('user signed out', this.state.userDoc);
+        console.log('user signed out');
       }
     });
   }
@@ -125,6 +126,7 @@ export default class App extends Component {
     let friends = this.state.userDoc.friends;
     let strangers = {};
     let everyone = {};
+    console.log("updating people list");
     db.collection("Users").get().then((doc) => {
       doc.docs.forEach((user) => {
         if (!Object.keys(friends).includes(user.id)) {
@@ -135,6 +137,7 @@ export default class App extends Component {
     }).then(() => {
       this.setState({
         peopleList: {
+          latestFriends: friends,
           strangers: strangers,
           everyone: everyone,
         }
@@ -212,6 +215,7 @@ export default class App extends Component {
       })
     } else {
       // Logged In Account
+      this.endSnapShot();
       friendRef.get().then((doc) => {
         friendDoc = doc.data();
         userEntry = {
@@ -325,32 +329,49 @@ export default class App extends Component {
         } else {
           console.log("action unknown: ", action)
         }
+        // Update state variables and let firebase update values later
+        this.setState({
+          friends: userDoc['friends'],
+        })
         // Update actions on firebase
         friendRef.update({
           added_me: friendDoc['added_me'],
           brokeup: friendDoc['brokeup'],
           friends: friendDoc['friends'],
-        })
-        userRef.update({
-          brokeup: userDoc['brokeup'],
-          friends: userDoc['friends'],
-          added_me: userDoc['added_me'],
+        }).then(() => {
+          userRef.update({
+            brokeup: userDoc['brokeup'],
+            friends: userDoc['friends'],
+            added_me: userDoc['added_me'],
+          }).then(() => {
+            this.startSnapShot(userDoc['email']);
+            temp = this.state.peopleList;
+            temp['latestFriends'] = {};
+            this.setState({
+              peopleList: temp
+            })
+          })
         })
       })
     }
   }
   startSnapShot(name) {
+    console.log("Starting snapshot");
     userSnapshot = db.collection("Users").doc(name).onSnapshot(
       { includeMetadataChanges: true },
       (doc) => {
         this.setState({ userDoc: doc.data() })
-        this.updatePeopleList();
-        // console.log('user signed in ', this.state.userDoc);
+        if (Object.keys(this.state.peopleList['latestFriends']).length !== Object.keys(doc.data()['friends']).length) {
+          // console.log(Object.keys(this.state.peopleList['latestFriends']).length)
+          // console.log(Object.keys(doc.data()['friends']).length)
+          this.updatePeopleList();
+        }
+        console.log('snapshot changed');
       });
   }
   endSnapShot() {
-    console.log("ending snapshot");
     if (userSnapshot !== undefined) {
+      console.log("Ending snapshot");
       userSnapshot();
     }
   }
