@@ -10,14 +10,15 @@ import SlidingMenu from '../slidingMenu/SlidingMenu';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Account from '../../screens/account/Account';
+import Friends from '../../screens/friends/Friends';
 import '../../app/App.css';
 
-function Navbar({ position, index, incFlipCam, close, Parenttitle, axis, hidden, GsignIn, GsignOut, userDoc }) {
+function Navbar({ position, index, incFlipCam, close, Parenttitle, axis, hidden, GsignIn, GsignOut, userDoc, peopleList, edit_friends }) {
 	let title = "";
 	let buttonDir = <KeyboardArrowDownIcon />
-	if (axis == "x") {
+	if (axis === "x") {
 		buttonDir = <ChevronRightIcon />
-	} else if (axis == "y") {
+	} else if (axis === "y") {
 		buttonDir = <KeyboardArrowDownIcon />
 	}
 	const [showAccount, setAccount] = useState(false)
@@ -107,7 +108,7 @@ function Navbar({ position, index, incFlipCam, close, Parenttitle, axis, hidden,
 						</SlidingMenu>
 						<SlidingMenu open={showFriends} close={toggleFriends} title="Add Friends">
 							<Navbar position="fixed"/>
-							<h1>Add Friends</h1>
+							<Friends userDoc={userDoc} peopleList={peopleList} edit_friends={edit_friends}/>
 						</SlidingMenu>
 						<SlidingMenu open={showExtra} close={toggleExtra} title="Extra">
 							<Navbar position="fixed"/>

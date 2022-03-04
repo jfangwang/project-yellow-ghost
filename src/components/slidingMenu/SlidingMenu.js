@@ -115,12 +115,11 @@ class SlidingMenu extends Component {
 
 SlidingMenu.propTypes = {
 	title: PropTypes.string,
-	open: PropTypes.func,
+	open: PropTypes.bool,
 	axis: PropTypes.string,
 }
 SlidingMenu.defaultProps = {
 	title: "",
-	open: () => {},
 	axis: 'y'
 }
 

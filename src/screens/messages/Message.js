@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import TimeAgo from 'javascript-time-ago';
 import Guest from '../../assets/images/guest-profile-pic.png';
 
-export default function Message({friend, streak_emoji, disableNavFootSlide}) {
-    var icon_class = "message-" + friend["status"]
+export default function Message({ friend, streak_emoji, disableNavFootSlide, userDoc }) {
+	var icon_class = "message-" + friend["status"]
 	var emoji = null;
 	var status_dict = {
 		"new-friend": "New Friend!",
@@ -24,48 +24,52 @@ export default function Message({friend, streak_emoji, disableNavFootSlide}) {
 	}
 	var status = status_dict[friend["status"]]
 	emoji = emoji_dict[friend["status"]]
-  return (
-    <li className="message-main row" onClick={friend["status"] === "new" ? null : null}>
-        <div className="row">
-            <img className="friend-profile-pic" src={friend["profile_pic_url"] === null ? Guest : friend["profile_pic_url"]} alt="friend-profile-pic"></img>
-        </div>
-        <div className="col">
-            <h3>{friend["name"]}</h3>
-            <div className="message-info">
-                <div className="message-info-container">
-                    {emoji ? <p>{emoji}</p> : <div className={icon_class}></div>}
-                    <h5>{status} </h5>
-                </div>
-                {/* <h5 className="time-stamp">{friend["last_time_stamp"] ? <> <div className="separator"></div> <TimeAgo date={friend["last_time_stamp"]} /> </> : null}</h5> */}
-                <div className="row">
-                        {friend["streak"] === null ? null : <>
-                            <div className="separator" style={{marginRight:"0.3rem"}}></div>
-                            <h5>{friend["streak"]}</h5>
-                            <h5>{streak_emoji}</h5>
-                            </>
-                        }
-                </div>
-            </div>
-        </div>
-    </li>
-  )
+	return (
+		<>
+			{friend && (
+				<li className="message-main row" onClick={friend["status"] === "new" ? null : null}>
+					<div className="row">
+						<img className="friend-profile-pic" src={friend["profile_pic_url"] === null ? Guest : friend["profile_pic_url"]} alt="friend-profile-pic"></img>
+					</div>
+					<div className="col">
+						<h3>{friend["name"]}</h3>
+						<div className="message-info">
+							<div className="message-info-container">
+								{emoji ? <p>{emoji}</p> : <div className={icon_class}></div>}
+								<h5>{status} </h5>
+							</div>
+							{/* <h5 className="time-stamp">{friend["last_time_stamp"] ? <> <div className="separator"></div> <TimeAgo date={friend["last_time_stamp"]} /> </> : null}</h5> */}
+							<div className="row">
+								{friend["streak"] === null ? null : <>
+									<div className="separator" style={{ marginRight: "0.3rem" }}></div>
+									<h5>{friend["streak"]}</h5>
+									<h5>{userDoc.streak_emoji ? userDoc.streak_emoji: streak_emoji}</h5>
+								</>
+								}
+							</div>
+						</div>
+					</div>
+				</li>
+			)}
+		</>
+	)
 }
 Message.defaultProps = {
-    friend: {
-        created: "today",
-        profile_pic_url: Guest,
-        name: "Guest",
-        status: "new-friend",
-        streak: 0,
-        sent: 0,
-        received: 0,
-        last_time_stamp: null,
-        snaps: [],
-    },
-    streak_emoji: "\u{1F525}",
-    pic: "Guest",
-    email: "Guest@Guest.com,",
-    key: "Guest@Guest.com,"
+	friend: {
+		created: "today",
+		profile_pic_url: Guest,
+		name: "Guest",
+		status: "new-friend",
+		streak: 0,
+		sent: 0,
+		received: 0,
+		last_time_stamp: null,
+		snaps: [],
+	},
+	streak_emoji: "\u{1F525}",
+	pic: "Guest",
+	email: "Guest@Guest.com,",
+	key: "Guest@Guest.com,"
 
 
 }

@@ -1,10 +1,10 @@
 import React, { Component, useEffect } from 'react';
-import {auth, db, provider} from '../utils/Firebase';
+import { auth, db, provider, storage } from '../utils/Firebase';
 import firebase from 'firebase/app';
 import { collection, onSnapshot } from "firebase/firestore";
 import SwipeableViews from 'react-swipeable-views';
 import { bindKeyboard } from 'react-swipeable-views-utils';
-import {isMobile } from 'react-device-detect';
+import { isMobile } from 'react-device-detect';
 import MetaTags from 'react-meta-tags';
 import './App.css';
 import Navbar from '../components/navbar/Navbar';
@@ -12,7 +12,7 @@ import Footer from '../components/footer/Footer';
 import Messages from '../screens/messages/Messages';
 import Camera from '../screens/camera/Camera';
 import Discover from '../screens/discover/Discover';
-import Guest from './GuestInfo';
+import { Guest, Strangers, Everyone } from './GuestInfo';
 
 
 const list = [];
@@ -38,6 +38,10 @@ export default class App extends Component {
       disable_swiping: false,
       showFooter: true,
       showNavbar: true,
+      peopleList: {
+        strangers: Strangers,
+        everyone: Everyone,
+      }
     }
     this.changeToIndex = this.changeToIndex.bind(this);
     this.updateDimensions = this.updateDimensions.bind(this);
@@ -54,6 +58,8 @@ export default class App extends Component {
     this.endSnapShot = this.endSnapShot.bind(this);
     this.getUserOnFirebase = this.getUserOnFirebase.bind(this);
     this.createUserOnFirebase = this.createUserOnFirebase.bind(this);
+    this.edit_friends = this.edit_friends.bind(this);
+    this.updatePeopleList = this.updatePeopleList.bind(this);
   }
   componentDidMount() {
     this.checkCurrentUser()
@@ -71,16 +77,16 @@ export default class App extends Component {
     })
   }
   incFlipCam() {
-    this.setState({flipCamCounter: this.state.flipCamCounter + 1})
+    this.setState({ flipCamCounter: this.state.flipCamCounter + 1 })
   }
   disable_swiping(e) {
-    this.setState({disable_swiping: e});
+    this.setState({ disable_swiping: e });
   }
   toggleNavbar() {
-    this.setState({showNavbar: !this.state.showNavbar});
+    this.setState({ showNavbar: !this.state.showNavbar });
   }
   toggleFooter() {
-    this.setState({showFooter: !this.state.showFooter});
+    this.setState({ showFooter: !this.state.showFooter });
   }
   disableNavFootSlide(e) {
     this.disable_swiping(e)
@@ -114,19 +120,26 @@ export default class App extends Component {
     console.log("sign out");
   }
   // Firestore Functions
-  startSnapShot(name) {
-    userSnapshot = db.collection("Users").doc(name).onSnapshot(
-      { includeMetadataChanges: true },
-      (doc) => {
-        this.setState({userDoc: doc.data()})
-        console.log('user signed in ', this.state.userDoc);
-    });
-  }
-  endSnapShot() {
-    console.log("ending snapshot");
-    if (userSnapshot !== undefined) {
-      userSnapshot();
-    }
+  updatePeopleList() {
+    // Make Strangers and Everyone List
+    let friends = this.state.userDoc.friends;
+    let strangers = {};
+    let everyone = {};
+    db.collection("Users").get().then((doc) => {
+      doc.docs.forEach((user) => {
+        if (!Object.keys(friends).includes(user.id)) {
+          strangers[user.id] = user.data()
+        }
+        everyone[user.id] = user.data();
+      })
+    }).then(() => {
+      this.setState({
+        peopleList: {
+          strangers: strangers,
+          everyone: everyone,
+        }
+      })
+    })
   }
   getUserOnFirebase(user) {
     let query = db.collection("Users").doc(user.email);
@@ -147,60 +160,234 @@ export default class App extends Component {
       username: user.email,
       profile_pic_url: user.photoURL,
       phoneNumber: user.phoneNumber,
-      streak_emoji:  "\u{1F525}",
+      streak_emoji: "\u{1F525}",
       sent: 0,
       received: 0,
+      brokeup: {},
       added_me: {},
       pending: {},
       friends: {
         [user.email]: {
-            created: c,
-            profile_pic_url: user.photoURL,
-            name: user.displayName,
-            status: "new-friend",
-            streak: 0,
-            sent: 0,
-            received: 0,
-            last_time_stamp: null,
-            snaps: []
+          created: c,
+          profile_pic_url: user.photoURL,
+          name: user.displayName,
+          status: "new-friend",
+          streak: 0,
+          sent: 0,
+          received: 0,
+          last_time_stamp: null,
+          snaps: []
         }
       },
     })
-    .then(() => {
-      console.log("New user added to firebase!");
-    })
+      .then(() => {
+        console.log("New user added to firebase!");
+      })
   }
+  edit_friends(action, person) {
+    let peopleList = this.state.peopleList;
+    let userDoc = this.state.userDoc;
+    let friendDoc = {};
+    let userEntry = {};
+    let personEntry = {};
+    let temp;
+    const friendRef = db.collection("Users").doc(person);
+    const userRef = db.collection("Users").doc(userDoc['email']);
+    const photoRef = db.collection("Photos")
+    if (!this.state.loggedIn) {
+      // Guest Account
+
+      if (action === "add") {
+        temp = peopleList['strangers'][person];
+        delete peopleList['strangers'][person];
+        userDoc['friends'][person] = temp;
+      } else if (action === "remove") {
+        temp = userDoc['friends'][person];
+        delete userDoc['friends'][person];
+        peopleList['strangers'][person] = temp;
+      }
+      this.setState({
+        userDoc: userDoc,
+        peopleList: peopleList,
+      })
+    } else {
+      // Logged In Account
+      friendRef.get().then((doc) => {
+        friendDoc = doc.data();
+        userEntry = {
+          created: userDoc['created'],
+          friendship: null,
+          profile_pic_url: userDoc['profile_pic_url'],
+          name: userDoc['name'],
+          status: "pending",
+          streak: 0,
+          sent: 0,
+          received: 0,
+          last_time_stamp: null,
+          snaps: []
+        }
+        personEntry = {
+          created: doc.data()['created'],
+          friendship: null,
+          profile_pic_url: doc.data()['profile_pic_url'],
+          name: doc.data()['name'],
+          status: "pending",
+          streak: 0,
+          sent: 0,
+          received: 0,
+          last_time_stamp: null,
+          snaps: []
+        }
+      }).then(() => {
+        if (action === "add") {
+          if (Object.keys(userDoc['brokeup']).includes(person)) {
+            // Restore old friend
+            temp = userDoc['brokeup'][person];
+            delete userDoc['brokeup'][person];
+            userDoc['friends'][person] = temp;
+            if (userDoc['friends'][person]['status'] === 'sent') {
+              friendDoc['friends'][userDoc['email']]['status'] = 'new';
+            } else if (userDoc['friends'][person]['status'] === 'opened') {
+              friendDoc['friends'][userDoc['email']]['status'] = 'received';
+            } else if (userDoc['friends'][person]['status'] === 'received') {
+              friendDoc['friends'][userDoc['email']]['status'] = 'opened';
+            } else if (userDoc['friends'][person]['status'] === 'new') {
+              friendDoc['friends'][userDoc['email']]['status'] = 'sent';
+            } else {
+              friendDoc['friends'][userDoc['email']]['status'] = 'new-friend';
+            }
+          } else {
+            // Send Friend Request
+            friendDoc['added_me'][userDoc['email']] = userEntry;
+            userDoc['friends'][person] = personEntry;
+          }
+        } else if (action === "remove") {
+          if (Object.keys(friendDoc['brokeup']).includes(userDoc['email'])) {
+            // Friend initiated breakup
+            delete friendDoc['brokeup'][userDoc['email']];
+            delete userDoc['friends'][person];
+            // Delete and/or update any snaps related to former friend and user
+            let trash = [];
+            let SentByUser = [];
+            let SentByPerson = [];
+            photoRef.where("sender", '==', userDoc['email']).where("sent", "array-contains", person).get().then((doc) => {
+              doc.docs.forEach((photo) => {
+                if (photo.data()['sent'].length == 1) {
+                  trash.push(photo.id);
+                } else {
+                  SentByUser.push(photo.id);
+                }
+              })
+            }).then(() => {
+              photoRef.where("sender", '==', person).where("sent", "array-contains", userDoc['email']).get().then((doc) => {
+                doc.docs.forEach((photo) => {
+                  if (photo.data()['sent'].length == 1) {
+                    trash.push(photo.id);
+                  } else {
+                    SentByPerson.push(photo.id);
+                  }
+                })
+              }).then(() => {
+                trash.forEach((item) => {
+                  photoRef.doc(item).delete().catch(() => { });
+                  storage.ref(`posts/${item}`).delete().catch(() => { })
+                })
+                SentByUser.forEach((item) => {
+                  photoRef.doc(item).update({
+                    sent: firebase.firestore.FieldValue.arrayRemove(person)
+                  })
+                })
+                SentByPerson.forEach((item) => {
+                  photoRef.doc(item).update({
+                    sent: firebase.firestore.FieldValue.arrayRemove(userDoc['email'])
+                  })
+                })
+              })
+            })
+          } else {
+            // Initiating Breakup
+            temp = userDoc['friends'][person];
+            delete userDoc['friends'][person];
+            userDoc['brokeup'][person] = temp;
+            friendDoc['friends'][userDoc['email']]['status'] = 'not-friends';
+          }
+        } else if (action === "accept request") {
+          // Accept Friend Request
+          temp = userDoc['added_me'][person];
+          delete userDoc['added_me'][person];
+          userDoc['friends'][person] = temp;
+          userDoc['friends'][person]['status'] = 'new-friend';
+          friendDoc['friends'][userDoc['email']]['status'] = 'new-friend';
+        } else if (action === "remove request") {
+          // Remove Friend Request
+          delete friendDoc['added_me'][userDoc['email']];
+          delete userDoc['friends'][person];
+        } else {
+          console.log("action unknown: ", action)
+        }
+        // Update actions on firebase
+        friendRef.update({
+          added_me: friendDoc['added_me'],
+          brokeup: friendDoc['brokeup'],
+          friends: friendDoc['friends'],
+        })
+        userRef.update({
+          brokeup: userDoc['brokeup'],
+          friends: userDoc['friends'],
+          added_me: userDoc['added_me'],
+        })
+      })
+    }
+  }
+  startSnapShot(name) {
+    userSnapshot = db.collection("Users").doc(name).onSnapshot(
+      { includeMetadataChanges: true },
+      (doc) => {
+        this.setState({ userDoc: doc.data() })
+        this.updatePeopleList();
+        // console.log('user signed in ', this.state.userDoc);
+      });
+  }
+  endSnapShot() {
+    console.log("ending snapshot");
+    if (userSnapshot !== undefined) {
+      userSnapshot();
+    }
+  }
+
   render() {
-		const { index, height, width, flipCamCounter, loggedIn, userDoc, disable_swiping, showNavbar, showFooter} = this.state;
+    const { index, height, width, flipCamCounter, loggedIn, userDoc, disable_swiping, showNavbar, showFooter, peopleList } = this.state;
     return (
       <>
         <MetaTags>
           <title>Yellow Ghost</title>
         </MetaTags>
-				{showNavbar && (<Navbar
+        {showNavbar && (<Navbar
           index={index}
           incFlipCam={this.incFlipCam}
           hidden={false}
           GsignIn={this.GoogleSignIn}
           GsignOut={this.GoogleSignOut}
           userDoc={userDoc}
+          peopleList={peopleList}
+          edit_friends={this.edit_friends}
         />)}
-				<BindKeyboardSwipeableViews
+        <BindKeyboardSwipeableViews
           className="slide_container"
           index={index}
           onChangeIndex={this.changeToIndex}
           disabled={disable_swiping}
-          containerStyle={{height: this.state.height, WebkitOverflowScrolling: 'touch'}}
+          containerStyle={{ height: this.state.height, WebkitOverflowScrolling: 'touch' }}
           enableMouseEvents
         >
-					<div className="slide slide1">
-            <Navbar/>
+          <div className="slide slide1">
+            <Navbar />
             <Messages
               userDoc={userDoc}
               disableNavFootSlide={this.disableNavFootSlide}
             />
           </div>
-					<div className="slide slide2">
+          <div className="slide slide2">
             <Camera
               index={index}
               height={height}
@@ -210,12 +397,12 @@ export default class App extends Component {
               disableNavFootSlide={this.disableNavFootSlide}
             />
           </div>
-					<div className="slide slide3">
-            <Navbar/>
+          <div className="slide slide3">
+            <Navbar />
             <h1>Discover</h1>
           </div>
-				</BindKeyboardSwipeableViews>
-				{showFooter ? <Footer index={index} changeToIndex={this.changeToIndex}/> : null}
+        </BindKeyboardSwipeableViews>
+        {showFooter ? <Footer index={index} changeToIndex={this.changeToIndex} /> : null}
       </>
     );
   }
