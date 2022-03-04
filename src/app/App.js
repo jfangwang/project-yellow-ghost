@@ -72,6 +72,14 @@ export default class App extends Component {
   updateDimensions() {
     this.setState({ width: window.innerWidth, height: window.innerHeight });
   };
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.userDoc !== this.state.userDoc) {
+      if (prevState.userDoc && (prevState.userDoc['added_me'] !== this.state.userDoc['added_me'])) {
+        console.log(prevState.userDoc['added_me'], this.state.userDoc['added_me'])
+        this.updatePeopleList();
+      }
+    }
+  }
   changeToIndex(e) {
     this.setState({
       index: e,
@@ -246,6 +254,7 @@ export default class App extends Component {
         if (action === "add") {
           if (Object.keys(userDoc['brokeup']).includes(person)) {
             // Restore old friend
+            delete peopleList['strangers'][person];
             temp = userDoc['brokeup'][person];
             delete userDoc['brokeup'][person];
             userDoc['friends'][person] = temp;
@@ -264,10 +273,12 @@ export default class App extends Component {
             // Send Friend Request
             friendDoc['added_me'][userDoc['email']] = userEntry;
             userDoc['friends'][person] = personEntry;
+            delete peopleList['strangers'][person];
           }
         } else if (action === "remove") {
           if (Object.keys(friendDoc['brokeup']).includes(userDoc['email'])) {
             // Friend initiated breakup
+            peopleList['strangers'][person] = userDoc['friends'][person];
             delete friendDoc['brokeup'][userDoc['email']];
             delete userDoc['friends'][person];
             // Delete and/or update any snaps related to former friend and user
@@ -310,6 +321,7 @@ export default class App extends Component {
             })
           } else {
             // Initiating Breakup
+            peopleList['strangers'][person] = userDoc['friends'][person];
             temp = userDoc['friends'][person];
             delete userDoc['friends'][person];
             userDoc['brokeup'][person] = temp;
@@ -324,6 +336,7 @@ export default class App extends Component {
           friendDoc['friends'][userDoc['email']]['status'] = 'new-friend';
         } else if (action === "remove request") {
           // Remove Friend Request
+          peopleList['strangers'][person] = userDoc['friends'][person];
           delete friendDoc['added_me'][userDoc['email']];
           delete userDoc['friends'][person];
         } else {
@@ -332,6 +345,7 @@ export default class App extends Component {
         // Update state variables and let firebase update values later
         this.setState({
           friends: userDoc['friends'],
+          peopleList: peopleList,
         })
         // Update actions on firebase
         friendRef.update({
@@ -361,7 +375,7 @@ export default class App extends Component {
       { includeMetadataChanges: true },
       (doc) => {
         this.setState({ userDoc: doc.data() })
-        if (Object.keys(this.state.peopleList['latestFriends']).length !== Object.keys(doc.data()['friends']).length) {
+        if ((Object.keys(this.state.peopleList['latestFriends']).length !== Object.keys(doc.data()['friends']).length)) {
           // console.log(Object.keys(this.state.peopleList['latestFriends']).length)
           // console.log(Object.keys(doc.data()['friends']).length)
           this.updatePeopleList();
