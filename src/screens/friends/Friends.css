@@ -167,12 +167,20 @@
     flex-direction: row;
   }
   .friend-list-container li {
-    border: 2px solid lightgray
+    border-top: 2px solid lightgray;
+    border-right: 2px solid lightgray;
+    border-left: 2px solid lightgray;
   }
-  
+  .friend-list-container li:last-child {
+    border-bottom: 2px solid lightgray;
+  }
   .friend-list-container li:not(:last-child), .friend-list-container button:not(:last-child) {
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
+  }
+  .friend-list-container li:not(:first-child), .friend-list-container button:not(:first-child) {
+    border-top-right-radius: 0;
+    border-top-left-radius: 0;
   }
   
   .pic-info-mix {

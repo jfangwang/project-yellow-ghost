@@ -29,3 +29,15 @@
     margin-bottom: 1rem;
     /* border: 1px red solid; */
 }
+.main img {
+    border-radius: 1rem;
+}
+.main .pic-container {
+    margin-right: 1rem;
+}
+.logout {
+    background-color: lightcoral;
+}
+.login {
+    background-color: yellow;
+}
