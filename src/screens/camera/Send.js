@@ -30,7 +30,7 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
         {sendList.length > 0 && (
           <div className="send-footer main-footer">
             <button style={{opacity: 0}} disabled>Save</button>
-            <button onClick={close}><b>Send</b><img src={sentImg} style={{height:'1rem', marginLeft:'0.5rem', filter: 'grayscale(100%)' }}/></button>
+            <button onClick={close}><b><h2>Send</h2></b><img src={sentImg} style={{height:'1rem', marginLeft:'0.5rem', filter: 'grayscale(100%)' }}/></button>
           </div>
         )}
         <div className="send-section">
@@ -63,7 +63,7 @@ function Receiver({ friend, sendList, id, handleSendList }) {
     <button className="item-container" onClick={toggle}>
       <div className="row">
         <img src={friend['profile_pic_url']} className="profile-pic" />
-        <h1>{friend['name']}</h1>
+        {selected ? <h1 style={{color: 'rgb(31, 168, 247)'}}>{friend['name']}</h1> : <h1 style={{color:'black'}}>{friend['name']}</h1>}
       </div>
       <div>
         {selected ? <div className="selected-circle"><img className="checkmark" src={checkmark} alt="U+2713" ></img></div>

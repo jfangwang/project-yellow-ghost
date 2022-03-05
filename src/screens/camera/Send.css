@@ -3,8 +3,10 @@
     flex-direction: column;
     align-items: center;
     background-color: rgb(233, 233, 233);
+    color: #000;
 }
 .send-section button {
+    color: black;
     border-radius: 0rem;
     outline:none;
     -webkit-tap-highlight-color: rgba(255, 255, 255, 1);
@@ -59,11 +61,12 @@
 }
 .send-footer button {
     border-radius: 2rem;
-    padding: 0.5rem 1.2rem 0.5rem 1.2rem;
+    padding: 0.7rem 1.2rem 0.7rem 1.2rem;
     display: flex;
     align-items: center;
     background-color: yellow;
     flex-direction: row;
+    color: black;
 }
 .profile-pic {
     border-radius: 1rem;

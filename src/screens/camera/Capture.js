@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import Footer from '../../components/footer/Footer';
 import { isMobile } from 'react-device-detect';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import './Camera.css';
 import '../../components/navbar/Navbar.css'
 import '../../components/footer/Footer.css'
@@ -28,7 +29,7 @@ export default function Capture({width, height, close, img, changedToSend, save}
   return (
     <div className="captured-screen" style={{height: height, width: width}}>
 		<div className="floating-navbar main-navbar">
-			<ul><li><button onClick={close}>Close</button></li></ul>
+			<ul><li><button onClick={close} style={{backgroundColor: 'transparent'}}><CloseRoundedIcon/></button></li></ul>
 			<ul></ul>
 		</div>
 		<div className="captured-footer main-footer">
