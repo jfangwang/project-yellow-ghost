@@ -26,12 +26,17 @@
 .cam-footer {
     position: absolute;
     bottom: 0;
-    z-index: 10;
+    z-index: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 .capture-button {
     width: 6em;
     height: 6em;
-    background: none;
+    background: transparent;
     border: 0.5rem solid lightgrey;
     border-radius: 50%;
 }
@@ -66,8 +71,6 @@
 .closeIcon {
     background-color: transparent;
     /* color: white; */
-    box-shadow: 0 0px 12px 0 rgba(0, 0, 0, 0.4), 0 0px 0px 0 rgba(0, 0, 0, 0.19);
-    border-radius: 100%;
 }
 .closeButton {
     margin: 0 0 0 0.5rem;
@@ -76,4 +79,8 @@
     align-items: center;
     /* background-color: transparent; */
     outline: none;
+}
+.shadow {
+    box-shadow: 0 0px 10px 0 rgba(0, 0, 0, 0.5), 0 0px 0px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 100%;
 }

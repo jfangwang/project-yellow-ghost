@@ -39,7 +39,7 @@ export default function Capture({ width, height, close, img, changedToSend, save
 		<>
 			<div className="captured-screen" style={{ height: height, width: width }}>
 				<div className="floating-navbar main-navbar capture-navbar" style={{ backgroundColor: 'transparent', zIndex: 1 }}>
-					<button className="closeButton" onClick={close}><CloseRoundedIcon className="closeIcon" style={{height: '2.5rem', width: '2.5rem'}} /></button>
+					<button className="closeButton shadow" onClick={close}><CloseRoundedIcon className="closeIcon" style={{height: '2.5rem', width: '2.5rem'}} /></button>
 					<ul></ul>
 				</div>
 				<div className="captured-footer main-footer">
