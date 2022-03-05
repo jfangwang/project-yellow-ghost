@@ -51,8 +51,3 @@
     display: flex;
     justify-content: space-between;
 }
-.send-screen {
-    display:flex;
-    flex-direction: column;
-    align-items: center;
-}

@@ -6,6 +6,7 @@ import { useDoubleTap } from 'use-double-tap';
 import Webcam from 'react-webcam';
 import logo from '../../assets/images/snapchat-background.gif';
 import './Camera.css';
+import './Send.css';
 import Footer from '../../components/footer/Footer'
 import Capture from './Capture';
 import Send from './Send';
