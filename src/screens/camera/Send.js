@@ -34,11 +34,26 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
           <h1>Send</h1>
           <ul style={{ opacity: 0 }}><li><button disabled>Back</button></li></ul>
         </div> */}
-        <div className="send-section">
-          {Object.keys(userDoc['friends']).map((key) => (
-            <Receiver friend={userDoc['friends'][key]} id={key} sendList={sendList} handleSendList={handleSendList} />
-          ))}
-          {/* {test} */}
+        <div className="send-section" style={{ style: 'relative', maxHeight: '100%', width: '100%', overflow: 'auto' }}>
+        {Object.keys(userDoc['friends']).map((key) => (
+              <Receiver friend={userDoc['friends'][key]} id={key} sendList={sendList} handleSendList={handleSendList} />
+            ))}
+            <Receiver sendList={sendList} handleSendList={handleSendList} />
+            <Receiver sendList={sendList} handleSendList={handleSendList} />
+            <Receiver sendList={sendList} handleSendList={handleSendList} />
+            <Receiver sendList={sendList} handleSendList={handleSendList} />
+            <Receiver sendList={sendList} handleSendList={handleSendList} />
+            <Receiver sendList={sendList} handleSendList={handleSendList} />
+            <Receiver sendList={sendList} handleSendList={handleSendList} />
+            <Receiver sendList={sendList} handleSendList={handleSendList} />
+            <Receiver sendList={sendList} handleSendList={handleSendList} />
+            <Receiver sendList={sendList} handleSendList={handleSendList} />
+            <Receiver sendList={sendList} handleSendList={handleSendList} />
+            <Receiver sendList={sendList} handleSendList={handleSendList} />
+            <Receiver sendList={sendList} handleSendList={handleSendList} />
+            <Receiver sendList={sendList} handleSendList={handleSendList} />
+            <Receiver sendList={sendList} handleSendList={handleSendList} />
+            {/* {test} */}
         </div>
         {sendList.length > 0 && (
           <div className="send-footer main-footer">
