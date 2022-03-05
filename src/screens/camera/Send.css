@@ -2,8 +2,10 @@
     display:flex;
     flex-direction: column;
     align-items: center;
+    justify-content: space-between;
     background-color: rgb(233, 233, 233);
     color: #000;
+    /* border: 1px solid red; */
 }
 .send-section button {
     color: black;
@@ -38,6 +40,8 @@
     padding: 3rem;
 }
 .send-section {
+    /* border: 1px solid red; */
+    height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -46,7 +50,6 @@
     padding: 1rem 0 1rem 0;
 }
 .send-footer {
-    position: absolute;
     bottom: 0;
     left:0;
     width: 100%;

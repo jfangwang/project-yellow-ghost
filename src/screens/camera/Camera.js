@@ -167,10 +167,19 @@ function Camera({index, height, width, flipCamCounter, disableNavFootSlide, user
 			</div>
 		}
 		{screen === "captured" &&
-			<Capture height={height} width={width} img={img} close={close} changedToSend={changedToSend} save={save}/>
+			<Capture
+				height={height}
+				width={width}
+				img={img}
+				close={close}
+				changedToSend={changedToSend}
+				save={save}
+				backToCapture={backToCapture}
+				userDoc={userDoc}
+			/>
 		}
-		{screen === "send" &&
-			<Send height={height} width={width} img={img} close={close} backToCapture={backToCapture} userDoc={userDoc}/>
+		{screen === "send" && (null)
+			// <Send height={height} width={width} img={img} close={close} backToCapture={backToCapture} userDoc={userDoc}/>
 		}
 	</div>
   )
