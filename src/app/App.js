@@ -62,6 +62,7 @@ export default class App extends Component {
     this.createUserOnFirebase = this.createUserOnFirebase.bind(this);
     this.edit_friends = this.edit_friends.bind(this);
     this.updatePeopleList = this.updatePeopleList.bind(this);
+    this.setUserDoc = this.setUserDoc.bind(this);
   }
   componentDidMount() {
     this.checkCurrentUser()
@@ -101,6 +102,11 @@ export default class App extends Component {
     this.disable_swiping(e)
     this.toggleFooter();
     this.toggleNavbar();
+  }
+  setUserDoc(e) {
+    this.setState({
+      userDoc: e
+    })
   }
 
   // Firebase Functions
@@ -430,6 +436,7 @@ export default class App extends Component {
               flipCamCounter={flipCamCounter}
               userDoc={userDoc}
               disableNavFootSlide={this.disableNavFootSlide}
+              setUserDoc={this.setUserDoc}
             />
           </div>
           <div className="slide slide3">

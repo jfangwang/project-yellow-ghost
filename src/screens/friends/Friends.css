@@ -129,7 +129,7 @@
     width: 0.9rem;
   }
   .friend-button {
-    margin-right: 1rem;
+    margin-right: 0.5rem;
   }
   .friend-button button {
     border-radius: 1rem;
@@ -186,7 +186,6 @@
   .pic-info-mix {
     display: flex;
     flex-direction: row;
-    margin-left: 0.5rem;
   }
   .friend-search {
     width: 96%;

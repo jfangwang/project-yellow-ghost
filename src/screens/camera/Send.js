@@ -4,6 +4,8 @@ import Navbar from '../../components/navbar/Navbar'
 import checkmark from '../../assets/images/black-checkmark.png';
 import sentImg from '../../assets/images/sent-img-icon.png';
 import GuestPic from '../../assets/images/guest-profile-pic.png';
+import { auth, db, provider, storage } from '../../utils/Firebase';
+import { v4 as uuid } from "uuid";
 import './Camera.css'
 import './Send.css'
 
@@ -13,12 +15,99 @@ for (var i = 0; i < 40; i++) {
   test.push(<h1>filler</h1>)
 }
 
-export default function Send({ height, width, img, close, backToCapture, userDoc }) {
+export default function Send({ height, width, img, close, backToCapture, userDoc, setUserDoc }) {
   const [sendList, setSendList] = useState([]);
-  let arr;
+  const [uploadComplete, setuploadComplete] = useState(false);
+  const [imgURL, setimgURL] = useState(null);
+  const imgId = uuid();
+  const timeStamp = new Date().toLocaleString();
+
+  const sendToFirebase = () => {
+    if (userDoc['created'] === 'N/A' && userDoc['email'] === 'Guest@Guest.com') {
+      changeGuestDoc();
+    } else {
+      console.log("Sending to fake firebase")
+      // updateFriendDoc(sendList);
+      // addPhotoToFireStore(imgId)
+      // send(imgId)
+      // updateFriendDoc(sendList);
+    }
+    close()
+  }
+  const changeGuestDoc = () => {
+    let newUserDoc = userDoc;
+    sendList.map((friend) => {
+      if (newUserDoc['friends'][friend] !== undefined) {
+        newUserDoc['friends'][friend]['last_time_stamp'] = new Date().toLocaleString();
+        newUserDoc['friends'][friend]['status'] = "new";
+        if (friend === userDoc['email']) {
+          newUserDoc['friends'][friend]['sent'] = newUserDoc['friends'][friend]['sent'] + 1;
+          newUserDoc['received'] = newUserDoc['received'] + 1;
+        }
+        newUserDoc['friends'][friend]['received'] = newUserDoc['friends'][friend]['received'] + 1;
+        newUserDoc['friends'][friend]['snaps'].push(img);
+        newUserDoc['sent'] = newUserDoc['sent'] + 1;
+      }
+    })
+    setUserDoc(newUserDoc);
+  }
+  const send = (id) => {
+    // Upload to Storage
+    setuploadComplete(false);
+    const upload = storage.ref(`posts/${id}`).putString(img, 'data_url');
+    upload.on('state_changed',
+      (snapshot) => {
+        let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done');
+      },
+      (error) => {
+        console.log("Could not upload to storage");
+      },
+      () => {
+        upload.snapshot.ref.getDownloadURL().then((downloadURL) => {
+          setimgURL(downloadURL);
+          setuploadComplete(true);
+          addPhotoToFireStore(id);
+          console.log("Uploaded to Storage");
+        });
+      }
+    );
+  }
+  const addPhotoToFireStore = (id) => {
+    db.collection("Photos").doc(id).set({
+      image_url: imgURL,
+      opened: [],
+      sender: userDoc['email'],
+      sent: sendList,
+      time_stamp: timeStamp,
+    })
+      .then(() => {
+        console.log("Uploaded to Firestore");
+      })
+      .catch((error) => {
+        console.error("Error writing document: ", error);
+      });
+  }
+  // const getAllFriends
+  const updateFriendDoc = (friend) => {
+    db.collection("Users").doc(friend).update({
+      friends: {
+        [friend]: {
+          time_stamp: timeStamp
+        }
+      }
+    })
+      .then(() => {
+        console.log("Document successfully written!");
+      })
+      .catch((error) => {
+        console.error("Error writing document: ", error);
+      })
+    console.log("Uploaded to friends");
+  }
 
   const handleSendList = (e) => {
-    arr = []
+    let arr = []
     e.forEach((item) => {
       arr.push(item);
     })
@@ -38,20 +127,14 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
           {Object.keys(userDoc['friends']).map((key) => (
             <Receiver friend={userDoc['friends'][key]} id={key} sendList={sendList} handleSendList={handleSendList} />
           ))}
-          <Receiver sendList={sendList} handleSendList={handleSendList} />
-          <Receiver sendList={sendList} handleSendList={handleSendList} />
-          <Receiver sendList={sendList} handleSendList={handleSendList} />
-          <Receiver sendList={sendList} handleSendList={handleSendList} />
-          <Receiver sendList={sendList} handleSendList={handleSendList} />
-          <Receiver sendList={sendList} handleSendList={handleSendList} />
           {/* {test} */}
         </div>
         {sendList.length > 0 && (
           <div className="send-footer main-footer">
-            <div style={{ width: '50%', display: 'flex', position:'relative', overflow: 'hidden' }}>
+            <div style={{ width: '50%', display: 'flex', position: 'relative', overflow: 'hidden' }}>
               <h2>Selected: {sendList.length}</h2>
             </div>
-            <button onClick={close}><b><h2>Send</h2></b><img src={sentImg} style={{ height: '1rem', marginLeft: '0.5rem', filter: 'grayscale(100%)' }} /></button>
+            <button onClick={sendToFirebase}><b><h2>Send</h2></b><img src={sentImg} style={{ height: '1rem', marginLeft: '0.5rem', filter: 'grayscale(100%)' }} /></button>
           </div>
         )}
       </div>
