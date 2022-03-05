@@ -98,7 +98,7 @@ function Friend(props) {
         <li className="item-container">
           <div className="pic-info-mix">
             <div className="pic-container">
-              <img className="friend-profile-pic" src={friends[key].profile_pic_url} alt="friend profile pic" />
+              <img className="friend-profile-pic" src={friends[key].profile_pic_url} alt="" />
             </div>
             <div className="friend-info">
               <h2>{friends[key].name}</h2>
@@ -126,7 +126,7 @@ function AddedMe(props) {
       <li className="item-container">
         <div className="pic-info-mix">
           <div className="pic-container">
-            <img className="friend-profile-pic" src={addedMe[key].profile_pic_url} alt="friend profile pic" />
+            <img className="friend-profile-pic" src={addedMe[key].profile_pic_url} alt="" />
           </div>
           <div className="friend-info">
             <h2>{addedMe[key].name}</h2>
@@ -149,7 +149,7 @@ function Stranger(props) {
       <li className="item-container">
         <div className="pic-info-mix">
           <div className="pic-container">
-            <img className="friend-profile-pic" src={strangers[key].profile_pic_url} alt="friend profile pic" />
+            <img className="friend-profile-pic" src={strangers[key].profile_pic_url} alt="" />
           </div>
           <div className="friend-info">
             <h2>{strangers[key].name}</h2>
@@ -173,7 +173,7 @@ function Everyone(props) {
       <li className="item-container">
         <div className="pic-info-mix">
           <div className="pic-container">
-            <img className="friend-profile-pic" src={everyone[key].profile_pic_url} alt="friend-profile-pic" />
+            <img className="friend-profile-pic" src={everyone[key].profile_pic_url} alt="" />
           </div>
           <div className="friend-info">
             <h2>{everyone[key].name}</h2>

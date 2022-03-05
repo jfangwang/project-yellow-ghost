@@ -25,7 +25,7 @@ export default class Account extends Component {
         <div className="section info">
           <div className="row ">
             <div className="pic-container">
-              <img src={userDoc['profile_pic_url']} alt="" />
+              <img src={userDoc['profile_pic_url']} style={{borderRadius: '1rem'}} alt="" />
             </div>
             <div className="col">
               <h1>{userDoc.name}</h1>
