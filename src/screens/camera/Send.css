@@ -54,6 +54,17 @@
     justify-content: space-between;
     background-color: lightblue;
 }
+.send-footer > * {
+    margin: 0 1rem 0 1rem;
+}
+.send-footer button {
+    border-radius: 2rem;
+    padding: 0.5rem 1.2rem 0.5rem 1.2rem;
+    display: flex;
+    align-items: center;
+    background-color: yellow;
+    flex-direction: row;
+}
 .profile-pic {
     border-radius: 1rem;
     height: 2.8rem;

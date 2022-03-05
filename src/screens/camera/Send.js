@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import Navbar from '../../components/navbar/Navbar'
 import checkmark from '../../assets/images/black-checkmark.png';
+import sentImg from '../../assets/images/sent-img-icon.png';
 import './Camera.css'
 import './Send.css'
 
@@ -28,8 +29,8 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
         </div>
         {sendList.length > 0 && (
           <div className="send-footer main-footer">
-            <ul><li><button>Save</button></li></ul>
-            <ul><li><button onClick={close}>Send</button></li></ul>
+            <button style={{opacity: 0}} disabled>Save</button>
+            <button onClick={close}><b>Send</b><img src={sentImg} style={{height:'1rem', marginLeft:'0.5rem', filter: 'grayscale(100%)' }}/></button>
           </div>
         )}
         <div className="send-section">
