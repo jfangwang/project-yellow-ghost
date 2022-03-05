@@ -18,7 +18,6 @@ for (var i = 0; i < 40; i++) {
 export default function Send({ height, width, img, close, backToCapture, userDoc, setUserDoc }) {
   const [sendList, setSendList] = useState([]);
   const [uploadComplete, setuploadComplete] = useState(false);
-  const [imgURL, setimgURL] = useState(null);
   const imgId = uuid();
   const timeStamp = new Date().toLocaleString();
 
@@ -27,10 +26,8 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
       changeGuestDoc();
     } else {
       console.log("Sending to fake firebase")
-      // updateFriendDoc(sendList);
-      // addPhotoToFireStore(imgId)
+      updateFriendDoc();
       // send(imgId)
-      // updateFriendDoc(sendList);
     }
     close()
   }
@@ -65,17 +62,15 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
       },
       () => {
         upload.snapshot.ref.getDownloadURL().then((downloadURL) => {
-          setimgURL(downloadURL);
-          setuploadComplete(true);
-          addPhotoToFireStore(id);
+          addPhotoToFireStore(id, downloadURL);
           console.log("Uploaded to Storage");
         });
       }
     );
   }
-  const addPhotoToFireStore = (id) => {
+  const addPhotoToFireStore = (id, downloadURL) => {
     db.collection("Photos").doc(id).set({
-      image_url: imgURL,
+      image_url: downloadURL,
       opened: [],
       sender: userDoc['email'],
       sent: sendList,
@@ -83,27 +78,48 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
     })
       .then(() => {
         console.log("Uploaded to Firestore");
+        updateFriendDoc();
       })
       .catch((error) => {
         console.error("Error writing document: ", error);
       });
   }
-  // const getAllFriends
-  const updateFriendDoc = (friend) => {
-    db.collection("Users").doc(friend).update({
-      friends: {
-        [friend]: {
-          time_stamp: timeStamp
+  const updateFriendDoc = () => {
+    let friendRef;
+    let batch = db.batch();
+    sendList.forEach((id) => {
+      console.log(id);
+      friendRef = db.collection("Users").doc(id)
+      let dict = {}
+      dict[`friends.qbs1864@gmail\.com.last_time_stamp`] = timeStamp;
+      batch.update(friendRef, {
+        "friends": {
+          [id]: {
+            timeStamp: timeStamp
+          }
         }
-      }
+      });
     })
-      .then(() => {
-        console.log("Document successfully written!");
-      })
-      .catch((error) => {
-        console.error("Error writing document: ", error);
-      })
-    console.log("Uploaded to friends");
+    batch.commit().then(() => {
+      console.log("batch uploaded")
+    });
+
+
+    // db.collection("Users").doc(friend).update({
+    //   friends: {
+    //     [friend]: {
+    //       time_stamp: timeStamp
+    //     }
+    //   }
+    // })
+    //   .then(() => {
+    //     console.log("Document successfully written!");
+    //     setuploadComplete(true);
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error writing document: ", error);
+    //   })
+    // console.log("Uploaded to friends");
   }
 
   const handleSendList = (e) => {
