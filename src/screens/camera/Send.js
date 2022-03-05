@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import Navbar from '../../components/navbar/Navbar'
 import checkmark from '../../assets/images/black-checkmark.png';
 import sentImg from '../../assets/images/sent-img-icon.png';
+import GuestPic from '../../assets/images/guest-profile-pic.png';
 import './Camera.css'
 import './Send.css'
 
@@ -79,3 +80,30 @@ function Receiver({ friend, sendList, id, handleSendList }) {
     </button>
   )
 }
+
+Receiver.propTypes = {
+  friend: PropTypes.shape({
+    color: PropTypes.string,
+    fontSize: PropTypes.number
+  }),
+  id: PropTypes.string,
+  handleSendList: PropTypes.func,
+  sendList: PropTypes.array,
+}
+Receiver.defaultProps = {
+  sendList: [],
+  id: "Guest@Guest.com",
+  friend: {
+    "Guest@Guest.com": {
+      created: new Date().toLocaleString(),
+      profile_pic_url: GuestPic,
+      name: "Guest",
+      status: "new-friend",
+      streak: 0,
+      sent: 0,
+      received: 0,
+      last_time_stamp: null,
+      snaps: []
+    },
+  },
+};
