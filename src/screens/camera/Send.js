@@ -35,29 +35,22 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
           <ul style={{ opacity: 0 }}><li><button disabled>Back</button></li></ul>
         </div> */}
         <div className="send-section" style={{ style: 'relative', maxHeight: '100%', width: '100%', overflow: 'auto' }}>
-        {Object.keys(userDoc['friends']).map((key) => (
-              <Receiver friend={userDoc['friends'][key]} id={key} sendList={sendList} handleSendList={handleSendList} />
-            ))}
-            <Receiver sendList={sendList} handleSendList={handleSendList} />
-            <Receiver sendList={sendList} handleSendList={handleSendList} />
-            <Receiver sendList={sendList} handleSendList={handleSendList} />
-            <Receiver sendList={sendList} handleSendList={handleSendList} />
-            <Receiver sendList={sendList} handleSendList={handleSendList} />
-            <Receiver sendList={sendList} handleSendList={handleSendList} />
-            <Receiver sendList={sendList} handleSendList={handleSendList} />
-            <Receiver sendList={sendList} handleSendList={handleSendList} />
-            <Receiver sendList={sendList} handleSendList={handleSendList} />
-            <Receiver sendList={sendList} handleSendList={handleSendList} />
-            <Receiver sendList={sendList} handleSendList={handleSendList} />
-            <Receiver sendList={sendList} handleSendList={handleSendList} />
-            <Receiver sendList={sendList} handleSendList={handleSendList} />
-            <Receiver sendList={sendList} handleSendList={handleSendList} />
-            <Receiver sendList={sendList} handleSendList={handleSendList} />
-            {/* {test} */}
+          {Object.keys(userDoc['friends']).map((key) => (
+            <Receiver friend={userDoc['friends'][key]} id={key} sendList={sendList} handleSendList={handleSendList} />
+          ))}
+          <Receiver sendList={sendList} handleSendList={handleSendList} />
+          <Receiver sendList={sendList} handleSendList={handleSendList} />
+          <Receiver sendList={sendList} handleSendList={handleSendList} />
+          <Receiver sendList={sendList} handleSendList={handleSendList} />
+          <Receiver sendList={sendList} handleSendList={handleSendList} />
+          <Receiver sendList={sendList} handleSendList={handleSendList} />
+          {/* {test} */}
         </div>
         {sendList.length > 0 && (
           <div className="send-footer main-footer">
-            <button style={{ opacity: 0 }} disabled>Save</button>
+            <div style={{ width: '50%', display: 'flex', position:'relative', overflow: 'hidden' }}>
+              <h2>Selected: {sendList.length}</h2>
+            </div>
             <button onClick={close}><b><h2>Send</h2></b><img src={sentImg} style={{ height: '1rem', marginLeft: '0.5rem', filter: 'grayscale(100%)' }} /></button>
           </div>
         )}

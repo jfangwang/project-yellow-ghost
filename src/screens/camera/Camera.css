@@ -51,3 +51,29 @@
     display: flex;
     justify-content: space-between;
 }
+.captured-footer > * {
+    margin: 0 1rem 0 1rem;
+}
+.captured-footer button {
+    border-radius: 2rem;
+    padding: 0.7rem 1.2rem 0.7rem 1.2rem;
+    display: flex;
+    align-items: center;
+    background-color: yellow;
+    flex-direction: row;
+    color: black;
+}
+.closeIcon {
+    background-color: transparent;
+    /* color: white; */
+    box-shadow: 0 0px 12px 0 rgba(0, 0, 0, 0.4), 0 0px 0px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 100%;
+}
+.closeButton {
+    margin: 0 0 0 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    outline: none;
+}

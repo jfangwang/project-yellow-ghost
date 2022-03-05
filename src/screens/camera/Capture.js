@@ -3,11 +3,13 @@ import Footer from '../../components/footer/Footer';
 import { isMobile } from 'react-device-detect';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import SlidingMenu from '../../components/slidingMenu/SlidingMenu';
+import CloseIcon from '../../assets/images/close.png'
 import Send from './Send';
 import Navbar from '../../components/navbar/Navbar';
 import './Camera.css';
 import '../../components/navbar/Navbar.css'
 import '../../components/footer/Footer.css'
+import zIndex from '@mui/material/styles/zIndex';
 
 export default function Capture({ width, height, close, img, changedToSend, save, backToCapture, userDoc }) {
 	const [toggle, setToggle] = useState(false);
@@ -36,14 +38,14 @@ export default function Capture({ width, height, close, img, changedToSend, save
 	return (
 		<>
 			<div className="captured-screen" style={{ height: height, width: width }}>
-				<div className="floating-navbar main-navbar">
-					<ul><li><button onClick={close} style={{ backgroundColor: 'transparent' }}><CloseRoundedIcon /></button></li></ul>
+				<div className="floating-navbar main-navbar capture-navbar" style={{ backgroundColor: 'transparent', zIndex: 1 }}>
+					<button className="closeButton" onClick={close}><CloseRoundedIcon className="closeIcon" style={{height: '2.5rem', width: '2.5rem'}} /></button>
 					<ul></ul>
 				</div>
 				<div className="captured-footer main-footer">
-					<ul><li><button onClick={save}>Save</button></li></ul>
+					<button onClick={save}>Save</button>
 					{/* <ul><li><button onClick={changedToSend}>Send</button></li></ul> */}
-					<ul><li><button onClick={toggleSend}>Send</button></li></ul>
+					<button onClick={toggleSend}>Send To</button>
 				</div>
 				<img id="capturedImg" src={img} />
 			</div>

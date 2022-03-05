@@ -37,7 +37,7 @@
 }
 .message-main {
     height: 4rem;
-    border-bottom:1px grey solid;
+    border-bottom:1px rgb(209, 209, 209) solid;
     align-items: center;
 }
 .friend-profile-pic {
