@@ -165,10 +165,11 @@ function Receiver({ friend, sendList, id, handleSendList }) {
   }
 
   return (
-    <button className="item-container" onClick={toggle}>
+    <button className="item-container" onClick={toggle} disabled={friend['status'] === "pending" || friend['status'] === "not-friends"}>
       <div className="row">
         <img src={friend['profile_pic_url']} className="profile-pic" />
         {selected ? <h1 style={{ color: 'rgb(31, 168, 247)' }}>{friend['name']}</h1> : <h1 style={{ color: 'black' }}>{friend['name']}</h1>}
+        {(friend['status'] === "pending" || friend['status'] === "not-friends") && <p style={{marginLeft: '1rem', color: 'red'}}><i>{friend['status']}</i></p>}
       </div>
       <div>
         {selected ? <div className="selected-circle"><img className="checkmark" src={checkmark} alt="U+2713" ></img></div>
