@@ -277,7 +277,7 @@ export default class App extends Component {
         everyone: everyone,
       }
     })
-    console.log("updated people list");
+    // console.log("updated people list");
   }
   updateRelatedSnaps(user, person) {
     // Delete and/or update any snaps between id1 and id2
@@ -391,6 +391,8 @@ export default class App extends Component {
                   friendship: null,
                   profile_pic_url: doc.data()['profile_pic_url'],
                   name: doc.data()['name'],
+                  username: doc.data()['username'],
+                  phoneNumber: doc.data()['phoneNumber'],
                   status: "pending",
                   streak: 0,
                   sent: 0,
