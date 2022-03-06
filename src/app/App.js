@@ -40,6 +40,7 @@ export default class App extends Component {
       disable_swiping: false,
       showFooter: true,
       showNavbar: true,
+      updateCounter: 0,
       peopleList: {
         friends: Guest.friends,
         strangers: Strangers,
@@ -67,6 +68,7 @@ export default class App extends Component {
     this.startEveryoneSS = this.startEveryoneSS.bind(this);
     this.endEveryoneSS = this.endEveryoneSS.bind(this);
     this.updateRelatedSnaps = this.updateRelatedSnaps.bind(this);
+    this.incUpdateCount = this.incUpdateCount.bind(this);
   }
   componentDidMount() {
     this.checkCurrentUser()
@@ -120,6 +122,10 @@ export default class App extends Component {
     this.setState({
       userDoc: e
     })
+  }
+  incUpdateCount() {
+    const num = this.state.updateCounter;
+    this.setState({ updateCounter: num + 1 })
   }
 
   // Firebase Functions
@@ -230,10 +236,21 @@ export default class App extends Component {
     userSnapshot = db.collection("Users").doc(user.uid).onSnapshot(
       { includeMetadataChanges: false },
       (doc) => {
-        console.log('user snapshot changed');
+        this.incUpdateCount();
+        console.log('user snapshot updated. Update Count: ', this.state.updateCounter);
         this.setState({ userDoc: doc.data() })
         if ((Object.keys(this.state.peopleList['friends']).sort() !== Object.keys(doc.data()['friends']).sort())) {
           this.updatePeopleList();
+        }
+        if (this.state.updateCounter === 1 && this.state.userDoc['deleteSnaps'].length > 0) {
+          this.state.userDoc['deleteSnaps'].forEach((id) => {
+            db.collection("Photos").doc(id).delete();
+            storage.ref(`posts/${id}`).delete();
+          })
+          db.collection("Users").doc(this.state.userDoc['id']).update({
+            deleteSnaps: [],
+          })
+          console.log("Deleted trashed snaps")
         }
       }, (err) => console.log("error: ", err))
   }
@@ -448,7 +465,7 @@ export default class App extends Component {
       } else if (action === "accept request") {
         // Accept Friend Request
         let ts = new Date().toLocaleString()
-        friendRef.update({ [`friends.${userDoc['id']}.status`]: 'new-friend', [`friends.${userDoc['id']}.friendship`]: ts}).catch((e) => console.log("err: ", e))
+        friendRef.update({ [`friends.${userDoc['id']}.status`]: 'new-friend', [`friends.${userDoc['id']}.friendship`]: ts }).catch((e) => console.log("err: ", e))
         temp = userDoc['added_me'][person];
         delete userDoc['added_me'][person];
         userDoc['friends'][person] = temp;

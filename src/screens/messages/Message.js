@@ -51,13 +51,21 @@ export default function Message({ friend, streak_emoji, disableNavFootSlide, use
 			db.collection("Users").doc(userDoc['id']).update({
 				[`friends.${friend['id']}.snaps`]: temp['friends'][friend['id']]['snaps']
 			}).then(() => {
-				if (Object.keys(temp['friends'][friend['id']]['snaps']).length <= 0)  {
+				if (Object.keys(temp['friends'][friend['id']]['snaps']).length <= 0) {
 					const ts = new Date().toLocaleString();
-					// Update Friend Doc if user is on last snap
+					// Update Friend and User Doc if user is on last snap
 					db.collection("Users").doc(friend['id']).update({
 						[`friends.${userDoc['id']}.status`]: 'opened',
 						[`friends.${userDoc['id']}.last_time_stamp`]: ts,
 						[`friends.${userDoc['id']}.streakRef`]: ts,
+					})
+
+					// Update User Doc
+					db.collection("Users").doc(userDoc['id']).update({
+						[`friends.${friend['id']}.status`]: 'received',
+						[`friends.${friend['id']}.last_time_stamp`]: ts,
+						[`friends.${friend['id']}.snaps`]: [],
+						[`friends.${friend['id']}.streakRef`]: ts,
 					})
 				}
 			})
@@ -67,7 +75,7 @@ export default function Message({ friend, streak_emoji, disableNavFootSlide, use
 					setLU(true)
 					// Move Photo id to deleteSnaps for pending delete
 					db.collection("Users").doc(userDoc['id']).update({
-						deleteSnaps: firstSnapId
+						deleteSnaps: firebase.firestore.FieldValue.arrayUnion(firstSnapId),
 					})
 				} else {
 					setLU(false)
@@ -76,6 +84,12 @@ export default function Message({ friend, streak_emoji, disableNavFootSlide, use
 						sent: firebase.firestore.FieldValue.arrayRemove(userDoc['id']),
 					})
 				}
+			})
+		} else {
+			const ts = new Date().toLocaleString();
+			db.collection("Users").doc(userDoc['id']).update({
+				[`friends.${friend['id']}.status`]: 'received',
+				[`friends.${friend['id']}.snaps`]: [],
 			})
 		}
 	}
@@ -87,17 +101,6 @@ export default function Message({ friend, streak_emoji, disableNavFootSlide, use
 			})
 		}
 		if (Object.keys(friend.snaps).length <= 0) {
-			// Update User and Friend Docs
-			const ts = new Date().toLocaleString();
-
-			// Update User Doc
-			db.collection("Users").doc(userDoc['id']).update({
-				[`friends.${friend['id']}.status`]: 'received',
-				[`friends.${friend['id']}.last_time_stamp`]: ts,
-				[`friends.${friend['id']}.snaps`]: [],
-				[`friends.${friend['id']}.streakRef`]: ts,
-			})
-
 			setImg(null);
 			disableNavFootSlide(false);
 		} else {
