@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import './Message.css';
+import { auth, db, provider, storage } from '../../utils/Firebase';
 import PropTypes from 'prop-types';
 import Guest from '../../assets/images/guest-profile-pic.png';
 import ReactTimeago from 'react-timeago';
 import { isMobile } from 'react-device-detect';
+import firebase from 'firebase/app';
+import { Store } from '@mui/icons-material';
 
 export default function Message({ friend, streak_emoji, disableNavFootSlide, userDoc, height, width }) {
 	const [ar, setar] = useState(9 / 16);
 	const [opened, setOpened] = useState([]);
 	const [img, setImg] = useState(null);
+	const [snapId, setsnapId] = useState(null);
+	const [lastUser, setLU] = useState(false);
 	var icon_class = "message-" + friend["status"]
 	var emoji = null;
 	var status_dict = {
@@ -30,12 +35,78 @@ export default function Message({ friend, streak_emoji, disableNavFootSlide, use
 	emoji = emoji_dict[friend["status"]]
 
 	const open = () => {
-		setImg("https://firebasestorage.googleapis.com/v0/b/ghost-f8b34.appspot.com/o/posts%2F01f43a64-b528-420b-abdb-e022c57493ac?alt=media&token=513aa215-8c3b-4a96-87cc-9df2c13b7c6e");
-		disableNavFootSlide();
+		console.log("open")
+		if (Object.keys(friend.snaps).length > 0) {
+			let firstSnapId = friend.snaps[Object.keys(friend.snaps)[0]].id;
+			setsnapId(firstSnapId);
+			// Get Image
+			db.collection("Photos").doc(firstSnapId).get().then((doc) => {
+				setImg(doc.data()['image_url'])
+				disableNavFootSlide(true);
+			})
+			// Delete snap from userdoc
+			let temp = userDoc;
+			let key = Object.keys(friend.snaps)[0];
+			delete temp['friends'][friend['id']]['snaps'][key]
+			db.collection("Users").doc(userDoc['id']).update({
+				[`friends.${friend['id']}.snaps`]: temp['friends'][friend['id']]['snaps']
+			}).then(() => {
+				if (Object.keys(temp['friends'][friend['id']]['snaps']).length <= 0)  {
+					const ts = new Date().toLocaleString();
+					// Update Friend Doc if user is on last snap
+					db.collection("Users").doc(friend['id']).update({
+						[`friends.${userDoc['id']}.status`]: 'opened',
+						[`friends.${userDoc['id']}.last_time_stamp`]: ts,
+						[`friends.${userDoc['id']}.streakRef`]: ts,
+					})
+				}
+			})
+			// Update Photo Doc
+			db.collection("Photos").doc(firstSnapId).get().then((doc) => {
+				if (doc.data()['sent'].length <= 1) {
+					setLU(true)
+					// Move Photo id to deleteSnaps for pending delete
+					db.collection("Users").doc(userDoc['id']).update({
+						deleteSnaps: firstSnapId
+					})
+				} else {
+					setLU(false)
+					// Update Photo Doc
+					db.collection("Photos").doc(firstSnapId).update({
+						sent: firebase.firestore.FieldValue.arrayRemove(userDoc['id']),
+					})
+				}
+			})
+		}
 	}
 	const close = () => {
-		setImg(null);
-		disableNavFootSlide();
+		if (snapId && lastUser) {
+			deletePhoto(snapId)
+			db.collection("Users").doc(userDoc['id']).update({
+				deleteSnaps: firebase.firestore.FieldValue.arrayRemove(snapId),
+			})
+		}
+		if (Object.keys(friend.snaps).length <= 0) {
+			// Update User and Friend Docs
+			const ts = new Date().toLocaleString();
+
+			// Update User Doc
+			db.collection("Users").doc(userDoc['id']).update({
+				[`friends.${friend['id']}.status`]: 'received',
+				[`friends.${friend['id']}.last_time_stamp`]: ts,
+				[`friends.${friend['id']}.snaps`]: [],
+				[`friends.${friend['id']}.streakRef`]: ts,
+			})
+
+			setImg(null);
+			disableNavFootSlide(false);
+		} else {
+			open()
+		}
+	}
+	const deletePhoto = (id) => {
+		db.collection("Photos").doc(id).delete();
+		storage.ref(`posts/${id}`).delete();
 	}
 
 	useEffect(() => {
@@ -69,8 +140,8 @@ export default function Message({ friend, streak_emoji, disableNavFootSlide, use
 	return (
 		<>
 			{img ?
-				<div className="img-overlay" style={{height:height, width: width}} onClick={close}>
-					<img id="receivedImg" src={img}/>
+				<div className="img-overlay" style={{ height: height, width: width }} onClick={close}>
+					<img id="receivedImg" src={img} />
 				</div>
 				:
 				<li className="message-main row" onClick={friend["status"] === "new" ? open : null}>

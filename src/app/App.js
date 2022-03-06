@@ -97,16 +97,24 @@ export default class App extends Component {
   disable_swiping(e) {
     this.setState({ disable_swiping: e });
   }
-  toggleNavbar() {
-    this.setState({ showNavbar: !this.state.showNavbar });
+  toggleNavbar(e) {
+    if (e === true || e === false) {
+      this.setState({ showNavbar: !e });
+    } else {
+      this.setState({ showNavbar: !this.state.showNavbar });
+    }
   }
-  toggleFooter() {
-    this.setState({ showFooter: !this.state.showFooter });
+  toggleFooter(e) {
+    if (e === true || e === false) {
+      this.setState({ showFooter: !e });
+    } else {
+      this.setState({ showFooter: !this.state.showFooter });
+    }
   }
   disableNavFootSlide(e) {
     this.disable_swiping(e)
-    this.toggleFooter();
-    this.toggleNavbar();
+    this.toggleFooter(e);
+    this.toggleNavbar(e);
   }
   setUserDoc(e) {
     this.setState({
@@ -151,18 +159,19 @@ export default class App extends Component {
       created: c,
       name: user.displayName,
       email: user.email,
+      friendship: c,
       id: user.uid,
       username: user.email,
       profile_pic_url: user.photoURL,
       phoneNumber: user.phoneNumber,
       streak_emoji: "\u{1F525}",
-      sent: 0,
-      received: 0,
       brokeup: {},
       added_me: {},
       pending: {},
+      deleteSnaps: [],
       friends: {
         [user.uid]: {
+          id: user.uid,
           created: c,
           email: user.email,
           name: user.displayName,
@@ -172,10 +181,11 @@ export default class App extends Component {
           nickname: null,
           status: "new-friend",
           streak: 0,
+          streakRef: [],
           sent: 0,
           received: 0,
           last_time_stamp: null,
-          snaps: []
+          snaps: {},
         }
       },
     })
@@ -251,6 +261,7 @@ export default class App extends Component {
     if (everyoneSnapshot !== undefined) {
       console.log("Ending Everyone SS");
       everyoneSnapshot();
+      this.updatePeopleList()
     }
   }
   GoogleSignIn = () => {
@@ -349,6 +360,7 @@ export default class App extends Component {
     } else {
       // On Firebase
       userEntry = {
+        id: userDoc['id'],
         created: userDoc['created'],
         friendship: null,
         profile_pic_url: userDoc['profile_pic_url'],
@@ -387,6 +399,7 @@ export default class App extends Component {
             friendRef.get().then((doc) => {
               if (doc.exists) {
                 personEntry = {
+                  id: doc.data()['id'],
                   created: doc.data()['created'],
                   friendship: null,
                   profile_pic_url: doc.data()['profile_pic_url'],
@@ -434,12 +447,13 @@ export default class App extends Component {
         }).catch((e) => console.log("err: ", e))
       } else if (action === "accept request") {
         // Accept Friend Request
-        friendRef.update({ [`friends.${userDoc['id']}.status`]: 'new-friend' }).catch((e) => console.log("err: ", e))
+        let ts = new Date().toLocaleString()
+        friendRef.update({ [`friends.${userDoc['id']}.status`]: 'new-friend', [`friends.${userDoc['id']}.friendship`]: ts}).catch((e) => console.log("err: ", e))
         temp = userDoc['added_me'][person];
         delete userDoc['added_me'][person];
         userDoc['friends'][person] = temp;
         userDoc['friends'][person]['status'] = 'new-friend';
-        userRef.update({ added_me: userDoc['added_me'], friends: userDoc['friends'] }).catch((e) => console.log("err: ", e))
+        userRef.update({ added_me: userDoc['added_me'], friends: userDoc['friends'], [`friends.${person}.friendship`]: ts }).catch((e) => console.log("err: ", e))
       } else if (action === "remove request") {
         // Remove Friend Request
         friendRef.update({ [`added_me.${userDoc['id']}`]: firebase.firestore.FieldValue.delete() }).catch((e) => console.log("err: ", e))

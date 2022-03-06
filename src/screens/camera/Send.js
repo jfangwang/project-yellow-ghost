@@ -94,13 +94,9 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
       newDoc['friends'][id]['last_time_stamp'] = timeStamp;
     })
     console.log(newDoc);
-    if (sendList.length === 1 && sendList[0] === userDoc['id']) {
-      console.log("Sending to yourself");
-    } else {
-      userRef.update({ "friends": newDoc['friends'] }).then(() => {
-        updateFriendDoc();
-      })
-    }
+    userRef.update({ "friends": newDoc['friends'] }).then(() => {
+      updateFriendDoc();
+    })
   }
   const updateFriendDoc = () => {
     let friendRef;
@@ -108,9 +104,10 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
       friendRef = db.collection("Users").doc(id);
       friendRef.update({
         [`friends.${userDoc['id']}.status`]: "new",
-        [`friends.${userDoc['id']}.snaps`]: firebase.firestore.FieldValue.arrayUnion(imgId),
+        [`friends.${userDoc['id']}.snaps.${timeStamp.replace(/\//g,"-")}`]: {id: imgId, type: "picture"},
         [`friends.${userDoc['id']}.received`]: firebase.firestore.FieldValue.increment(1),
         [`friends.${userDoc['id']}.last_time_stamp`]: timeStamp,
+        [`friends.${userDoc['id']}.streakRef`]: firebase.firestore.FieldValue.arrayUnion(timeStamp),
       });
     })
   }
