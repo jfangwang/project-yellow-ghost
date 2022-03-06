@@ -127,6 +127,99 @@ export default class App extends Component {
       }
     });
   }
+  getUserOnFirebase(user) {
+    let query = db.collection("Users").doc(user.uid);
+    query.get().then((doc) => {
+      if (!doc.exists) {
+        this.createUserOnFirebase(user)
+      } else {
+        this.startSnapShot(user);
+      }
+    })
+  }
+  createUserOnFirebase(user) {
+    console.log("new user incoming")
+    const c = new Date().toLocaleString()
+    db.collection("Users").doc(user.uid).set({
+      created: c,
+      name: user.displayName,
+      email: user.email,
+      username: user.email,
+      profile_pic_url: user.photoURL,
+      phoneNumber: user.phoneNumber,
+      streak_emoji: "\u{1F525}",
+      sent: 0,
+      received: 0,
+      brokeup: {},
+      added_me: {},
+      pending: {},
+      friends: {
+        [user.uid]: {
+          email: user.email,
+          created: c,
+          profile_pic_url: user.photoURL,
+          name: user.displayName,
+          status: "new-friend",
+          streak: 0,
+          sent: 0,
+          received: 0,
+          last_time_stamp: null,
+          snaps: []
+        }
+      },
+    })
+      .then(() => {
+        db.collection("Users").doc("Everyone").update({
+          [`all_users.${user.uid}`]: {
+            created: c,
+            name: user.displayName,
+            email: user.email,
+            username: user.email,
+            profile_pic_url: user.photoURL,
+            phoneNumber: user.phoneNumber,
+          },
+        }).then(() => {
+          console.log("Everyone Doc Updated");
+          this.startSnapShot(user)
+        })
+        .catch(() => {
+          db.collection("Users").doc("Everyone").set({
+            all_users: {
+              [`${user.uid}`]: {
+                created: c,
+                name: user.displayName,
+                email: user.email,
+                username: user.email,
+                profile_pic_url: user.photoURL,
+                phoneNumber: user.phoneNumber,
+              },
+            }
+          }).then(() => {
+            console.log("Everyone Doc Created")
+            this.startSnapShot(user)
+          })
+          .catch((error) => console.log("Error: ", error))
+        })
+      })
+  }
+  startSnapShot(user) {
+    console.log("Starting snapshot");
+    userSnapshot = db.collection("Users").doc(user.uid).onSnapshot(
+      { includeMetadataChanges: true },
+      (doc) => {
+        this.setState({ userDoc: doc.data() })
+        // if ((Object.keys(this.state.peopleList['latestFriends']).length !== Object.keys(doc.data()['friends']).length)) {
+        //   this.updatePeopleList();
+        // }
+        console.log('snapshot changed');
+      }, (err) => console.log("error: ", err))
+  }
+  endSnapShot() {
+    if (userSnapshot !== undefined) {
+      console.log("Ending snapshot");
+      userSnapshot();
+    }
+  }
   GoogleSignIn = () => {
     auth.signInWithPopup(provider)
   }
@@ -157,49 +250,6 @@ export default class App extends Component {
         }
       })
     })
-  }
-  getUserOnFirebase(user) {
-    let query = db.collection("Users").doc(user.email);
-    query.get().then((doc) => {
-      if (!doc.exists) {
-        this.createUserOnFirebase(user)
-      } else {
-        this.startSnapShot(user.email);
-      }
-    })
-  }
-  createUserOnFirebase(user) {
-    const c = new Date().toLocaleString()
-    db.collection("Users").doc(user.email).set({
-      created: c,
-      name: user.displayName,
-      email: user.email,
-      username: user.email,
-      profile_pic_url: user.photoURL,
-      phoneNumber: user.phoneNumber,
-      streak_emoji: "\u{1F525}",
-      sent: 0,
-      received: 0,
-      brokeup: {},
-      added_me: {},
-      pending: {},
-      friends: {
-        [user.email]: {
-          created: c,
-          profile_pic_url: user.photoURL,
-          name: user.displayName,
-          status: "new-friend",
-          streak: 0,
-          sent: 0,
-          received: 0,
-          last_time_stamp: null,
-          snaps: []
-        }
-      },
-    })
-      .then(() => {
-        console.log("New user added to firebase!");
-      })
   }
   edit_friends(action, person) {
     let peopleList = this.state.peopleList;
@@ -375,27 +425,6 @@ export default class App extends Component {
       })
     }
   }
-  startSnapShot(name) {
-    console.log("Starting snapshot");
-    userSnapshot = db.collection("Users").doc(name).onSnapshot(
-      { includeMetadataChanges: true },
-      (doc) => {
-        this.setState({ userDoc: doc.data() })
-        if ((Object.keys(this.state.peopleList['latestFriends']).length !== Object.keys(doc.data()['friends']).length)) {
-          // console.log(Object.keys(this.state.peopleList['latestFriends']).length)
-          // console.log(Object.keys(doc.data()['friends']).length)
-          this.updatePeopleList();
-        }
-        console.log('snapshot changed');
-      });
-  }
-  endSnapShot() {
-    if (userSnapshot !== undefined) {
-      console.log("Ending snapshot");
-      userSnapshot();
-    }
-  }
-
   render() {
     const { index, height, width, flipCamCounter, loggedIn, userDoc, disable_swiping, showNavbar, showFooter, peopleList } = this.state;
     return (

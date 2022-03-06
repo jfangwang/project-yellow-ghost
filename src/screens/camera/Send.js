@@ -26,7 +26,7 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
       changeGuestDoc();
     } else {
       console.log("Sending to fake firebase")
-      updateFriendDoc();
+      // updateFriendDoc();
       // send(imgId)
     }
     close()

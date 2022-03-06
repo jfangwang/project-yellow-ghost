@@ -42,9 +42,9 @@ export default class Account extends Component {
           <div className="section">
             <h1>Friends</h1>
             <div className="col">
-              {Object.keys(userDoc.friends).filter(item => item !== userDoc['email']).sort().map((key) => (
+              {/* {Object.keys(userDoc.friends).filter(item => item !== userDoc['email']).sort().map((key) => (
                 <h3>{userDoc.friends[key]['name']}</h3>
-              ))}
+              ))} */}
             </div>
           </div>
         }
@@ -53,7 +53,7 @@ export default class Account extends Component {
           <img src="https://media.npr.org/assets/img/2017/06/30/snapchat-world_custom-7763b62a81588d5def16ef6335a573d94e0dc908.jpg" />
         </div>
         <div className="section">
-          {userDoc.created !== 'N/A' && <h3>Joined Snapchat Clone on {userDoc.created}</h3>}
+          {/* {userDoc.created !== 'N/A' && <h3>Joined Snapchat Clone on {userDoc['created']}</h3>} */}
         </div>
         <div className="section">
           {userDoc['name'] === 'Guest' ?
