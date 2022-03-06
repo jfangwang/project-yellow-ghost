@@ -481,6 +481,8 @@ export default class App extends Component {
             <Messages
               userDoc={userDoc}
               disableNavFootSlide={this.disableNavFootSlide}
+              height={height}
+              width={width}
             />
           </div>
           <div className="slide slide2">

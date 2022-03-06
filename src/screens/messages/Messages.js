@@ -9,7 +9,7 @@ for (let i = 0; i < 30; i += 1) {
   list.push(<Message />);
 }
 
-function Messages({userDoc, disableNavFootSlide}) {
+function Messages({userDoc, disableNavFootSlide, height, width}) {
   return (
     <ul className="messages-container">
       {Object.keys(userDoc.friends).sort().map((key) => (
@@ -17,6 +17,8 @@ function Messages({userDoc, disableNavFootSlide}) {
           disableNavFootSlide={disableNavFootSlide}
           friend={userDoc.friends[key]}
           userDoc={userDoc}
+          height={height}
+          width={width}
         />
       ))}
       {/* {list} */}
