@@ -102,7 +102,7 @@ function Friend(props) {
             </div>
             <div className="friend-info">
               <h2>{friends[key].name}</h2>
-              <p style={{ fontSize: "0.9rem" }}>{key}</p>
+              <p style={{ fontSize: "0.9rem" }}>{friends[key].username}</p>
             </div>
           </div>
           <div className="friend-button">
@@ -130,7 +130,7 @@ function AddedMe(props) {
           </div>
           <div className="friend-info">
             <h2>{addedMe[key].name}</h2>
-            <p>{key}</p>
+            <p style={{ fontSize: "0.9rem" }}>{addedMe[key].username}</p>
           </div>
         </div>
         <div className="friend-button">
@@ -153,7 +153,7 @@ function Stranger(props) {
           </div>
           <div className="friend-info">
             <h2>{strangers[key].name}</h2>
-            <p>{key}</p>
+            <p style={{ fontSize: "0.9rem" }}>{strangers[key].username}</p>
           </div>
         </div>
         <div className="friend-button">
@@ -177,7 +177,7 @@ function Everyone(props) {
           </div>
           <div className="friend-info">
             <h2>{everyone[key].name}</h2>
-            <p>{key}</p>
+            <p style={{ fontSize: "0.9rem" }}>{everyone[key].username}</p>
           </div>
         </div>
         <div className="friend-button">

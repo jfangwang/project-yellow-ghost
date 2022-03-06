@@ -66,6 +66,7 @@ export default class App extends Component {
     this.setUserDoc = this.setUserDoc.bind(this);
     this.startEveryoneSS = this.startEveryoneSS.bind(this);
     this.endEveryoneSS = this.endEveryoneSS.bind(this);
+    this.updateRelatedSnaps = this.updateRelatedSnaps.bind(this);
   }
   componentDidMount() {
     this.checkCurrentUser()
@@ -150,6 +151,7 @@ export default class App extends Component {
       created: c,
       name: user.displayName,
       email: user.email,
+      id: user.uid,
       username: user.email,
       profile_pic_url: user.photoURL,
       phoneNumber: user.phoneNumber,
@@ -192,25 +194,25 @@ export default class App extends Component {
           this.startSnapShot(user)
           this.startEveryoneSS();
         })
-        .catch(() => {
-          db.collection("Users").doc("Everyone").set({
-            all_users: {
-              [`${user.uid}`]: {
-                created: c,
-                name: user.displayName,
-                email: user.email,
-                username: user.email,
-                profile_pic_url: user.photoURL,
-                phoneNumber: user.phoneNumber,
-              },
-            }
-          }).then(() => {
-            console.log("Everyone Doc Created")
-            this.startSnapShot(user)
-            this.startEveryoneSS();
+          .catch(() => {
+            db.collection("Users").doc("Everyone").set({
+              all_users: {
+                [`${user.uid}`]: {
+                  created: c,
+                  name: user.displayName,
+                  email: user.email,
+                  username: user.email,
+                  profile_pic_url: user.photoURL,
+                  phoneNumber: user.phoneNumber,
+                },
+              }
+            }).then(() => {
+              console.log("Everyone Doc Created")
+              this.startSnapShot(user)
+              this.startEveryoneSS();
+            })
+              .catch((error) => console.log("Error: ", error))
           })
-          .catch((error) => console.log("Error: ", error))
-        })
       })
   }
   startSnapShot(user) {
@@ -239,7 +241,7 @@ export default class App extends Component {
         console.log('everyone snapshot changed');
         let temp = this.state.peopleList;
         temp['everyone'] = doc.data()['all_users'];
-        this.setState({peopleList: temp});
+        this.setState({ peopleList: temp });
         this.updatePeopleList();
       },
       (err) => console.log("error: ", err)
@@ -264,7 +266,7 @@ export default class App extends Component {
     let friends = this.state.userDoc.friends;
     let strangers = {};
     let everyone = this.state.peopleList.everyone;
-    let s_keys = Object.keys(everyone).filter(function(obj) { return Object.keys(friends).indexOf(obj) == -1; });
+    let s_keys = Object.keys(everyone).filter(function (obj) { return Object.keys(friends).indexOf(obj) == -1; });
     s_keys.forEach((id) => {
       strangers[id] = everyone[id];
     })
@@ -277,6 +279,47 @@ export default class App extends Component {
     })
     console.log("updated people list");
   }
+  updateRelatedSnaps(user, person) {
+    // Delete and/or update any snaps between id1 and id2
+    const photoRef = db.collection("Photos");
+    let trash = [];
+    let SentByUser = [];
+    let SentByPerson = [];
+    photoRef.where("sender", '==', user).where("sent", "array-contains", person).get().then((doc) => {
+      doc.docs.forEach((photo) => {
+        if (photo.data()['sent'].length == 1) {
+          trash.push(photo.id);
+        } else {
+          SentByUser.push(photo.id);
+        }
+      })
+    }).then(() => {
+      photoRef.where("sender", '==', person).where("sent", "array-contains", user).get().then((doc) => {
+        doc.docs.forEach((photo) => {
+          if (photo.data()['sent'].length == 1) {
+            trash.push(photo.id);
+          } else {
+            SentByPerson.push(photo.id);
+          }
+        })
+      }).then(() => {
+        trash.forEach((item) => {
+          photoRef.doc(item).delete().catch(() => { });
+          storage.ref(`posts/${item}`).delete().catch(() => { })
+        })
+        SentByUser.forEach((item) => {
+          photoRef.doc(item).update({
+            sent: firebase.firestore.FieldValue.arrayRemove(person)
+          })
+        })
+        SentByPerson.forEach((item) => {
+          photoRef.doc(item).update({
+            sent: firebase.firestore.FieldValue.arrayRemove(user)
+          })
+        })
+      })
+    })
+  }
   edit_friends(action, person) {
     let peopleList = this.state.peopleList;
     let userDoc = this.state.userDoc;
@@ -285,7 +328,7 @@ export default class App extends Component {
     let personEntry = {};
     let temp;
     const friendRef = db.collection("Users").doc(person);
-    const userRef = db.collection("Users").doc(userDoc['email']);
+    const userRef = db.collection("Users").doc(userDoc['id']);
     const photoRef = db.collection("Photos")
     if (!this.state.loggedIn) {
       // Guest Account
@@ -304,152 +347,106 @@ export default class App extends Component {
         peopleList: peopleList,
       })
     } else {
-      // Logged In Account
-      this.endSnapShot();
-      this.endEveryoneSS();
-      friendRef.get().then((doc) => {
-        friendDoc = doc.data();
-        userEntry = {
-          created: userDoc['created'],
-          friendship: null,
-          profile_pic_url: userDoc['profile_pic_url'],
-          name: userDoc['name'],
-          status: "pending",
-          streak: 0,
-          sent: 0,
-          received: 0,
-          last_time_stamp: null,
-          snaps: []
-        }
-        personEntry = {
-          created: doc.data()['created'],
-          friendship: null,
-          profile_pic_url: doc.data()['profile_pic_url'],
-          name: doc.data()['name'],
-          status: "pending",
-          streak: 0,
-          sent: 0,
-          received: 0,
-          last_time_stamp: null,
-          snaps: []
-        }
-      }).then(() => {
-        if (action === "add") {
-          if (Object.keys(userDoc['brokeup']).includes(person)) {
-            // Restore old friend
-            delete peopleList['strangers'][person];
-            temp = userDoc['brokeup'][person];
-            delete userDoc['brokeup'][person];
-            userDoc['friends'][person] = temp;
-            if (userDoc['friends'][person]['status'] === 'sent') {
-              friendDoc['friends'][userDoc['email']]['status'] = 'new';
-            } else if (userDoc['friends'][person]['status'] === 'opened') {
-              friendDoc['friends'][userDoc['email']]['status'] = 'received';
-            } else if (userDoc['friends'][person]['status'] === 'received') {
-              friendDoc['friends'][userDoc['email']]['status'] = 'opened';
-            } else if (userDoc['friends'][person]['status'] === 'new') {
-              friendDoc['friends'][userDoc['email']]['status'] = 'sent';
-            } else {
-              friendDoc['friends'][userDoc['email']]['status'] = 'new-friend';
-            }
-          } else {
-            // Send Friend Request
-            friendDoc['added_me'][userDoc['email']] = userEntry;
-            userDoc['friends'][person] = personEntry;
-            delete peopleList['strangers'][person];
+      // On Firebase
+      userEntry = {
+        created: userDoc['created'],
+        friendship: null,
+        profile_pic_url: userDoc['profile_pic_url'],
+        name: userDoc['name'],
+        username: userDoc['username'],
+        phoneNumber: userDoc['phoneNumber'],
+        status: "pending",
+        streak: 0,
+        sent: 0,
+        received: 0,
+        last_time_stamp: null,
+        snaps: []
+      };
+      if (action === "add") {
+        if (Object.keys(userDoc['brokeup']).includes(person)) {
+          // Restore old friend
+          delete peopleList['strangers'][person];
+          temp = userDoc['brokeup'][person];
+          delete userDoc['brokeup'][person];
+          userDoc['friends'][person] = temp;
+          let status = 'new-friend';
+          if (userDoc['friends'][person]['status'] === 'sent') {
+            status = 'new';
+          } else if (userDoc['friends'][person]['status'] === 'opened') {
+            status = 'received';
+          } else if (userDoc['friends'][person]['status'] === 'received') {
+            status = 'opened';
+          } else if (userDoc['friends'][person]['status'] === 'new') {
+            status = 'sent';
           }
-        } else if (action === "remove") {
-          if (Object.keys(friendDoc['brokeup']).includes(userDoc['email'])) {
-            // Friend initiated breakup
+          friendRef.update({ [`friends.${userDoc['id']}.status`]: status }).catch((e) => console.log("err: ", e))
+          userRef.update({ brokeup: userDoc['brokeup'], friends: userDoc['friends'] }).catch((e) => console.log("err: ", e))
+        } else {
+          // Send Friend Request
+          if (person !== userDoc['id']) {
+            friendRef.get().then((doc) => {
+              if (doc.exists) {
+                personEntry = {
+                  created: doc.data()['created'],
+                  friendship: null,
+                  profile_pic_url: doc.data()['profile_pic_url'],
+                  name: doc.data()['name'],
+                  status: "pending",
+                  streak: 0,
+                  sent: 0,
+                  received: 0,
+                  last_time_stamp: null,
+                  snaps: []
+                };
+                userRef.set({ "friends": { [`${person}`]: personEntry } }, { merge: true }).then(() => {
+                  delete peopleList['strangers'][person];
+                  friendRef.set({ "added_me": { [`${userDoc['id']}`]: userEntry } }, { merge: true }).catch((e) => console.log("err: ", e))
+                }).catch((e) => console.log("err: ", e))
+              }
+            }).catch((e) => console.log("err: ", e))
+          } else {
+            console.log("Cannot add yourself");
+          }
+        }
+      } else if (action === "remove") {
+        friendRef.get().then((doc) => { friendDoc = doc.data() }).then(() => {
+          if (Object.keys(friendDoc['brokeup']).includes(userDoc['id'])) {
+            // Friend Initiated Breakup
             peopleList['strangers'][person] = userDoc['friends'][person];
-            delete friendDoc['brokeup'][userDoc['email']];
-            delete userDoc['friends'][person];
-            // Delete and/or update any snaps related to former friend and user
-            let trash = [];
-            let SentByUser = [];
-            let SentByPerson = [];
-            photoRef.where("sender", '==', userDoc['email']).where("sent", "array-contains", person).get().then((doc) => {
-              doc.docs.forEach((photo) => {
-                if (photo.data()['sent'].length == 1) {
-                  trash.push(photo.id);
-                } else {
-                  SentByUser.push(photo.id);
-                }
-              })
-            }).then(() => {
-              photoRef.where("sender", '==', person).where("sent", "array-contains", userDoc['email']).get().then((doc) => {
-                doc.docs.forEach((photo) => {
-                  if (photo.data()['sent'].length == 1) {
-                    trash.push(photo.id);
-                  } else {
-                    SentByPerson.push(photo.id);
-                  }
-                })
-              }).then(() => {
-                trash.forEach((item) => {
-                  photoRef.doc(item).delete().catch(() => { });
-                  storage.ref(`posts/${item}`).delete().catch(() => { })
-                })
-                SentByUser.forEach((item) => {
-                  photoRef.doc(item).update({
-                    sent: firebase.firestore.FieldValue.arrayRemove(person)
-                  })
-                })
-                SentByPerson.forEach((item) => {
-                  photoRef.doc(item).update({
-                    sent: firebase.firestore.FieldValue.arrayRemove(userDoc['email'])
-                  })
-                })
-              })
-            })
+            friendRef.update({ [`brokeup.${userDoc['id']}`]: firebase.firestore.FieldValue.delete() }).catch((e) => console.log("err: ", e));
+            userRef.update({ [`friends.${person}`]: firebase.firestore.FieldValue.delete() }).catch((e) => console.log("err: ", e))
+            this.updateRelatedSnaps(person, userDoc['id']);
           } else {
             // Initiating Breakup
-            peopleList['strangers'][person] = userDoc['friends'][person];
-            temp = userDoc['friends'][person];
-            delete userDoc['friends'][person];
-            userDoc['brokeup'][person] = temp;
-            friendDoc['friends'][userDoc['email']]['status'] = 'not-friends';
+            if (person !== userDoc['id']) {
+              friendRef.update({ [`friends.${userDoc['id']}.status`]: 'not-friends' }).catch((e) => console.log("err: ", e))
+              peopleList['strangers'][person] = userDoc['friends'][person];
+              temp = userDoc['friends'][person];
+              delete userDoc['friends'][person];
+              userDoc['brokeup'][person] = temp;
+              userRef.update({ brokeup: userDoc['brokeup'], friends: userDoc['friends'] }).catch((e) => console.log("err: ", e))
+            } else {
+              console.log("Cannot remove yourself")
+            }
           }
-        } else if (action === "accept request") {
-          // Accept Friend Request
-          temp = userDoc['added_me'][person];
-          delete userDoc['added_me'][person];
-          userDoc['friends'][person] = temp;
-          userDoc['friends'][person]['status'] = 'new-friend';
-          friendDoc['friends'][userDoc['email']]['status'] = 'new-friend';
-        } else if (action === "remove request") {
-          // Remove Friend Request
-          peopleList['strangers'][person] = userDoc['friends'][person];
-          delete friendDoc['added_me'][userDoc['email']];
-          delete userDoc['friends'][person];
-        } else {
-          console.log("action unknown: ", action)
-        }
-        // Update state variables and let firebase update values later
-        this.setState({
-          friends: userDoc['friends'],
-          peopleList: peopleList,
-        })
-        // Update actions on firebase
-        friendRef.update({
-          added_me: friendDoc['added_me'],
-          brokeup: friendDoc['brokeup'],
-          friends: friendDoc['friends'],
-        }).then(() => {
-          userRef.update({
-            brokeup: userDoc['brokeup'],
-            friends: userDoc['friends'],
-            added_me: userDoc['added_me'],
-          }).then(() => {
-            this.startSnapShot(userDoc['email']);
-            temp = this.state.peopleList;
-            temp['latestFriends'] = {};
-            this.setState({
-              peopleList: temp
-            })
-          })
-        })
-      })
+        }).catch((e) => console.log("err: ", e))
+      } else if (action === "accept request") {
+        // Accept Friend Request
+        friendRef.update({ [`friends.${userDoc['id']}.status`]: 'new-friend' }).catch((e) => console.log("err: ", e))
+        temp = userDoc['added_me'][person];
+        delete userDoc['added_me'][person];
+        userDoc['friends'][person] = temp;
+        userDoc['friends'][person]['status'] = 'new-friend';
+        userRef.update({ added_me: userDoc['added_me'], friends: userDoc['friends'] }).catch((e) => console.log("err: ", e))
+      } else if (action === "remove request") {
+        // Remove Friend Request
+        friendRef.update({ [`added_me.${userDoc['id']}`]: firebase.firestore.FieldValue.delete() }).catch((e) => console.log("err: ", e))
+        peopleList['strangers'][person] = userDoc['friends'][person];
+        delete userDoc['friends'][person];
+        userRef.update({ friends: userDoc['friends'] }).catch((e) => console.log("err: ", e))
+      } else {
+        console.log("action unknown: ", action)
+      }
     }
   }
   render() {
