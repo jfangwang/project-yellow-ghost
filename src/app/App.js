@@ -25,6 +25,7 @@ for (let i = 0; i < 30; i += 1) {
 const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
 
 let userSnapshot;
+let everyoneSnapshot;
 
 export default class App extends Component {
   constructor(props) {
@@ -40,7 +41,7 @@ export default class App extends Component {
       showFooter: true,
       showNavbar: true,
       peopleList: {
-        latestFriends: {},
+        friends: Guest.friends,
         strangers: Strangers,
         everyone: Everyone,
       }
@@ -63,6 +64,8 @@ export default class App extends Component {
     this.edit_friends = this.edit_friends.bind(this);
     this.updatePeopleList = this.updatePeopleList.bind(this);
     this.setUserDoc = this.setUserDoc.bind(this);
+    this.startEveryoneSS = this.startEveryoneSS.bind(this);
+    this.endEveryoneSS = this.endEveryoneSS.bind(this);
   }
   componentDidMount() {
     this.checkCurrentUser()
@@ -70,6 +73,7 @@ export default class App extends Component {
   }
   componentWillUnmount() {
     this.endSnapShot();
+    this.endEveryoneSS();
   }
   updateDimensions() {
     this.setState({ width: window.innerWidth, height: window.innerHeight });
@@ -119,6 +123,7 @@ export default class App extends Component {
         this.getUserOnFirebase(user);
       } else {
         this.endSnapShot();
+        this.endEveryoneSS();
         this.setState({
           loggedIn: false,
           userDoc: Guest,
@@ -134,6 +139,7 @@ export default class App extends Component {
         this.createUserOnFirebase(user)
       } else {
         this.startSnapShot(user);
+        this.startEveryoneSS();
       }
     })
   }
@@ -155,10 +161,13 @@ export default class App extends Component {
       pending: {},
       friends: {
         [user.uid]: {
-          email: user.email,
           created: c,
-          profile_pic_url: user.photoURL,
+          email: user.email,
           name: user.displayName,
+          phoneNumber: user.phoneNumber,
+          profile_pic_url: user.photoURL,
+          username: user.email,
+          nickname: null,
           status: "new-friend",
           streak: 0,
           sent: 0,
@@ -181,6 +190,7 @@ export default class App extends Component {
         }).then(() => {
           console.log("Everyone Doc Updated");
           this.startSnapShot(user)
+          this.startEveryoneSS();
         })
         .catch(() => {
           db.collection("Users").doc("Everyone").set({
@@ -197,6 +207,7 @@ export default class App extends Component {
           }).then(() => {
             console.log("Everyone Doc Created")
             this.startSnapShot(user)
+            this.startEveryoneSS();
           })
           .catch((error) => console.log("Error: ", error))
         })
@@ -205,19 +216,39 @@ export default class App extends Component {
   startSnapShot(user) {
     console.log("Starting snapshot");
     userSnapshot = db.collection("Users").doc(user.uid).onSnapshot(
-      { includeMetadataChanges: true },
+      { includeMetadataChanges: false },
       (doc) => {
+        console.log('user snapshot changed');
         this.setState({ userDoc: doc.data() })
-        // if ((Object.keys(this.state.peopleList['latestFriends']).length !== Object.keys(doc.data()['friends']).length)) {
-        //   this.updatePeopleList();
-        // }
-        console.log('snapshot changed');
+        if ((Object.keys(this.state.peopleList['friends']).sort() !== Object.keys(doc.data()['friends']).sort())) {
+          this.updatePeopleList();
+        }
       }, (err) => console.log("error: ", err))
   }
   endSnapShot() {
     if (userSnapshot !== undefined) {
-      console.log("Ending snapshot");
+      console.log("Ending userSnapshot");
       userSnapshot();
+    }
+  }
+  startEveryoneSS() {
+    console.log("Starting Everyone SS");
+    everyoneSnapshot = db.collection("Users").doc("Everyone").onSnapshot(
+      { includeMetadataChanges: false },
+      (doc) => {
+        console.log('everyone snapshot changed');
+        let temp = this.state.peopleList;
+        temp['everyone'] = doc.data()['all_users'];
+        this.setState({peopleList: temp});
+        this.updatePeopleList();
+      },
+      (err) => console.log("error: ", err)
+    )
+  }
+  endEveryoneSS() {
+    if (everyoneSnapshot !== undefined) {
+      console.log("Ending Everyone SS");
+      everyoneSnapshot();
     }
   }
   GoogleSignIn = () => {
@@ -232,24 +263,19 @@ export default class App extends Component {
     // Make Strangers and Everyone List
     let friends = this.state.userDoc.friends;
     let strangers = {};
-    let everyone = {};
-    console.log("updating people list");
-    db.collection("Users").get().then((doc) => {
-      doc.docs.forEach((user) => {
-        if (!Object.keys(friends).includes(user.id)) {
-          strangers[user.id] = user.data()
-        }
-        everyone[user.id] = user.data();
-      })
-    }).then(() => {
-      this.setState({
-        peopleList: {
-          latestFriends: friends,
-          strangers: strangers,
-          everyone: everyone,
-        }
-      })
+    let everyone = this.state.peopleList.everyone;
+    let s_keys = Object.keys(everyone).filter(function(obj) { return Object.keys(friends).indexOf(obj) == -1; });
+    s_keys.forEach((id) => {
+      strangers[id] = everyone[id];
     })
+    this.setState({
+      peopleList: {
+        friends: friends,
+        strangers: strangers,
+        everyone: everyone,
+      }
+    })
+    console.log("updated people list");
   }
   edit_friends(action, person) {
     let peopleList = this.state.peopleList;
@@ -280,6 +306,7 @@ export default class App extends Component {
     } else {
       // Logged In Account
       this.endSnapShot();
+      this.endEveryoneSS();
       friendRef.get().then((doc) => {
         friendDoc = doc.data();
         userEntry = {
