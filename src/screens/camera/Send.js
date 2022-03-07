@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import Navbar from '../../components/navbar/Navbar'
 import checkmark from '../../assets/images/black-checkmark.png';
@@ -6,6 +6,13 @@ import sentImg from '../../assets/images/sent-img-icon.png';
 import GuestPic from '../../assets/images/guest-profile-pic.png';
 import firebase from 'firebase/app';
 import { auth, db, provider, storage } from '../../utils/Firebase';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import { yellow, green } from '@mui/material/colors';
+import Button from '@mui/material/Button';
+import Fab from '@mui/material/Fab';
+import CheckIcon from '@mui/icons-material/Check';
+import SaveIcon from '@mui/icons-material/Save';
 import { v4 as uuid } from "uuid";
 import './Camera.css'
 import './Send.css'
@@ -17,17 +24,39 @@ for (var i = 0; i < 40; i++) {
 }
 
 export default function Send({ height, width, img, close, backToCapture, userDoc, setUserDoc }) {
+  const [loading, setLoading] = React.useState(false);
+  const [success, setSuccess] = React.useState(false);
+  const timer = React.useRef();
   const [sendList, setSendList] = useState([]);
   const [uploadComplete, setuploadComplete] = useState(false);
+  const [sendPressed, setSendPressed] = useState(false);
   const imgId = uuid();
   const timeStamp = new Date().toLocaleString();
 
-  const sendToFirebase = () => {
-    if (userDoc['created'] === 'N/A' && userDoc['email'] === 'Guest@Guest.com') {
-      changeGuestDoc();
-    } else {
-      send(imgId)
+  const handleButtonClick = () => {
+    if (!loading) {
+      if (userDoc['created'] === 'N/A' && userDoc['email'] === 'Guest@Guest.com') {
+        changeGuestDoc();
+      } else {
+        sendToFirebase()
+      }
+      setSuccess(false);
+      setLoading(true);
     }
+  };
+
+  useEffect(() => {
+    if (uploadComplete) {
+      console.log("uploaded")
+      setSuccess(true);
+      setLoading(false);
+      setTimeout(() => close(), 100);
+    }
+  }, [uploadComplete])
+
+  const sendToFirebase = () => {
+    setSendPressed(true);
+    send(imgId)
   }
   const changeGuestDoc = () => {
     let newUserDoc = userDoc;
@@ -52,6 +81,7 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
       }
     })
     setUserDoc(newUserDoc);
+    setuploadComplete(true);
   }
   const send = (id) => {
     // Upload to Storage
@@ -108,13 +138,14 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
       friendRef = db.collection("Users").doc(id);
       friendRef.update({
         [`friends.${userDoc['id']}.status`]: "new",
-        [`friends.${userDoc['id']}.snaps.${timeStamp.replace(/\//g,"-")}`]: {id: imgId, type: "picture"},
+        [`friends.${userDoc['id']}.snaps.${timeStamp.replace(/\//g, "-")}`]: { id: imgId, type: "picture" },
         [`friends.${userDoc['id']}.received`]: firebase.firestore.FieldValue.increment(1),
         [`friends.${userDoc['id']}.last_time_stamp`]: timeStamp,
         [`friends.${userDoc['id']}.streakRef`]: firebase.firestore.FieldValue.arrayUnion(timeStamp),
       });
     })
-    close()
+    setuploadComplete(true);
+    console.log("done: ", uploadComplete)
   }
 
   const handleSendList = (e) => {
@@ -145,7 +176,28 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
             <div style={{ width: '50%', display: 'flex', position: 'relative', overflow: 'hidden' }}>
               <h2>Selected: {sendList.length}</h2>
             </div>
-            <button onClick={sendToFirebase}><b><h2>Send</h2></b><img src={sentImg} style={{ height: '1rem', marginLeft: '0.5rem', filter: 'grayscale(100%)' }} /></button>
+            <Box sx={{ m: 1, position: 'relative' }}>
+              <Button
+                variant="contained"
+                disabled={sendPressed}
+                onClick={handleButtonClick}
+              >
+                Send
+              </Button>
+              {loading && (
+                <CircularProgress
+                  size={24}
+                  sx={{
+                    color: yellow[500],
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    marginTop: '-12px',
+                    marginLeft: '-12px',
+                  }}
+                />
+              )}
+            </Box>
           </div>
         )}
       </div>
@@ -174,7 +226,7 @@ function Receiver({ friend, sendList, id, handleSendList }) {
       <div className="row">
         <img src={friend['profile_pic_url']} className="profile-pic" />
         {selected ? <h1 style={{ color: 'rgb(31, 168, 247)' }}>{friend['name']}</h1> : <h1 style={{ color: 'black' }}>{friend['name']}</h1>}
-        {(friend['status'] === "pending" || friend['status'] === "not-friends") && <p style={{marginLeft: '1rem', color: 'red'}}><i>{friend['status']}</i></p>}
+        {(friend['status'] === "pending" || friend['status'] === "not-friends") && <p style={{ marginLeft: '1rem', color: 'red' }}><i>{friend['status']}</i></p>}
       </div>
       <div>
         {selected ? <div className="selected-circle"><img className="checkmark" src={checkmark} alt="U+2713" ></img></div>
