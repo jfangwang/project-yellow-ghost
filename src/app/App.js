@@ -175,6 +175,8 @@ export default class App extends Component {
       username: user.email,
       profile_pic_url: user.photoURL,
       phoneNumber: user.phoneNumber,
+      received: 0,
+      sent: 0,
       streak_emoji: "\u{1F525}",
       brokeup: {},
       added_me: {},

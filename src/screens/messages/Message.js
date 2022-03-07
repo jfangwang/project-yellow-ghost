@@ -49,7 +49,8 @@ export default function Message({ friend, streak_emoji, disableNavFootSlide, use
 				let key = Object.keys(friend.snaps)[0];
 				delete temp['friends'][friend['id']]['snaps'][key]
 				db.collection("Users").doc(userDoc['id']).update({
-					[`friends.${friend['id']}.snaps`]: temp['friends'][friend['id']]['snaps']
+					[`friends.${friend['id']}.snaps`]: temp['friends'][friend['id']]['snaps'],
+					received: firebase.firestore.FieldValue.increment(1),
 				}).then(() => {
 					if (Object.keys(temp['friends'][friend['id']]['snaps']).length <= 0) {
 						const ts = new Date().toLocaleString();
@@ -97,6 +98,7 @@ export default function Message({ friend, streak_emoji, disableNavFootSlide, use
 			let k = Object.keys(friend['snaps']).sort()[0];
 			setImg(friend['snaps'][k]['src'])
 			disableNavFootSlide(true);
+			userDoc["received"] += 1;
 		}
 	}
 	const close = () => {

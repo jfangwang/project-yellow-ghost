@@ -26,11 +26,8 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
     if (userDoc['created'] === 'N/A' && userDoc['email'] === 'Guest@Guest.com') {
       changeGuestDoc();
     } else {
-      console.log("Sending to fake firebase: ", sendList);
-      // updateFriendDoc();
       send(imgId)
     }
-    close()
   }
   const changeGuestDoc = () => {
     let newUserDoc = userDoc;
@@ -38,10 +35,11 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
       if (newUserDoc['friends'][friend] !== undefined) {
         newUserDoc['friends'][friend]['last_time_stamp'] = new Date().toLocaleString();
         newUserDoc['friends'][friend]['status'] = "sent";
+        newUserDoc["sent"] += 1;
         if (friend === userDoc['email']) {
           newUserDoc['friends'][friend]['status'] = "new";
-          newUserDoc['friends'][friend]['sent'] = newUserDoc['friends'][friend]['sent'] + 1;
-          newUserDoc['friends'][friend]['received'] = newUserDoc['friends'][friend]['received'] + 1;
+          newUserDoc['friends'][friend]['sent'] += 1;
+          newUserDoc['friends'][friend]['received'] += 1;
           let newEntry = {
             id: imgId,
             type: "picture",
@@ -49,7 +47,6 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
           }
           newUserDoc['friends'][friend]['snaps'][timeStamp] = newEntry;
         } else {
-          newUserDoc['friends'][friend]['received'] = newUserDoc['friends'][friend]['received'] + 1;
           newUserDoc['friends'][friend]['sent'] = newUserDoc['friends'][friend]['sent'] + 1;
         }
       }
@@ -63,7 +60,7 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
     upload.on('state_changed',
       (snapshot) => {
         let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log('Upload is ' + progress + '% done');
+        // console.log('Upload is ' + progress + '% done');
       },
       (error) => {
         console.log("Could not upload to storage");
@@ -71,7 +68,7 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
       () => {
         upload.snapshot.ref.getDownloadURL().then((downloadURL) => {
           addPhotoToFireStore(id, downloadURL);
-          console.log("Uploaded to Storage");
+          // console.log("Uploaded to Storage");
         });
       }
     );
@@ -85,7 +82,7 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
       time_stamp: timeStamp,
     })
       .then(() => {
-        console.log("Uploaded to Firestore");
+        // console.log("Uploaded to Firestore");
         updateUserDoc();
       })
       .catch((error) => {
@@ -100,8 +97,8 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
       newDoc['friends'][id]['sent'] = newDoc['friends'][id]['sent'] + 1;
       newDoc['friends'][id]['last_time_stamp'] = timeStamp;
     })
-    console.log(newDoc);
-    userRef.update({ "friends": newDoc['friends'] }).then(() => {
+    // console.log(newDoc);
+    userRef.update({ "friends": newDoc['friends'], "sent": firebase.firestore.FieldValue.increment(sendList.length) }).then(() => {
       updateFriendDoc();
     })
   }
@@ -117,6 +114,7 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
         [`friends.${userDoc['id']}.streakRef`]: firebase.firestore.FieldValue.arrayUnion(timeStamp),
       });
     })
+    close()
   }
 
   const handleSendList = (e) => {
