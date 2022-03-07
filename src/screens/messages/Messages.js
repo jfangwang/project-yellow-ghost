@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 import './Messages.css'
+import './Message.css'
 import Message from './Message'
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 const list = [];
 
@@ -14,13 +16,16 @@ function Messages({ userDoc, disableNavFootSlide, height, width, loggedIn, toggl
     <>
       <ul className="messages-container">
         {!loggedIn &&
-          <li className="guest_message">
-            <h4>
-              Welcome to Project Yellow Ghost, a web app version of SnapChat. 
-              Right now, you are on a local guest account for you to try out. 
-              Feel free to sign in at the top if you want to start using this product. 
-              Happy Snapping!
+          <li>
+            <div className="guest_message">
+              {/* <button><CloseRoundedIcon/></button> */}
+              <h4>
+                Welcome to Project Yellow Ghost, a web app version of SnapChat.
+                Right now, you are on a local guest account for you to try out.
+                Feel free to sign in at the top if you want to start using this product.
+                Happy Snapping!
               </h4>
+            </div>
           </li>
         }
         {Object.keys(userDoc.friends).sort().map((key) => (

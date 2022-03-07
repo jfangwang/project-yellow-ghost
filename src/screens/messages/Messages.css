@@ -8,7 +8,12 @@
 }
 .guest_message {
     background-color: lightgray;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+    padding: 1rem;
     /* border: 1px red solid; */
+}
+.guest_message button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
 }
