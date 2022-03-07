@@ -11,7 +11,7 @@ import '../../components/navbar/Navbar.css'
 import '../../components/footer/Footer.css'
 import zIndex from '@mui/material/styles/zIndex';
 
-export default function Capture({ width, height, close, img, changedToSend, save, backToCapture, userDoc, setUserDoc }) {
+export default function Capture({ width, height, close, img, changedToSend, save, backToCapture, userDoc, setUserDoc, sent }) {
 	const [toggle, setToggle] = useState(false);
 	const [swipe, setSwipe] = useState(false);
 	const toggleSend = () => {
@@ -59,7 +59,7 @@ export default function Capture({ width, height, close, img, changedToSend, save
 				<img id="capturedImg" src={img} />
 			</div>
 			<SlidingMenu open={toggle} close={toggleSend} title="Send" disabled={swipe} keyboard={false}>
-				<Send height={height} width={width} img={img} close={close} backToCapture={backToCapture} userDoc={userDoc} setUserDoc={setUserDoc} toggleSwipe={toggleSwipe}/>
+				<Send height={height} width={width} img={img} close={close} backToCapture={backToCapture} userDoc={userDoc} setUserDoc={setUserDoc} toggleSwipe={toggleSwipe} sent={sent}/>
 			</SlidingMenu>
 		</>
 	)

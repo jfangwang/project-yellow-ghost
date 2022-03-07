@@ -20,7 +20,7 @@ for (var i = 0; i < 40; i++) {
   test.push(<h1>filler</h1>)
 }
 
-export default function Send({ height, width, img, close, backToCapture, userDoc, setUserDoc, toggleSwipe }) {
+export default function Send({ height, width, img, close, backToCapture, userDoc, setUserDoc, toggleSwipe, sent }) {
   const [loading, setLoading] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
   const timer = React.useRef();
@@ -49,7 +49,7 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
       setSuccess(true);
       setLoading(false);
       toggleSwipe(false);
-      setTimeout(() => close(), 100);
+      setTimeout(() => sent(), 100);
     }
   }, [uploadComplete])
 

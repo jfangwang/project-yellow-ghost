@@ -49,7 +49,6 @@ export default class App extends Component {
     }
     this.changeToIndex = this.changeToIndex.bind(this);
     this.updateDimensions = this.updateDimensions.bind(this);
-    this.changeToIndex = this.changeToIndex.bind(this);
     this.incFlipCam = this.incFlipCam.bind(this);
     this.disable_swiping = this.disable_swiping.bind(this);
     this.toggleNavbar = this.toggleNavbar.bind(this);
@@ -69,6 +68,7 @@ export default class App extends Component {
     this.endEveryoneSS = this.endEveryoneSS.bind(this);
     this.updateRelatedSnaps = this.updateRelatedSnaps.bind(this);
     this.incUpdateCount = this.incUpdateCount.bind(this);
+    this.toggleSnapShot = this.toggleSnapShot.bind(this);
   }
   componentDidMount() {
     this.checkCurrentUser()
@@ -237,6 +237,16 @@ export default class App extends Component {
               .catch((error) => console.log("Error: ", error))
           })
       })
+  }
+  toggleSnapShot(e) {
+    let d = {
+      id: this.state.userDoc['id']
+    }
+    if (e === true) {
+      this.startSnapShot(d);
+    } else if (e === false) {
+      this.endSnapShot();
+    }
   }
   startSnapShot(user) {
     console.log("Starting snapshot");
@@ -522,6 +532,7 @@ export default class App extends Component {
               height={height}
               width={width}
               loggedIn={loggedIn}
+              toggleSnapShot={this.toggleSnapShot}
             />
           </div>
           <div className="slide slide2">
@@ -533,6 +544,7 @@ export default class App extends Component {
               userDoc={userDoc}
               disableNavFootSlide={this.disableNavFootSlide}
               setUserDoc={this.setUserDoc}
+              changeToIndex={this.changeToIndex}
             />
           </div>
           <div className="slide slide3">

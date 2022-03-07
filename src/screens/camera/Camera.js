@@ -12,7 +12,7 @@ import Capture from './Capture';
 import Send from './Send';
 
 
-function Camera({index, height, width, flipCamCounter, disableNavFootSlide, userDoc, setUserDoc}) {
+function Camera({index, height, width, flipCamCounter, disableNavFootSlide, userDoc, setUserDoc, changeToIndex}) {
 	const [ar, setar] = useState(9/16);
 	const [img, setImg] = useState(null);
 	const [faceMode, setFaceMode] = useState('environment');
@@ -47,6 +47,12 @@ function Camera({index, height, width, flipCamCounter, disableNavFootSlide, user
 		setImg(null);
 		setScreen('camera');
 		disableNavFootSlide(false);
+	}
+	function sent() {
+		setImg(null);
+		setScreen('camera');
+		disableNavFootSlide(false);
+		changeToIndex(0);
 	}
 
 	useEffect(() => {
@@ -177,6 +183,7 @@ function Camera({index, height, width, flipCamCounter, disableNavFootSlide, user
 				backToCapture={backToCapture}
 				userDoc={userDoc}
 				setUserDoc={setUserDoc}
+				sent={sent}
 			/>
 		}
 		{screen === "send" && (null)

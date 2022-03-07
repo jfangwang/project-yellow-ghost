@@ -8,7 +8,7 @@ import { isMobile } from 'react-device-detect';
 import firebase from 'firebase/app';
 import { Store } from '@mui/icons-material';
 
-export default function Message({ friend, streak_emoji, disableNavFootSlide, userDoc, height, width, loggedIn }) {
+export default function Message({ friend, streak_emoji, disableNavFootSlide, userDoc, height, width, loggedIn, toggleSnapShot }) {
 	const [ar, setar] = useState(9 / 16);
 	const [opened, setOpened] = useState([]);
 	const [img, setImg] = useState(null);
@@ -36,6 +36,7 @@ export default function Message({ friend, streak_emoji, disableNavFootSlide, use
 
 	const open = () => {
 		if (loggedIn) {
+			// toggleSnapShot(false);
 			if (Object.keys(friend.snaps).length > 0) {
 				let firstSnapId = friend.snaps[Object.keys(friend.snaps)[0]].id;
 				setsnapId(firstSnapId);
@@ -110,6 +111,7 @@ export default function Message({ friend, streak_emoji, disableNavFootSlide, use
 				})
 			}
 			if (Object.keys(friend.snaps).length <= 0) {
+				// toggleSnapShot(true);
 				setImg(null);
 				disableNavFootSlide(false);
 			} else {
