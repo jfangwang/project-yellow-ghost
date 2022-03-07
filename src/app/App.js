@@ -240,7 +240,7 @@ export default class App extends Component {
   }
   toggleSnapShot(e) {
     let d = {
-      id: this.state.userDoc['id']
+      uid: this.state.userDoc['id']
     }
     if (e === true) {
       this.startSnapShot(d);
@@ -545,6 +545,7 @@ export default class App extends Component {
               disableNavFootSlide={this.disableNavFootSlide}
               setUserDoc={this.setUserDoc}
               changeToIndex={this.changeToIndex}
+              toggleSnapShot={this.toggleSnapShot}
             />
           </div>
           <div className="slide slide3">

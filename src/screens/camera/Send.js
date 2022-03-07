@@ -20,7 +20,7 @@ for (var i = 0; i < 40; i++) {
   test.push(<h1>filler</h1>)
 }
 
-export default function Send({ height, width, img, close, backToCapture, userDoc, setUserDoc, toggleSwipe, sent }) {
+export default function Send({ height, width, img, close, backToCapture, userDoc, setUserDoc, toggleSwipe, sent, toggleSnapShot }) {
   const [loading, setLoading] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
   const timer = React.useRef();
@@ -49,12 +49,14 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
       setSuccess(true);
       setLoading(false);
       toggleSwipe(false);
+      toggleSnapShot(true);
       setTimeout(() => sent(), 100);
     }
   }, [uploadComplete])
 
   const sendToFirebase = () => {
     setSendPressed(true);
+    toggleSnapShot(false);
     send(imgId)
   }
   const changeGuestDoc = () => {
@@ -144,7 +146,6 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
       });
     })
     setuploadComplete(true);
-    console.log("done: ", uploadComplete)
   }
 
   const handleSendList = (e) => {

@@ -36,7 +36,7 @@ export default function Message({ friend, streak_emoji, disableNavFootSlide, use
 
 	const open = () => {
 		if (loggedIn) {
-			// toggleSnapShot(false);
+			toggleSnapShot(false);
 			if (Object.keys(friend.snaps).length > 0) {
 				let firstSnapId = friend.snaps[Object.keys(friend.snaps)[0]].id;
 				setsnapId(firstSnapId);
@@ -111,7 +111,7 @@ export default function Message({ friend, streak_emoji, disableNavFootSlide, use
 				})
 			}
 			if (Object.keys(friend.snaps).length <= 0) {
-				// toggleSnapShot(true);
+				toggleSnapShot(true);
 				setImg(null);
 				disableNavFootSlide(false);
 			} else {

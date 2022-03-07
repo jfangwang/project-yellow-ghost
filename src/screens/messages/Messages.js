@@ -12,22 +12,20 @@ for (let i = 0; i < 30; i += 1) {
 function Messages({ userDoc, disableNavFootSlide, height, width, loggedIn, toggleSnapShot }) {
   return (
     <>
-      {userDoc &&
-        <ul className="messages-container">
-          {Object.keys(userDoc.friends).sort().map((key) => (
-            <Message
-              disableNavFootSlide={disableNavFootSlide}
-              friend={userDoc.friends[key]}
-              userDoc={userDoc}
-              height={height}
-              width={width}
-              loggedIn={loggedIn}
-              toggleSnapShot={toggleSnapShot}
-            />
-          ))}
-          {/* {list} */}
-        </ul>
-      }
+      <ul className="messages-container">
+        {Object.keys(userDoc.friends).sort().map((key) => (
+          <Message
+            disableNavFootSlide={disableNavFootSlide}
+            friend={userDoc.friends[key]}
+            userDoc={userDoc}
+            height={height}
+            width={width}
+            loggedIn={loggedIn}
+            toggleSnapShot={toggleSnapShot}
+          />
+        ))}
+        {/* {list} */}
+      </ul>
     </>
   )
 }
