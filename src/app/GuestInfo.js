@@ -5,6 +5,7 @@ import MortyPic from '../assets/images/morty-profile-pic.jpg';
 const c = new Date().toLocaleString()
 
 export const Guest = {
+  id: "Guest@Guest.com",
   created: "N/A",
   name: "Guest",
   email: "Guest@Guest.com",
@@ -26,12 +27,13 @@ export const Guest = {
       sent: 0,
       received: 0,
       last_time_stamp: null,
-      snaps: []
+      snaps: {}
     },
   },
 }
 export const Strangers = {
   "Rick@Guest.com": {
+    id: "Rick@Guest.com",
     created: "N/A",
     profile_pic_url: RickPic,
     name: "Rick",
@@ -41,9 +43,10 @@ export const Strangers = {
     sent: 0,
     received: 0,
     last_time_stamp: null,
-    snaps: []
+    snaps: {}
   },
   "Morty@Guest.com": {
+    id: "Morty@Guest.com",
     created: "N/A",
     profile_pic_url: MortyPic,
     name: "Morty",
@@ -53,11 +56,12 @@ export const Strangers = {
     sent: 0,
     received: 0,
     last_time_stamp: null,
-    snaps: []
+    snaps: {}
   },
 }
 export const Everyone = {
   "Guest@Guest.com": {
+    id: "Guest@Guest.com",
     created: "N/A",
     profile_pic_url: GuestPic,
     name: "Guest",
@@ -67,9 +71,10 @@ export const Everyone = {
     sent: 0,
     received: 0,
     last_time_stamp: null,
-    snaps: []
+    snaps: {}
   },
   "Rick@Guest.com": {
+    id: "Rick@Guest.com",
     created: "N/A",
     profile_pic_url: RickPic,
     name: "Rick",
@@ -79,9 +84,10 @@ export const Everyone = {
     sent: 0,
     received: 0,
     last_time_stamp: null,
-    snaps: []
+    snaps: {}
   },
   "Morty@Guest.com": {
+    id: "Morty@Guest.com",
     created: "N/A",
     profile_pic_url: MortyPic,
     name: "Morty",
@@ -91,6 +97,6 @@ export const Everyone = {
     sent: 0,
     received: 0,
     last_time_stamp: null,
-    snaps: []
+    snaps: {}
   }
 }

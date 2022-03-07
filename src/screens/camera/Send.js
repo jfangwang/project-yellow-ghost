@@ -37,14 +37,21 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
     sendList.map((friend) => {
       if (newUserDoc['friends'][friend] !== undefined) {
         newUserDoc['friends'][friend]['last_time_stamp'] = new Date().toLocaleString();
-        newUserDoc['friends'][friend]['status'] = "new";
+        newUserDoc['friends'][friend]['status'] = "sent";
         if (friend === userDoc['email']) {
+          newUserDoc['friends'][friend]['status'] = "new";
           newUserDoc['friends'][friend]['sent'] = newUserDoc['friends'][friend]['sent'] + 1;
-          newUserDoc['received'] = newUserDoc['received'] + 1;
+          newUserDoc['friends'][friend]['received'] = newUserDoc['friends'][friend]['received'] + 1;
+          let newEntry = {
+            id: imgId,
+            type: "picture",
+            src: img,
+          }
+          newUserDoc['friends'][friend]['snaps'][timeStamp] = newEntry;
+        } else {
+          newUserDoc['friends'][friend]['received'] = newUserDoc['friends'][friend]['received'] + 1;
+          newUserDoc['friends'][friend]['sent'] = newUserDoc['friends'][friend]['sent'] + 1;
         }
-        newUserDoc['friends'][friend]['received'] = newUserDoc['friends'][friend]['received'] + 1;
-        newUserDoc['friends'][friend]['snaps'].push(img);
-        newUserDoc['sent'] = newUserDoc['sent'] + 1;
       }
     })
     setUserDoc(newUserDoc);

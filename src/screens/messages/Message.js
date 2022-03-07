@@ -8,7 +8,7 @@ import { isMobile } from 'react-device-detect';
 import firebase from 'firebase/app';
 import { Store } from '@mui/icons-material';
 
-export default function Message({ friend, streak_emoji, disableNavFootSlide, userDoc, height, width }) {
+export default function Message({ friend, streak_emoji, disableNavFootSlide, userDoc, height, width, loggedIn }) {
 	const [ar, setar] = useState(9 / 16);
 	const [opened, setOpened] = useState([]);
 	const [img, setImg] = useState(null);
@@ -35,76 +35,95 @@ export default function Message({ friend, streak_emoji, disableNavFootSlide, use
 	emoji = emoji_dict[friend["status"]]
 
 	const open = () => {
-		console.log("open")
-		if (Object.keys(friend.snaps).length > 0) {
-			let firstSnapId = friend.snaps[Object.keys(friend.snaps)[0]].id;
-			setsnapId(firstSnapId);
-			// Get Image
-			db.collection("Photos").doc(firstSnapId).get().then((doc) => {
-				setImg(doc.data()['image_url'])
-				disableNavFootSlide(true);
-			})
-			// Delete snap from userdoc
-			let temp = userDoc;
-			let key = Object.keys(friend.snaps)[0];
-			delete temp['friends'][friend['id']]['snaps'][key]
-			db.collection("Users").doc(userDoc['id']).update({
-				[`friends.${friend['id']}.snaps`]: temp['friends'][friend['id']]['snaps']
-			}).then(() => {
-				if (Object.keys(temp['friends'][friend['id']]['snaps']).length <= 0) {
-					const ts = new Date().toLocaleString();
-					// Update Friend and User Doc if user is on last snap
-					db.collection("Users").doc(friend['id']).update({
-						[`friends.${userDoc['id']}.status`]: 'opened',
-						[`friends.${userDoc['id']}.last_time_stamp`]: ts,
-						[`friends.${userDoc['id']}.streakRef`]: ts,
-					})
+		if (loggedIn) {
+			if (Object.keys(friend.snaps).length > 0) {
+				let firstSnapId = friend.snaps[Object.keys(friend.snaps)[0]].id;
+				setsnapId(firstSnapId);
+				// Get Image
+				db.collection("Photos").doc(firstSnapId).get().then((doc) => {
+					setImg(doc.data()['image_url'])
+					disableNavFootSlide(true);
+				})
+				// Delete snap from userdoc
+				let temp = userDoc;
+				let key = Object.keys(friend.snaps)[0];
+				delete temp['friends'][friend['id']]['snaps'][key]
+				db.collection("Users").doc(userDoc['id']).update({
+					[`friends.${friend['id']}.snaps`]: temp['friends'][friend['id']]['snaps']
+				}).then(() => {
+					if (Object.keys(temp['friends'][friend['id']]['snaps']).length <= 0) {
+						const ts = new Date().toLocaleString();
+						// Update Friend and User Doc if user is on last snap
+						db.collection("Users").doc(friend['id']).update({
+							[`friends.${userDoc['id']}.status`]: 'opened',
+							[`friends.${userDoc['id']}.last_time_stamp`]: ts,
+							[`friends.${userDoc['id']}.streakRef`]: ts,
+						})
 
-					// Update User Doc
-					db.collection("Users").doc(userDoc['id']).update({
-						[`friends.${friend['id']}.status`]: 'received',
-						[`friends.${friend['id']}.last_time_stamp`]: ts,
-						[`friends.${friend['id']}.snaps`]: [],
-						[`friends.${friend['id']}.streakRef`]: ts,
-					})
-				}
-			})
-			// Update Photo Doc
-			db.collection("Photos").doc(firstSnapId).get().then((doc) => {
-				if (doc.data()['sent'].length <= 1) {
-					setLU(true)
-					// Move Photo id to deleteSnaps for pending delete
-					db.collection("Users").doc(userDoc['id']).update({
-						deleteSnaps: firebase.firestore.FieldValue.arrayUnion(firstSnapId),
-					})
-				} else {
-					setLU(false)
-					// Update Photo Doc
-					db.collection("Photos").doc(firstSnapId).update({
-						sent: firebase.firestore.FieldValue.arrayRemove(userDoc['id']),
-					})
-				}
-			})
+						// Update User Doc
+						db.collection("Users").doc(userDoc['id']).update({
+							[`friends.${friend['id']}.status`]: 'received',
+							[`friends.${friend['id']}.last_time_stamp`]: ts,
+							[`friends.${friend['id']}.snaps`]: [],
+							[`friends.${friend['id']}.streakRef`]: ts,
+						})
+					}
+				})
+				// Update Photo Doc
+				db.collection("Photos").doc(firstSnapId).get().then((doc) => {
+					if (doc.data()['sent'].length <= 1) {
+						setLU(true)
+						// Move Photo id to deleteSnaps for pending delete
+						db.collection("Users").doc(userDoc['id']).update({
+							deleteSnaps: firebase.firestore.FieldValue.arrayUnion(firstSnapId),
+						})
+					} else {
+						setLU(false)
+						// Update Photo Doc
+						db.collection("Photos").doc(firstSnapId).update({
+							sent: firebase.firestore.FieldValue.arrayRemove(userDoc['id']),
+						})
+					}
+				})
+			} else {
+				const ts = new Date().toLocaleString();
+				db.collection("Users").doc(userDoc['id']).update({
+					[`friends.${friend['id']}.status`]: 'received',
+					[`friends.${friend['id']}.snaps`]: [],
+				})
+			}
 		} else {
-			const ts = new Date().toLocaleString();
-			db.collection("Users").doc(userDoc['id']).update({
-				[`friends.${friend['id']}.status`]: 'received',
-				[`friends.${friend['id']}.snaps`]: [],
-			})
+			// Guest Account
+			let k = Object.keys(friend['snaps']).sort()[0];
+			setImg(friend['snaps'][k]['src'])
+			disableNavFootSlide(true);
 		}
 	}
 	const close = () => {
-		if (snapId && lastUser) {
-			deletePhoto(snapId)
-			db.collection("Users").doc(userDoc['id']).update({
-				deleteSnaps: firebase.firestore.FieldValue.arrayRemove(snapId),
-			})
-		}
-		if (Object.keys(friend.snaps).length <= 0) {
-			setImg(null);
-			disableNavFootSlide(false);
+		if (loggedIn) {
+			if (snapId && lastUser) {
+				deletePhoto(snapId)
+				db.collection("Users").doc(userDoc['id']).update({
+					deleteSnaps: firebase.firestore.FieldValue.arrayRemove(snapId),
+				})
+			}
+			if (Object.keys(friend.snaps).length <= 0) {
+				setImg(null);
+				disableNavFootSlide(false);
+			} else {
+				open()
+			}
 		} else {
-			open()
+			// Guest Account
+			let k = Object.keys(friend['snaps']).sort()[0];
+			delete friend['snaps'][k]
+			if (Object.keys(friend['snaps']).length > 0) {
+				open();
+			} else {
+				friend['status'] = 'received'
+				setImg(null);
+				disableNavFootSlide(false);
+			}
 		}
 	}
 	const deletePhoto = (id) => {

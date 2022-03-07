@@ -142,6 +142,11 @@ export default class App extends Component {
         this.setState({
           loggedIn: false,
           userDoc: Guest,
+          peopleList: {
+            friends: Guest.friends,
+            strangers: Strangers,
+            everyone: Everyone,
+          }
         })
         console.log('user signed out');
       }
@@ -514,6 +519,7 @@ export default class App extends Component {
               disableNavFootSlide={this.disableNavFootSlide}
               height={height}
               width={width}
+              loggedIn={loggedIn}
             />
           </div>
           <div className="slide slide2">
