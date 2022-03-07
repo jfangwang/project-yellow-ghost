@@ -6,3 +6,9 @@
     width: 100%;
     /* padding: 0.4rem; */
 }
+.guest_message {
+    background-color: lightgray;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    /* border: 1px red solid; */
+}

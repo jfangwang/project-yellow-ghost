@@ -54,9 +54,9 @@ export default function Capture({ width, height, close, img, changedToSend, save
 				<div className="captured-footer main-footer">
 					<button onClick={save}>Save</button>
 					{/* <ul><li><button onClick={changedToSend}>Send</button></li></ul> */}
-					<button onClick={toggleSend}>Send To</button>
+					{img ? <button onClick={toggleSend}>Send To</button> : <button style={{backgroundColor: 'lightcoral'}}>Cannot Send</button>}
 				</div>
-				<img id="capturedImg" src={img} />
+				{ img ? <img id="capturedImg" src={img} /> : <><h3 style={{height:'auto', width:'auto'}}>Invalid Image. Allow camera access to send pictures.</h3><div id="capturedImg"/></>}
 			</div>
 			<SlidingMenu open={toggle} close={toggleSend} title="Send" disabled={swipe} keyboard={false}>
 				<Send height={height} width={width} img={img} close={close} backToCapture={backToCapture} userDoc={userDoc} setUserDoc={setUserDoc} toggleSwipe={toggleSwipe} sent={sent} toggleSnapShot={toggleSnapShot}/>

@@ -13,6 +13,16 @@ function Messages({ userDoc, disableNavFootSlide, height, width, loggedIn, toggl
   return (
     <>
       <ul className="messages-container">
+        {!loggedIn &&
+          <li className="guest_message">
+            <h4>
+              Welcome to Project Yellow Ghost, a web app version of SnapChat. 
+              Right now, you are on a local guest account for you to try out. 
+              Feel free to sign in at the top if you want to start using this product. 
+              Happy Snapping!
+              </h4>
+          </li>
+        }
         {Object.keys(userDoc.friends).sort().map((key) => (
           <Message
             disableNavFootSlide={disableNavFootSlide}
