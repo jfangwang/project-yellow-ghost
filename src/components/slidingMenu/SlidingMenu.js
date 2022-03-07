@@ -7,7 +7,7 @@ import './SlidingMenu.css'
 
 const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
 let list = [];
-for (var i=0; i<200; i++) {
+for (var i = 0; i < 200; i++) {
 	list.push(<h1>filler</h1>)
 }
 
@@ -39,7 +39,7 @@ class SlidingMenu extends Component {
 	componentDidUpdate(prevProps) {
 		if (prevProps.open !== this.props.open) {
 			if (this.props.open === true) {
-				this.setState({hide: false}, () => setTimeout(() => this.changeToIndex(1), 0));
+				this.setState({ hide: false }, () => setTimeout(() => this.changeToIndex(1), 0));
 				this.setState({ top: true })
 			}
 			if (this.props.open === false) {
@@ -51,7 +51,7 @@ class SlidingMenu extends Component {
 		this.setState({
 			index: e,
 		})
-		this.setState({bgColor: 'transparent'});
+		this.setState({ bgColor: 'transparent' });
 	}
 	handleScroll(e) {
 		const target = e.target;
@@ -59,55 +59,88 @@ class SlidingMenu extends Component {
 			if (target.scrollTop <= 0) {
 				this.setState({ top: true })
 			} else {
-				this.setState({top: false})
+				this.setState({ top: false })
 			}
 		}
 	}
 	changeOnSwitch() {
-		this.setState({bgColor: 'transparent'});
+		this.setState({ bgColor: 'transparent' });
 	}
 	closeMenu() {
 		this.changeToIndex(0);
 	}
 	checkIndex() {
 		if (this.state.index === 0) {
-			this.setState({hide:true});
+			this.setState({ hide: true });
 			if (this.props.open === true) {
 				this.props.close();
 			}
 		}
 		if (this.state.index >= 1) {
-			this.setState({bgColor: 'white'});
+			this.setState({ bgColor: 'white' });
 		}
 	}
 	render() {
 		const { height, width, index, top, hide, bgColor } = this.state;
-		const { children, title, axis } = this.props;
-		return (
-			<>
-				{!hide && (
-					<div className="sliding-menu" style={{ height: height, width: width, backgroundColor:bgColor }}>
+		const { children, title, axis, disabled } = this.props;
+
+		let view = <>
+			{!hide &&
+				(
+					<div className="sliding-menu" style={{ height: height, width: width, backgroundColor: bgColor }}>
 						<BindKeyboardSwipeableViews
 							containerStyle={{ height: height, width: width }}
 							axis={axis}
-							disabled={!top}
+							disabled={!top || disabled}
 							onSwitching={this.changeOnSwitch}
 							onChangeIndex={this.changeToIndex}
 							onTransitionEnd={this.checkIndex}
 							index={index}
 							enableMouseEvents
 						>
-							<div style={{ height:height, width:width }}></div>
+							<div style={{ height: height, width: width }}></div>
 							<div onScroll={this.handleScroll} style={{ backgroundColor: 'white', height: height, width: width }}>
 								<div style={{ backgroundColor: 'white' }}>
-									<Navbar position="fixed" hidden={false} Parenttitle={title} close={this.closeMenu} axis={axis}/>	
+									<Navbar position="fixed" hidden={false} Parenttitle={title} close={this.closeMenu} axis={axis} />
 									{children}
 									{/* {list} */}
 								</div>
 							</div>
 						</BindKeyboardSwipeableViews>
 					</div>
-				)}
+				)
+			}
+		</>
+		let view2 = <>
+		{!hide &&
+			(
+				<div className="sliding-menu" style={{ height: height, width: width, backgroundColor: bgColor }}>
+					<SwipeableViews
+						containerStyle={{ height: height, width: width }}
+						axis={axis}
+						disabled={!top || disabled}
+						onSwitching={this.changeOnSwitch}
+						onChangeIndex={this.changeToIndex}
+						onTransitionEnd={this.checkIndex}
+						index={index}
+						enableMouseEvents
+					>
+						<div style={{ height: height, width: width }}></div>
+						<div onScroll={this.handleScroll} style={{ backgroundColor: 'white', height: height, width: width }}>
+							<div style={{ backgroundColor: 'white' }}>
+								<Navbar position="fixed" hidden={false} Parenttitle={title} close={this.closeMenu} axis={axis} />
+								{children}
+								{/* {list} */}
+							</div>
+						</div>
+					</SwipeableViews>
+				</div>
+			)
+		}
+	</>
+		return (
+			<>
+				{view2}
 			</>
 		);
 	}
@@ -117,10 +150,14 @@ SlidingMenu.propTypes = {
 	title: PropTypes.string,
 	open: PropTypes.bool,
 	axis: PropTypes.string,
+	disabled: PropTypes.bool,
+	keyboard: PropTypes.bool,
 }
 SlidingMenu.defaultProps = {
 	title: "",
-	axis: 'y'
+	axis: 'y',
+	disabled: false,
+	keyboard: true
 }
 
 export default SlidingMenu;

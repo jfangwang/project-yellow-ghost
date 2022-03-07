@@ -10,9 +10,6 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { yellow, green } from '@mui/material/colors';
 import Button from '@mui/material/Button';
-import Fab from '@mui/material/Fab';
-import CheckIcon from '@mui/icons-material/Check';
-import SaveIcon from '@mui/icons-material/Save';
 import { v4 as uuid } from "uuid";
 import './Camera.css'
 import './Send.css'
@@ -23,7 +20,7 @@ for (var i = 0; i < 40; i++) {
   test.push(<h1>filler</h1>)
 }
 
-export default function Send({ height, width, img, close, backToCapture, userDoc, setUserDoc }) {
+export default function Send({ height, width, img, close, backToCapture, userDoc, setUserDoc, toggleSwipe }) {
   const [loading, setLoading] = React.useState(false);
   const [success, setSuccess] = React.useState(false);
   const timer = React.useRef();
@@ -40,6 +37,7 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
       } else {
         sendToFirebase()
       }
+      toggleSwipe(true);
       setSuccess(false);
       setLoading(true);
     }
@@ -50,6 +48,7 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
       console.log("uploaded")
       setSuccess(true);
       setLoading(false);
+      toggleSwipe(false);
       setTimeout(() => close(), 100);
     }
   }, [uploadComplete])
