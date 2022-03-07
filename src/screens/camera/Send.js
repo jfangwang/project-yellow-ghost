@@ -36,6 +36,7 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
         changeGuestDoc();
       } else {
         sendToFirebase()
+        toggleSnapShot(false);
       }
       toggleSwipe(true);
       setSuccess(false);
@@ -49,14 +50,15 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
       setSuccess(true);
       setLoading(false);
       toggleSwipe(false);
-      toggleSnapShot(true);
+      if (userDoc['created'] !== 'N/A' && userDoc['email'] !== 'Guest@Guest.com') {
+        toggleSnapShot(true);
+      }
       setTimeout(() => sent(), 100);
     }
   }, [uploadComplete])
 
   const sendToFirebase = () => {
     setSendPressed(true);
-    toggleSnapShot(false);
     send(imgId)
   }
   const changeGuestDoc = () => {
