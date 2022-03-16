@@ -64,7 +64,7 @@ function Camera({index, height, width, flipCamCounter, disableNavFootSlide, user
 		if (flippy) {
 			flippy.current.toggle();
 		}
-		
+
 	}, [flipCamCounter]);
 
 	useEffect(() => {
@@ -98,14 +98,14 @@ function Camera({index, height, width, flipCamCounter, disableNavFootSlide, user
 	}, [height, width])
 
   return (
-	<div className='webcam-screen' style={{height:height, width:width}}>
+	<div className='webcam-screen' style={{height: '100%', width: '100%'}}>
 		{/* <div id="webcam"></div><div id="webcam2"></div> */}
 			<Flippy
 				flipOnHover={false} // default false
 				flipOnClick={false} // default false
 				flipDirection="horizontal" // horizontal or vertical
 				ref={flippy}
-				style={{height:window.innerHeight, width: width}} /// these are optional style, it is not necessary
+				style={{height: '100%', width: '100%'}} /// these are optional style, it is not necessary
 				{...double_tap}
 			>
 				{isMobile ?
