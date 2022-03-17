@@ -24,6 +24,9 @@ body {
 .slide2 {
     background-color: var(--snapchat-color);
     touch-action: none;
+    display:flex;
+    justify-content: center;
+    align-items: center;
 }
 ul {
     list-style: none;

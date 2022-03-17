@@ -11,6 +11,7 @@ import Navbar from '../components/navbar/Navbar';
 import Footer from '../components/footer/Footer';
 import Messages from '../screens/messages/Messages';
 import Camera from '../screens/camera/Camera';
+import NewCam from '../screens/camera/NewCam';
 import Discover from '../screens/discover/Discover';
 import { Guest, Strangers, Everyone } from './GuestInfo';
 import { objectMethod } from '@babel/types';
@@ -536,7 +537,7 @@ export default class App extends Component {
             />
           </div>
           <div className="slide slide2">
-            <Camera
+            {/* <Camera
               index={index}
               height={height}
               width={width}
@@ -546,6 +547,8 @@ export default class App extends Component {
               setUserDoc={this.setUserDoc}
               changeToIndex={this.changeToIndex}
               toggleSnapShot={this.toggleSnapShot}
+            /> */}
+            <NewCam
             />
           </div>
           <div className="slide slide3">
