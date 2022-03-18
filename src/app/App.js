@@ -1,7 +1,7 @@
 import React, { Component, useEffect } from 'react';
 import { auth, db, provider, storage } from '../utils/Firebase';
-import firebase from 'firebase/app';
-import { collection, onSnapshot } from "firebase/firestore";
+import firebase from 'firebase/compat/app';
+import { collection, onSnapshot } from "firebase/compat/firestore";
 import SwipeableViews from 'react-swipeable-views';
 import { bindKeyboard } from 'react-swipeable-views-utils';
 import { isMobile } from 'react-device-detect';
@@ -537,7 +537,7 @@ export default class App extends Component {
             />
           </div>
           <div className="slide slide2">
-            {/* <Camera
+            <Camera
               index={index}
               height={height}
               width={width}
@@ -547,9 +547,9 @@ export default class App extends Component {
               setUserDoc={this.setUserDoc}
               changeToIndex={this.changeToIndex}
               toggleSnapShot={this.toggleSnapShot}
-            /> */}
-            <NewCam
             />
+            {/* <NewCam
+            /> */}
           </div>
           <div className="slide slide3">
             <Navbar />

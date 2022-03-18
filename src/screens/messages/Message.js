@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import Guest from '../../assets/images/guest-profile-pic.png';
 import ReactTimeago from 'react-timeago';
 import { isMobile } from 'react-device-detect';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import { Store } from '@mui/icons-material';
 
 export default function Message({ friend, streak_emoji, disableNavFootSlide, userDoc, height, width, loggedIn, toggleSnapShot }) {

@@ -4,7 +4,7 @@ import Navbar from '../../components/navbar/Navbar'
 import checkmark from '../../assets/images/black-checkmark.png';
 import sentImg from '../../assets/images/sent-img-icon.png';
 import GuestPic from '../../assets/images/guest-profile-pic.png';
-import firebase from 'firebase/app';
+import firebase from 'firebase/compat/app';
 import { auth, db, provider, storage } from '../../utils/Firebase';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';

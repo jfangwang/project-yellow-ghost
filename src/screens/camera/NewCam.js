@@ -28,7 +28,7 @@ export default function NewCam() {
   return (
     <>
     <div>
-      Device List:
+      Device List: asdfasdf
     </div>
       <video id="cam">
 
