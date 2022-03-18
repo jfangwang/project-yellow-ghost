@@ -9,12 +9,13 @@ import './NewCam.css'
 var stream = undefined;
 
 export default function NewCam({ index, height, width, flipCamCounter, disableNavFootSlide, userDoc, setUserDoc, changeToIndex, toggleSnapShot, incFlipCam }) {
-  const [img, setImg] = useState("");
+  const [img, setImg] = useState(null);
   const [screen, setScreen] = useState("camera");
+  const [enabled, setEnabled] = useState(false);
   const desktopConstraints = {
     audio: false,
     video: {
-      facingMode: "environment",
+      facingMode: "user",
       width: { min: 720 * 0.5625, ideal: 1920 * 0.5625, max: 3840 * 0.5625 },
       height: { min: 720, ideal: 1920, max: 3840 }
     }
@@ -23,7 +24,7 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
     audio: false,
     video: {
       facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
-      height: { min: 1280 / height * width, ideal: 1920 / height * width },
+      height: { min: 1280 / width * height, ideal: 1920 / width * height },
       width: { min: 1280, ideal: 1920 }
     }
   }
@@ -33,29 +34,29 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
   });
 
   function activateCam() {
+    document.querySelector(".camOverlay").classList.remove("fadeIn")
+    document.querySelector(".camOverlay").classList.add("loading")
+    console.log("Camera Activated")
     navigator.mediaDevices.getUserMedia(isMobile ? mobileConstraints : desktopConstraints)
       .then(mediaStream => {
+        setEnabled(true)
         stream = mediaStream;
         const video = document.querySelector("#cam");
         video.srcObject = mediaStream;
       })
       .catch(function (err) {
-        alert("Cam is denied")
+        alert("Camera is disabled")
+        setEnabled(false)
       })
-  }
-
-  function activateCanvas() {
-    const ctx = canvas.getContext('2d');
-    const canvas = document.querySelector('#canvasCam');
-    const video = document.querySelector("#cam");
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext("2d").drawImage(video, 0, 0);
   }
 
   useEffect(() => {
     activateCam()
-    // activateCanvas()
+    const video = document.querySelector("video");
+    video.addEventListener("loadeddata", function () {
+      document.querySelector(".camOverlay").classList.remove("loading")
+      document.querySelector(".camOverlay").classList.add("fadeIn")
+    });
   }, [])
 
   useEffect(() => {
@@ -63,6 +64,12 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
       activateCam()
     }
   }, [flipCamCounter])
+
+  useEffect(() => {
+    if (isMobile && height) {
+
+    }
+  }, [height, width])
 
   useEffect(() => {
 
@@ -85,10 +92,13 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
     if (isMobile && flipCamCounter % 2 === 0) {
       canvas.getContext("2d").scale(-1, 1);
       canvas.getContext("2d").drawImage(video, canvas.width * -1, 0);
-    } else {
-      canvas.getContext("2d").drawImage(video, 0, 0);
     }
-    setImg(canvas.toDataURL("image/png"));
+    if (enabled) {
+      canvas.getContext("2d").drawImage(video, 0, 0);
+      setImg(canvas.toDataURL("image/png"));
+    } else {
+      setImg(null);
+    }
     setScreen('captured');
     disableNavFootSlide(true);
   }
@@ -113,7 +123,7 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
       <video
         autoPlay
         playsInline
-        style={flipCamCounter % 2 === 0 ? mirrorStyle : null}
+        style={flipCamCounter % 2 === 0 && isMobile ? mirrorStyle : null}
         height="100%"
         width="100%"
         id="cam"
