@@ -7,31 +7,34 @@ import './NewCam.css'
 var stream = undefined;
 
 export default function NewCam({height, width, flipCamCounter, index}) {
+  console.log(height, width, 720/height * width )
   const desktopConstraints = {
     audio: false,
     video: {
       facingMode: "environment",
-      height: height,
-      width: width * 0.5625,
+      width: { min: 720 * 0.5625, ideal: 1920 * 0.5625, max: 3840 * 0.5625 },
+      height: { min: 720, ideal: 1920, max: 3840 }
     }
   }
+
+
   const mobileConstraints = {
     audio: false,
     video: {
       facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
-      height: width,
-      width: height,
+      height: { min: 720 / height * width , ideal: 3840 / height * width},
+      width: { min: 720, ideal: 3840 }
     }
   }
   const [devices, setDevices] = useState([{ label: "Nothing" }])
   const [constraints, setConstraints] = useState(desktopConstraints)
 
-  // console.log(navigator.mediaDevices.getSupportedConstraints())
-
   function activateCam() {
     navigator.mediaDevices.getUserMedia(isMobile ? mobileConstraints : desktopConstraints)
       .then(mediaStream => {
         stream = mediaStream;
+        // console.log(mediaStream.getVideoTracks()[0].getSettings())
+        // setCamHeight(mediaStream.getVideoTracks()[0].getSettings().height)
         // navigator.mediaDevices.enumerateDevices()
         //   .then(function (devices) {
         //     setDevices({
@@ -53,12 +56,15 @@ export default function NewCam({height, width, flipCamCounter, index}) {
   }, [flipCamCounter])
 
   useEffect(() => {
-    if(index == 1) {
-      activateCam()
-    } else {
-      stream.getTracks().forEach(function(track) {
-        track.stop();
-      });
+
+    if (stream !== undefined) {
+      if(index == 1) {
+        activateCam()
+      } else {
+        stream.getTracks().forEach(function(track) {
+          track.stop();
+        });
+      }
     }
   }, [index])
 
