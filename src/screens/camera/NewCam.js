@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import Webcam from 'react-webcam'
 import { isMobile } from 'react-device-detect'
+import { useDoubleTap } from 'use-double-tap'
 import Footer from '../../components/footer/Footer'
 import './NewCam.css'
 
 var stream = undefined;
 
-export default function NewCam({height, width, flipCamCounter, index}) {
-  console.log(height, width, 720/height * width )
+export default function NewCam({height, width, flipCamCounter, index, incFlipCam}) {
   const desktopConstraints = {
     audio: false,
     video: {
@@ -24,6 +24,10 @@ export default function NewCam({height, width, flipCamCounter, index}) {
       width: { min: 1280, ideal: 1920 }
     }
   }
+
+  const double_tap = useDoubleTap(() => {
+		incFlipCam()
+	});
 
   function activateCam() {
     navigator.mediaDevices.getUserMedia(isMobile ? mobileConstraints : desktopConstraints)
@@ -71,9 +75,12 @@ export default function NewCam({height, width, flipCamCounter, index}) {
         width="100%"
         id="cam"
       />
-      <div className="camOverlay" style={{position: "absolute", height: height, width: width}}>
+      <div
+        className="camOverlay"
+        style={{position: "absolute", height: height, width: width}}
+        {...double_tap}
+      >
         <div>
-          <h1>Footer</h1>
         </div>
         <div>
           <div style={{display: "flex", justifyContent: "center"}}>

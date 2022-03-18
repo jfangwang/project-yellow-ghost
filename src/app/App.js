@@ -553,6 +553,7 @@ export default class App extends Component {
               height={height}
               width={width}
               flipCamCounter={flipCamCounter}
+              incFlipCam={this.incFlipCam}
             />
           </div>
           <div className="slide slide3">
