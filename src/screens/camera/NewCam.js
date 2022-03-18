@@ -103,7 +103,9 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
   }, [flipCamCounter])
 
   useEffect(() => {
-    fixOrientation()
+    if (isMobile) {
+      fixOrientation()
+    }
   }, [height, width])
 
   useEffect(() => {
