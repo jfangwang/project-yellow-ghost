@@ -125,7 +125,7 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
       <video
         autoPlay
         playsInline
-        style={flipCamCounter % 2 === 0 && isMobile ? mirrorStyle : null}
+        style={(flipCamCounter % 2 === 0 && isMobile) || (!isMobile) ? mirrorStyle : null}
         height="100%"
         width="100%"
         id="cam"
