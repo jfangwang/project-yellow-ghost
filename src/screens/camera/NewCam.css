@@ -11,3 +11,7 @@
     border: 0.5rem solid lightgrey;
     border-radius: 50%;
 }
+.canvas {
+    /* background-color: rgba(253, 171, 147, 0.3); */
+    display: none;
+}

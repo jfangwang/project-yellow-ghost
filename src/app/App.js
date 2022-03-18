@@ -553,6 +553,11 @@ export default class App extends Component {
               height={height}
               width={width}
               flipCamCounter={flipCamCounter}
+              userDoc={userDoc}
+              disableNavFootSlide={this.disableNavFootSlide}
+              setUserDoc={this.setUserDoc}
+              changeToIndex={this.changeToIndex}
+              toggleSnapShot={this.toggleSnapShot}
               incFlipCam={this.incFlipCam}
             />
           </div>
