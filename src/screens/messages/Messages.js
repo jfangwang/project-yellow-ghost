@@ -1,9 +1,7 @@
-import React, { useEffect } from 'react'
-import PropTypes from 'prop-types'
+import React from 'react'
 import './Messages.css'
 import './Message.css'
 import Message from './Message'
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 
 const list = [];
 

@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import './Message.css';
-import { auth, db, provider, storage } from '../../utils/Firebase';
+import { db, storage } from '../../utils/Firebase';
 import PropTypes from 'prop-types';
 import Guest from '../../assets/images/guest-profile-pic.png';
 import ReactTimeago from 'react-timeago';
 import { isMobile } from 'react-device-detect';
 import firebase from 'firebase/compat/app';
-import { Store } from '@mui/icons-material';
 
 export default function Message({ friend, streak_emoji, disableNavFootSlide, userDoc, height, width, loggedIn, toggleSnapShot }) {
 	const [ar, setar] = useState(9 / 16);

@@ -537,7 +537,7 @@ export default class App extends Component {
             />
           </div>
           <div className="slide slide2">
-            <Camera
+            {/* <Camera
               index={index}
               height={height}
               width={width}
@@ -547,9 +547,13 @@ export default class App extends Component {
               setUserDoc={this.setUserDoc}
               changeToIndex={this.changeToIndex}
               toggleSnapShot={this.toggleSnapShot}
-            />
-            {/* <NewCam
             /> */}
+            <NewCam
+              index={index}
+              height={height}
+              width={width}
+              flipCamCounter={flipCamCounter}
+            />
           </div>
           <div className="slide slide3">
             <Navbar />
