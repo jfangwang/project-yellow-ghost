@@ -27,7 +27,8 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
     video: {
       facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
       height: { min: 1280 / width * height, ideal: 1920 / width * height },
-      width: { min: 1280, ideal: 1920 }
+      width: { min: 1280, ideal: 1920 },
+      aspectRatio: height/width,
     }
   }
 
@@ -76,7 +77,7 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
   useEffect(() => {
 
     if (stream !== undefined) {
-      if (index == 1) {
+      if (index === 1 && screen === "camera") {
         activateCam()
       } else {
         stream.getTracks().forEach(function (track) {
@@ -84,7 +85,7 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
         });
       }
     }
-  }, [index])
+  }, [index, screen])
 
   function capture() {
     const canvas = document.querySelector('#canvasCam');
