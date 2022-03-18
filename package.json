@@ -27,7 +27,7 @@
     "eject": "react-scripts eject",
     "test": "jest",
     "test-watch": "jest --watch",
-    "version": "npm run build && git add -A",
+    "version": "npm run build && git add -A && firebase deploy",
     "postversion": "git push && git push --tags && rm -rf build"
   },
   "eslintConfig": {
