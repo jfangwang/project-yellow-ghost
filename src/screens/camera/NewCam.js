@@ -12,7 +12,6 @@ var stream = undefined;
 export default function NewCam({ index, height, width, flipCamCounter, disableNavFootSlide, userDoc, setUserDoc, changeToIndex, toggleSnapShot, incFlipCam }) {
   const [img, setImg] = useState(null);
   const [screen, setScreen] = useState("camera");
-  const [enabled, setEnabled] = useState(false);
   const [vidLoaded, setVidLoaded] = useState(false);
   const desktopConstraints = {
     audio: false,
@@ -44,14 +43,12 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
     console.log("Camera Activated")
     navigator.mediaDevices.getUserMedia(isMobile ? mobileConstraints : desktopConstraints)
       .then(mediaStream => {
-        setEnabled(true)
         stream = mediaStream;
         const video = document.querySelector("#cam");
         video.srcObject = mediaStream;
       })
       .catch(function (err) {
         alert("Camera is disabled")
-        setEnabled(false)
       })
   }
 
@@ -109,107 +106,103 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
     fixOrientation()
   }, [height, width])
 
-useEffect(() => {
+  useEffect(() => {
 
-  if (stream !== undefined) {
-    if (index === 1 && screen === "camera") {
-      if (isMobile) {
-        fixOrientation()
+    if (stream !== undefined) {
+      if (index === 1 && screen === "camera") {
+        if (isMobile) {
+          fixOrientation()
+        } else {
+          activateCam()
+        }
       } else {
-        activateCam()
+        stream.getTracks().forEach(function (track) {
+          track.stop();
+        });
       }
-    } else {
-      stream.getTracks().forEach(function (track) {
-        track.stop();
-      });
     }
-  }
-}, [index, screen])
+  }, [index, screen])
 
-function capture() {
-  const canvas = document.querySelector('#canvasCam');
-  const video = document.querySelector("#cam");
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  if (isMobile && flipCamCounter % 2 === 0) {
-    canvas.getContext("2d").scale(-1, 1);
-    canvas.getContext("2d").drawImage(video, canvas.width * -1, 0);
-  }
-  if (enabled) {
+  function capture() {
+    const canvas = document.querySelector('#canvasCam');
+    const video = document.querySelector("#cam");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    if (isMobile && flipCamCounter % 2 === 0) {
+      canvas.getContext("2d").scale(-1, 1);
+      canvas.getContext("2d").drawImage(video, canvas.width * -1, 0);
+    }
     canvas.getContext("2d").drawImage(video, 0, 0);
     setImg(canvas.toDataURL("image/png"));
-  } else {
-    setImg(null);
+    setScreen('captured');
+    disableNavFootSlide(true);
   }
-  setScreen('captured');
-  disableNavFootSlide(true);
-}
-function changedToSend() { setScreen('send') }
-function backToCapture() { setScreen('captured') }
-function save() { close() }
-function close() {
-  setImg(null);
-  setScreen('camera');
-  disableNavFootSlide(false);
-}
-function sent() {
-  setImg(null);
-  setScreen('camera');
-  disableNavFootSlide(false);
-  changeToIndex(0);
-}
+  function changedToSend() { setScreen('send') }
+  function backToCapture() { setScreen('captured') }
+  function save() { close() }
+  function close() {
+    setImg(null);
+    setScreen('camera');
+    disableNavFootSlide(false);
+  }
+  function sent() {
+    setImg(null);
+    setScreen('camera');
+    disableNavFootSlide(false);
+    changeToIndex(0);
+  }
 
-const mirrorStyle = { transform: "scaleX(-1)" }
-return (
-  <>
-    <video
-      autoPlay
-      playsInline
-      style={(flipCamCounter % 2 === 0 && isMobile) || (!isMobile) ? mirrorStyle : null}
-      height="100%"
-      width="100%"
-      id="cam"
-    />
-    <canvas
-      id="canvasCam"
-      className='canvas'
-      style={{ position: "absolute" }}
-      height={height}
-      width={width}
-    />
-
-    <div
-      className="camOverlay"
-      style={{ position: "absolute", height: height, width: width }}
-      {...double_tap}
-    >
-      <div>
-      </div>
-      <div>
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <button className="capture-button" onClick={vidLoaded ? capture : null}></button>
-        </div>
-        <Footer type="relative" />
-      </div>
-    </div>
-
-    {screen === "captured" &&
-      <Capture
+  const mirrorStyle = { transform: "scaleX(-1)" }
+  return (
+    <>
+      <video
+        autoPlay
+        playsInline
+        style={(flipCamCounter % 2 === 0 && isMobile) || (!isMobile) ? mirrorStyle : null}
+        height="100%"
+        width="100%"
+        id="cam"
+      />
+      <canvas
+        id="canvasCam"
+        className='canvas'
+        style={{ position: "absolute" }}
         height={height}
         width={width}
-        img={img}
-        close={close}
-        changedToSend={changedToSend}
-        save={save}
-        backToCapture={backToCapture}
-        userDoc={userDoc}
-        setUserDoc={setUserDoc}
-        sent={sent}
-        toggleSnapShot={toggleSnapShot}
       />
-    }
 
-  </>
+      <div
+        className="camOverlay"
+        style={{ position: "absolute", height: height, width: width }}
+        {...double_tap}
+      >
+        <div>
+        </div>
+        <div>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <button className="capture-button" onClick={vidLoaded ? capture : null}></button>
+          </div>
+          <Footer type="relative" />
+        </div>
+      </div>
 
-)
+      {screen === "captured" &&
+        <Capture
+          height={height}
+          width={width}
+          img={img}
+          close={close}
+          changedToSend={changedToSend}
+          save={save}
+          backToCapture={backToCapture}
+          userDoc={userDoc}
+          setUserDoc={setUserDoc}
+          sent={sent}
+          toggleSnapShot={toggleSnapShot}
+        />
+      }
+
+    </>
+
+  )
 }
