@@ -5,6 +5,7 @@ import { useDoubleTap } from 'use-double-tap'
 import Capture from './Capture';
 import Footer from '../../components/footer/Footer'
 import './NewCam.css'
+import { AspectRatio } from '@mui/icons-material';
 
 var stream = undefined;
 
@@ -17,7 +18,8 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
     video: {
       facingMode: "user",
       width: { min: 720 * 0.5625, ideal: 1920 * 0.5625, max: 3840 * 0.5625 },
-      height: { min: 720, ideal: 1920, max: 3840 }
+      height: { min: 720, ideal: 1920, max: 3840 },
+      aspectRatio: 9.5/16,
     }
   }
   const mobileConstraints = {
