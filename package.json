@@ -1,6 +1,6 @@
 {
   "name": "project-yellow-ghost",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@babel/preset-env": "^7.16.11",
@@ -26,7 +26,9 @@
     "build": "react-scripts build",
     "eject": "react-scripts eject",
     "test": "jest",
-    "test-watch": "jest --watch"
+    "test-watch": "jest --watch",
+    "version": "npm run build && git add -A",
+    "postversion": "git push && git push --tags && rm -rf build"
   },
   "eslintConfig": {
     "extends": [
