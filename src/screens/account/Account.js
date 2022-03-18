@@ -4,6 +4,8 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import '../messages/Message.css'
 import { updateSourceFile } from 'typescript';
 
+const { version } = require("../../../package.json");
+
 export default class Account extends Component {
   constructor(props) {
     super(props);
@@ -52,7 +54,7 @@ export default class Account extends Component {
         }
         <div className="section snapMap">
           <h1>Snap Map</h1>
-          <img src="https://media.npr.org/assets/img/2017/06/30/snapchat-world_custom-7763b62a81588d5def16ef6335a573d94e0dc908.jpg" />
+          <img src="https://media.npr.org/assets/img/2017/06/30/snapchat-world_custom-7763b62a81588d5def16ef6335a573d94e0dc908.jpg" alt=""/>
         </div>
         <div className="section">
           {userDoc.created !== 'N/A' && <h3>Joined Snapchat Clone on {userDoc['created']}</h3>}
@@ -63,6 +65,9 @@ export default class Account extends Component {
             :
             <button onClick={this.signOut} className="logout"><h2>Logout</h2></button>
           }
+        </div>
+        <div className="section">
+          <p>Project Yellow Ghost v{version}</p>
         </div>
       </main>
     )
