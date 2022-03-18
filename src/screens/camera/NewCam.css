@@ -4,3 +4,10 @@
     flex-direction: column;
     justify-content: space-between;
 }
+.capture-button {
+    width: 6em;
+    height: 6em;
+    background: transparent;
+    border: 0.5rem solid lightgrey;
+    border-radius: 50%;
+}

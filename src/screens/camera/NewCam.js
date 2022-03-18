@@ -16,33 +16,19 @@ export default function NewCam({height, width, flipCamCounter, index}) {
       height: { min: 720, ideal: 1920, max: 3840 }
     }
   }
-
-
   const mobileConstraints = {
     audio: false,
     video: {
       facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
-      height: { min: 720 / height * width , ideal: 3840 / height * width},
-      width: { min: 720, ideal: 3840 }
+      height: { min: 1280 / height * width , ideal: 1920 / height * width},
+      width: { min: 1280, ideal: 1920 }
     }
   }
-  const [devices, setDevices] = useState([{ label: "Nothing" }])
-  const [constraints, setConstraints] = useState(desktopConstraints)
 
   function activateCam() {
     navigator.mediaDevices.getUserMedia(isMobile ? mobileConstraints : desktopConstraints)
       .then(mediaStream => {
         stream = mediaStream;
-        // console.log(mediaStream.getVideoTracks()[0].getSettings())
-        // setCamHeight(mediaStream.getVideoTracks()[0].getSettings().height)
-        // navigator.mediaDevices.enumerateDevices()
-        //   .then(function (devices) {
-        //     setDevices({
-        //       devices: devices.map(({ deviceId, groupId, kind, label }) =>
-        //         ({ deviceId, groupId, kind, label })
-        //       )
-        //     })
-        //   })
         var video = document.querySelector("#cam");
         video.srcObject = mediaStream;
       })
@@ -53,6 +39,12 @@ export default function NewCam({height, width, flipCamCounter, index}) {
 
   useEffect(() => {
     activateCam()
+  }, [])
+
+  useEffect(() => {
+    if (stream !== undefined) {
+      activateCam()
+    }
   }, [flipCamCounter])
 
   useEffect(() => {
@@ -85,7 +77,7 @@ export default function NewCam({height, width, flipCamCounter, index}) {
         </div>
         <div>
           <div style={{display: "flex", justifyContent: "center"}}>
-            <h1>Capture</h1>
+            <button className="capture-button"></button>
           </div>
           <Footer type="relative"/>
         </div>
