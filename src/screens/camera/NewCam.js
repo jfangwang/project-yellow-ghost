@@ -14,7 +14,7 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
   const [arr, setArr] = useState([])
   const [camH, setcamH] = useState(null);
   const [camW, setcamW] = useState(null);
-  const [ar, setAr] = useState(9.5/16);
+  const [ar, setAr] = useState(16/9.5);
   const [stream, setStream] = useState(null);
   const mirrorStyle = { transform: "scaleX(-1)" }
 
@@ -30,26 +30,29 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
     if ((isMobile && flipCamCounter % 2 === 0) || !isMobile) {
       canvas.getContext("2d").scale(-1, 1);
       canvas.getContext("2d").drawImage(video, canvas.width * -1, 0);
-    } else if (isMobile) {
-      // canvas.getContext("2d").scale(-1, 1);
+    } else {
       canvas.getContext("2d").drawImage(video, 0, 0);
     }
-    // console.log(canvas.toDataURL("image/png"))
-    var image = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height);
-    console.log(image)
-    // setImg(canvas.toDataURL("image/png"));
-    // setScreen('captured');
-    // disableNavFootSlide(true);
+    canvas.toBlob((blob) => {
+      var url = URL.createObjectURL(blob)
+      setImg(url)
+      console.log(url)
+    });
+    setScreen('captured');
+    disableNavFootSlide(true);
+    // URL.revokeObjectURL(url);
   }
   function changedToSend() { setScreen('send') }
   function backToCapture() { setScreen('captured') }
   function save() { close() }
   function close() {
+    URL.revokeObjectURL(img);
     setImg(null);
     setScreen('camera');
     disableNavFootSlide(false);
   }
   function sent() {
+    URL.revokeObjectURL(img);
     setImg(null);
     setScreen('camera');
     disableNavFootSlide(false);
@@ -59,6 +62,15 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
     audio: false,
     video: {
       facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
+      aspectRatio: {
+        exact: isMobile ? height/width : 9.5/16
+      },
+      height: {
+        ideal: 2160
+      },
+      width: {
+        ideal: 3840
+      },
     }
   }
 
@@ -68,27 +80,31 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
     document.querySelector(".camOverlay").classList.add("loading")
     navigator.mediaDevices.getUserMedia(temp).then((mediaStream) => {
       setStream(mediaStream)
-      if (mediaStream.getVideoTracks().length > 0) {
-        if (isMobile) {
-          setAr(width/height)
-          setcamH(mediaStream.getVideoTracks()[0].getCapabilities().height.max)
-          setcamW(mediaStream.getVideoTracks()[0].getCapabilities().width.max)
-        } else {
-          setcamH(mediaStream.getVideoTracks()[0].getCapabilities().height.max)
-          setcamW(mediaStream.getVideoTracks()[0].getCapabilities().height.max * ar)
-        }
-        mediaStream.getVideoTracks()[0].applyConstraints({
-          height: !isMobile ? mediaStream.getVideoTracks()[0].getCapabilities().height.max :
-                              width/height * mediaStream.getVideoTracks()[0].getCapabilities().width.max,
-
-          width: !isMobile ? mediaStream.getVideoTracks()[0].getCapabilities().height.max * ar :
-          mediaStream.getVideoTracks()[0].getCapabilities().width.max,
-        }).then(() => {
-          document.querySelector("#cam").srcObject = mediaStream;
-          console.log(mediaStream.getVideoTracks()[0].getCapabilities().height.max,
-                      mediaStream.getVideoTracks()[0].getCapabilities().width.max)
-        })
-      }
+      document.querySelector("#cam").srcObject = mediaStream;
+      console.log(mediaStream.getVideoTracks()[0].getSettings())
+      // var h, w;
+      // if (mediaStream.getVideoTracks().length > 0) {
+      //   if (!isMobile) {
+      //     h = mediaStream.getVideoTracks()[0].getCapabilities().height.max;
+      //     w = mediaStream.getVideoTracks()[0].getCapabilities().height.max * ar;
+      //     setcamH(h) 
+      //     setcamW(w)
+      //   } else {
+      //     setAr(width / height);
+      //     h = width / height * mediaStream.getVideoTracks()[0].getCapabilities().width.max;
+      //     w = mediaStream.getVideoTracks()[0].getCapabilities().width.max;
+      //     setcamH(h)
+      //     setcamW(w)
+      //   }
+      //   mediaStream.getVideoTracks()[0].applyConstraints({
+      //     height: h, width: w
+      //   }).then(() => {
+      //     document.querySelector("#cam").srcObject = mediaStream;
+      //     // console.log(h, w, mediaStream.getVideoTracks()[0].getSettings())
+      //   }).catch((err) => {
+      //     console.log("error ", err)
+      //   })
+      // }
     })
   }
 
@@ -102,7 +118,6 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
   }
 
   useEffect(() => {
-    startCam()
     const video = document.querySelector("video");
     video.addEventListener("loadeddata", function () {
       setVidLoaded(true)
@@ -147,7 +162,7 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
         </div>
         <div>
           <div className="captureFooter" style={{ display: "flex", justifyContent: "center" }}>
-          <p>{arr}</p>
+            <p>{arr}</p>
             <button className="capture-button" onClick={vidLoaded && img === null ? capture : null}></button>
           </div>
           <Footer type="relative" />

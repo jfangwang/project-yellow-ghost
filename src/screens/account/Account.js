@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import './Account.css';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import '../messages/Message.css'
-import { updateSourceFile } from 'typescript';
 
 export default class Account extends Component {
   constructor(props) {

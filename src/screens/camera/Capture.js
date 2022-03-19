@@ -10,6 +10,7 @@ import './Camera.css';
 import '../../components/navbar/Navbar.css'
 import '../../components/footer/Footer.css'
 import zIndex from '@mui/material/styles/zIndex';
+import { imageListClasses } from '@mui/material';
 
 export default function Capture({ width, height, close, img, changedToSend, save, backToCapture, userDoc, setUserDoc, sent, toggleSnapShot }) {
 	const [toggle, setToggle] = useState(false);
@@ -44,6 +45,14 @@ export default function Capture({ width, height, close, img, changedToSend, save
 			}
 		}
 	}, [height, width])
+
+	useEffect(() => {
+		if (img !== null) {
+			console.log(img)
+			document.querySelector("#capturedImg").src = `${img}`;
+			// URL.revokeObjectURL(img);
+		}
+	}, img)
 	return (
 		<>
 			<div className="captured-screen" style={{ height: height, width: width }}>
@@ -56,7 +65,7 @@ export default function Capture({ width, height, close, img, changedToSend, save
 					{/* <ul><li><button onClick={changedToSend}>Send</button></li></ul> */}
 					{img ? <button onClick={toggleSend}>Send To</button> : <button style={{backgroundColor: 'lightcoral'}}>Cannot Send</button>}
 				</div>
-				{ img ? <img id="capturedImg" src={img} /> : <><h3 style={{height:'auto', width:'auto'}}>Invalid Image. Allow camera access to send pictures.</h3><div id="capturedImg"/></>}
+				<img id="capturedImg" />
 			</div>
 			<SlidingMenu open={toggle} close={toggleSend} title="Send" disabled={swipe} keyboard={false}>
 				<Send height={height} width={width} img={img} close={close} backToCapture={backToCapture} userDoc={userDoc} setUserDoc={setUserDoc} toggleSwipe={toggleSwipe} sent={sent} toggleSnapShot={toggleSnapShot}/>
