@@ -16,6 +16,9 @@
     /* background-color: rgba(253, 171, 147, 0.3); */
     display: none;
 }
+#id {
+    background-color: red;
+}
 .loading {
     background-color: yellow;
     background-image: url('../../assets/images/snapchat-background.gif');

@@ -16,20 +16,19 @@ export default function NewCam({ loggedIn, index, height, width, flipCamCounter,
   const [camW, setcamW] = useState(null);
   const [ar, setAr] = useState(16/9.5);
   const [stream, setStream] = useState(null);
+  const [portrait, setPortrait] = useState(false)
   const mirrorStyle = { transform: "scaleX(-1)" }
 
   const double_tap = useDoubleTap(() => {
     incFlipCam()
   });
 
-  const capture = e => {
-    e.preventDefault(true);
-    console.log(e)
+  function capture() {
     const canvas = document.querySelector('#canvasCam');
     const video = document.querySelector("#cam");
-    setArr([canvas.width, canvas.height, video.videoWidth, video.videoHeight])
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
+    setArr([canvas.width, canvas.height, video.videoWidth, video.videoHeight])
     const ctx = canvas.getContext("2d");
     if ((isMobile && flipCamCounter % 2 === 0) || !isMobile) {
       ctx.scale(-1, 1);
@@ -49,17 +48,17 @@ export default function NewCam({ loggedIn, index, height, width, flipCamCounter,
   function backToCapture() { setScreen('captured') }
   function save() { close() }
   function close() {
-    // if (img.startsWith('blob:')) {
-    //   URL.revokeObjectURL(img);
-    // }
+    if (img.startsWith('blob:')) {
+      URL.revokeObjectURL(img);
+    }
     setImg(null);
     setScreen('camera');
     disableNavFootSlide(false);
   }
   function sent() {
-    // if (loggedIn && img.startsWith('blob:')) {
-    //   URL.revokeObjectURL(img);
-    // }
+    if (loggedIn && img.startsWith('blob:')) {
+      URL.revokeObjectURL(img);
+    }
     setImg(null);
     setScreen('camera');
     disableNavFootSlide(false);
@@ -70,10 +69,10 @@ export default function NewCam({ loggedIn, index, height, width, flipCamCounter,
     video: {
       facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
       aspectRatio: {
-        exact: isMobile ? height/width : 9.5/16
+        exact: isMobile ? (portrait ? height/width : width/height) : 9.5/16
       },
-      width: isMobile ? 8000 : {ideal: width/height * 2160},
-      height: isMobile ? 8000 : {ideal: 2160},
+      height: {ideal: 8000},
+      width: {ideal: 8000}
     }
   }
 
@@ -86,33 +85,10 @@ export default function NewCam({ loggedIn, index, height, width, flipCamCounter,
       document.querySelector("#cam").srcObject = mediaStream;
       console.log(mediaStream.getVideoTracks()[0].getSettings())
       var a = []
-      a.push(`height ${mediaStream.getVideoTracks()[0].getSettings().height} : ` + `width ${mediaStream.getVideoTracks()[0].getSettings().width}`)
+      a.push(`Camera height ${mediaStream.getVideoTracks()[0].getSettings().height} : ` + `Camera width ${mediaStream.getVideoTracks()[0].getSettings().width}`)
       a.push(`Max height ${mediaStream.getVideoTracks()[0].getCapabilities().height.max} : ` + `Max width ${mediaStream.getVideoTracks()[0].getCapabilities().width.max}`)
       a.push(`device height ${height} : ` + `device width ${width}`)
       setArr(a)
-      // var h, w;
-      // if (mediaStream.getVideoTracks().length > 0) {
-      //   if (!isMobile) {
-      //     h = mediaStream.getVideoTracks()[0].getCapabilities().height.max;
-      //     w = mediaStream.getVideoTracks()[0].getCapabilities().height.max * ar;
-      //     setcamH(h) 
-      //     setcamW(w)
-      //   } else {
-      //     setAr(width / height);
-      //     h = width / height * mediaStream.getVideoTracks()[0].getCapabilities().width.max;
-      //     w = mediaStream.getVideoTracks()[0].getCapabilities().width.max;
-      //     setcamH(h)
-      //     setcamW(w)
-      //   }
-      //   mediaStream.getVideoTracks()[0].applyConstraints({
-      //     height: h, width: w
-      //   }).then(() => {
-      //     document.querySelector("#cam").srcObject = mediaStream;
-      //     // console.log(h, w, mediaStream.getVideoTracks()[0].getSettings())
-      //   }).catch((err) => {
-      //     console.log("error ", err)
-      //   })
-      // }
     })
   }
 
@@ -143,6 +119,19 @@ export default function NewCam({ loggedIn, index, height, width, flipCamCounter,
     }
   }, [flipCamCounter, index, screen])
 
+  useEffect(() => {
+    if (isMobile && height > width) {
+      setPortrait(true)
+    } else {
+      setPortrait(false)
+    }
+  }, [height, width])
+
+  useEffect(() => {
+    stopCam()
+    startCam()
+  }, [portrait])
+
   return (
     <>
       <video
@@ -170,9 +159,9 @@ export default function NewCam({ loggedIn, index, height, width, flipCamCounter,
         </div>
         <div>
           <div className="captureFooter" style={{ display: "flex", justifyContent: "center" }}>
-            <p style={{backgroundColor:"white"}}>{arr.map((i) => {
+            {/* <p style={{backgroundColor:"white"}}>{arr.map((i) => {
               return <div>{i}</div>
-            })}</p>
+            })}</p> */}
             <button type="button" className="capture-button" onClick={(vidLoaded) && (img === null) ? capture : null }></button>
           </div>
           <Footer type="relative" />
