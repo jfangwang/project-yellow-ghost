@@ -71,8 +71,8 @@ export default function NewCam({ loggedIn, index, height, width, flipCamCounter,
       aspectRatio: {
         exact: isMobile ? (portrait ? height/width : width/height) : 9.5/16
       },
-      height: {ideal: 8000},
-      width: {ideal: 8000}
+      height: {ideal: 1920},
+      width: {ideal: 1920}
     }
   }
 

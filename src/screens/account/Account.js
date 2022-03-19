@@ -3,6 +3,8 @@ import './Account.css';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import '../messages/Message.css'
 
+const { version } = require('../../../package.json');
+
 export default class Account extends Component {
   constructor(props) {
     super(props);
@@ -62,6 +64,9 @@ export default class Account extends Component {
             :
             <button onClick={this.signOut} className="logout"><h2>Logout</h2></button>
           }
+        </div>
+        <div className="section">
+          <p>Project Yellow Ghost v{version}</p>
         </div>
       </main>
     )
