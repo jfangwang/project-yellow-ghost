@@ -13,24 +13,24 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
   const [img, setImg] = useState(null);
   const [screen, setScreen] = useState("camera");
   const [vidLoaded, setVidLoaded] = useState(false);
-  const desktopConstraints = {
+  const [desktopConstraints, setdesktopConstraints] = useState({
     audio: false,
     video: {
-      facingMode: "user",
-      width: { min: 720 * 0.5625, ideal: 1920 * 0.5625, max: 3840 * 0.5625 },
-      height: { min: 720, ideal: 1920, max: 3840 },
       aspectRatio: 9.5 / 16,
+      facingMode: "user",
+      width: { ideal: 4096 },
+      height: { ideal: 2160 },
     }
-  }
-  var mobileConstraints = {
+  })
+  const [mobileConstraints, setmobileConstraints] = useState({
     audio: false,
     video: {
       facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
-      height: { min: 1280 / width * height, ideal: 1920 / width * height },
-      width: { min: 1280, ideal: 1920 },
-      aspectRatio: height / width,
+      aspectRatio: width / height,
+      width: { ideal: 4096 },
+      height: { ideal: 2160 },
     }
-  }
+  })
 
   const double_tap = useDoubleTap(() => {
     incFlipCam()
@@ -46,6 +46,28 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
         stream = mediaStream;
         const video = document.querySelector("#cam");
         video.srcObject = mediaStream;
+        if (!isMobile && Object.keys(desktopConstraints['video']['width']).includes('ideal')) {
+          // Get Resolution of user's camera
+          setdesktopConstraints({
+            audio: false,
+            video: {
+              aspectRatio: 9.5 / 16,
+              facingMode: "user",
+              width: 9.5 / 16 * mediaStream.getVideoTracks()[0].getSettings().height,
+              height: mediaStream.getVideoTracks()[0].getSettings().height,
+            }
+          })
+        } else if (isMobile && Object.keys(mobileConstraints['video']['width']).includes('ideal')) {
+          // setmobileConstraints({
+          //   audio: false,
+          //   video: {
+          //     aspectRatio: height/width,
+          //     facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
+          //     width: width/height * mediaStream.getVideoTracks()[0].getSettings().width,
+          //     height: mediaStream.getVideoTracks()[0].getSettings().width,
+          //   }
+          // })
+        }
       })
       .catch(function (err) {
         alert("Camera is disabled")
@@ -54,7 +76,7 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
 
   function fixOrientation() {
     if (isMobile && width > height) {
-      mobileConstraints = {
+      setmobileConstraints({
         audio: false,
         video: {
           facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
@@ -62,12 +84,12 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
           width: { min: 1280, ideal: 1920 },
           aspectRatio: 9.5 / 16,
         }
-      }
+      })
       if (screen === "camera") {
         activateCam()
       }
-    } else {
-      mobileConstraints = {
+    } else if (isMobile) {
+      setmobileConstraints({
         audio: false,
         video: {
           facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
@@ -75,7 +97,7 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
           width: { min: 1280, ideal: 1920 },
           aspectRatio: height / width,
         }
-      }
+      })
       if (screen === "camera") {
         activateCam()
       }
@@ -123,6 +145,10 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
     }
   }, [index, screen])
 
+  useEffect(() => {
+    activateCam();
+  }, [desktopConstraints, mobileConstraints])
+
   function capture() {
     const canvas = document.querySelector('#canvasCam');
     const video = document.querySelector("#cam");
@@ -131,8 +157,13 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
     if (isMobile && flipCamCounter % 2 === 0) {
       canvas.getContext("2d").scale(-1, 1);
       canvas.getContext("2d").drawImage(video, canvas.width * -1, 0);
+    } else if (isMobile) {
+      // canvas.getContext("2d").scale(-1, 1);
+      canvas.getContext("2d").drawImage(video, 0, 0);
+    } else {
+      canvas.getContext("2d").scale(-1, 1);
+      canvas.getContext("2d").drawImage(video, canvas.width * -1, 0);
     }
-    canvas.getContext("2d").drawImage(video, 0, 0);
     setImg(canvas.toDataURL("image/png"));
     setScreen('captured');
     disableNavFootSlide(true);
