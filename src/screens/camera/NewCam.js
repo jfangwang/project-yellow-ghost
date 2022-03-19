@@ -7,166 +7,39 @@ import Footer from '../../components/footer/Footer'
 import './NewCam.css'
 import { AspectRatio } from '@mui/icons-material';
 
-var stream = undefined;
-
 export default function NewCam({ index, height, width, flipCamCounter, disableNavFootSlide, userDoc, setUserDoc, changeToIndex, toggleSnapShot, incFlipCam }) {
   const [img, setImg] = useState(null);
   const [screen, setScreen] = useState("camera");
   const [vidLoaded, setVidLoaded] = useState(false);
-  const [desktopConstraints, setdesktopConstraints] = useState({
-    audio: false,
-    video: {
-      aspectRatio: 9.5 / 16,
-      facingMode: "user",
-      width: { ideal: 4096 },
-      height: { ideal: 2160 },
-    }
-  })
-  const [mobileConstraints, setmobileConstraints] = useState({
-    audio: false,
-    video: {
-      facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
-      aspectRatio: width / height,
-      width: { ideal: 4096 },
-      height: { ideal: 2160 },
-    }
-  })
+  const [arr, setArr] = useState([])
+  const [camH, setcamH] = useState(null);
+  const [camW, setcamW] = useState(null);
+  const [ar, setAr] = useState(9.5/16);
+  const [stream, setStream] = useState(null);
+  const mirrorStyle = { transform: "scaleX(-1)" }
 
   const double_tap = useDoubleTap(() => {
     incFlipCam()
   });
-
-  function activateCam() {
-    setVidLoaded(false)
-    document.querySelector(".camOverlay").classList.remove("fadeIn")
-    document.querySelector(".camOverlay").classList.add("loading")
-    console.log("Camera Activated")
-    navigator.mediaDevices.getUserMedia(isMobile ? mobileConstraints : desktopConstraints)
-      .then(mediaStream => {
-        stream = mediaStream;
-        const video = document.querySelector("#cam");
-        video.srcObject = mediaStream;
-        if (!isMobile && Object.keys(desktopConstraints['video']['width']).includes('ideal')) {
-          // Get Resolution of user's camera
-          setdesktopConstraints({
-            audio: false,
-            video: {
-              aspectRatio: 9.5 / 16,
-              facingMode: "user",
-              width: 9.5 / 16 * mediaStream.getVideoTracks()[0].getSettings().height,
-              height: mediaStream.getVideoTracks()[0].getSettings().height,
-            }
-          })
-        } else if (isMobile && Object.keys(mobileConstraints['video']['width']).includes('ideal')) {
-          // setmobileConstraints({
-          //   audio: false,
-          //   video: {
-          //     aspectRatio: height/width,
-          //     facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
-          //     width: width/height * mediaStream.getVideoTracks()[0].getSettings().width,
-          //     height: mediaStream.getVideoTracks()[0].getSettings().width,
-          //   }
-          // })
-        }
-      })
-      .catch(function (err) {
-        alert("Camera is disabled")
-      })
-  }
-
-  function fixOrientation() {
-    if (isMobile && width > height) {
-      setmobileConstraints({
-        audio: false,
-        video: {
-          facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
-          height: { min: 1280 / width * height, ideal: 1920 / width * height },
-          width: { min: 1280, ideal: 1920 },
-          aspectRatio: 9.5 / 16,
-        }
-      })
-      if (screen === "camera") {
-        activateCam()
-      }
-    } else if (isMobile) {
-      setmobileConstraints({
-        audio: false,
-        video: {
-          facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
-          height: { min: 1280 / width * height, ideal: 1920 / width * height },
-          width: { min: 1280, ideal: 1920 },
-          aspectRatio: height / width,
-        }
-      })
-      if (screen === "camera") {
-        activateCam()
-      }
-    }
-  }
-
-  useEffect(() => {
-    activateCam()
-    const video = document.querySelector("video");
-    video.addEventListener("loadeddata", function () {
-      setVidLoaded(true)
-      document.querySelector(".camOverlay").classList.remove("loading")
-      document.querySelector(".camOverlay").classList.add("fadeIn")
-    });
-  }, [])
-
-  useEffect(() => {
-    if (stream !== undefined) {
-      if (isMobile) {
-        fixOrientation()
-      } else {
-        activateCam()
-      }
-    }
-  }, [flipCamCounter])
-
-  useEffect(() => {
-    fixOrientation()
-  }, [height, width])
-
-  useEffect(() => {
-
-    if (stream !== undefined) {
-      if (index === 1 && screen === "camera") {
-        if (isMobile) {
-          fixOrientation()
-        } else {
-          activateCam()
-        }
-      } else {
-        stream.getTracks().forEach(function (track) {
-          track.stop();
-        });
-      }
-    }
-  }, [index, screen])
-
-  useEffect(() => {
-    activateCam();
-  }, [desktopConstraints, mobileConstraints])
 
   function capture() {
     const canvas = document.querySelector('#canvasCam');
     const video = document.querySelector("#cam");
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    if (isMobile && flipCamCounter % 2 === 0) {
+    if ((isMobile && flipCamCounter % 2 === 0) || !isMobile) {
       canvas.getContext("2d").scale(-1, 1);
       canvas.getContext("2d").drawImage(video, canvas.width * -1, 0);
     } else if (isMobile) {
       // canvas.getContext("2d").scale(-1, 1);
       canvas.getContext("2d").drawImage(video, 0, 0);
-    } else {
-      canvas.getContext("2d").scale(-1, 1);
-      canvas.getContext("2d").drawImage(video, canvas.width * -1, 0);
     }
-    setImg(canvas.toDataURL("image/png"));
-    setScreen('captured');
-    disableNavFootSlide(true);
+    // console.log(canvas.toDataURL("image/png"))
+    var image = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height);
+    console.log(image)
+    // setImg(canvas.toDataURL("image/png"));
+    // setScreen('captured');
+    // disableNavFootSlide(true);
   }
   function changedToSend() { setScreen('send') }
   function backToCapture() { setScreen('captured') }
@@ -182,8 +55,71 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
     disableNavFootSlide(false);
     changeToIndex(0);
   }
+  const temp = {
+    audio: false,
+    video: {
+      facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
+    }
+  }
 
-  const mirrorStyle = { transform: "scaleX(-1)" }
+  function startCam() {
+    setVidLoaded(false)
+    document.querySelector(".camOverlay").classList.remove("fadeIn")
+    document.querySelector(".camOverlay").classList.add("loading")
+    navigator.mediaDevices.getUserMedia(temp).then((mediaStream) => {
+      setStream(mediaStream)
+      if (mediaStream.getVideoTracks().length > 0) {
+        if (isMobile) {
+          setAr(width/height)
+          setcamH(mediaStream.getVideoTracks()[0].getCapabilities().height.max)
+          setcamW(mediaStream.getVideoTracks()[0].getCapabilities().width.max)
+        } else {
+          setcamH(mediaStream.getVideoTracks()[0].getCapabilities().height.max)
+          setcamW(mediaStream.getVideoTracks()[0].getCapabilities().height.max * ar)
+        }
+        mediaStream.getVideoTracks()[0].applyConstraints({
+          height: !isMobile ? mediaStream.getVideoTracks()[0].getCapabilities().height.max :
+                              width/height * mediaStream.getVideoTracks()[0].getCapabilities().width.max,
+
+          width: !isMobile ? mediaStream.getVideoTracks()[0].getCapabilities().height.max * ar :
+          mediaStream.getVideoTracks()[0].getCapabilities().width.max,
+        }).then(() => {
+          document.querySelector("#cam").srcObject = mediaStream;
+          console.log(mediaStream.getVideoTracks()[0].getCapabilities().height.max,
+                      mediaStream.getVideoTracks()[0].getCapabilities().width.max)
+        })
+      }
+    })
+  }
+
+  function stopCam() {
+    if (stream !== null) {
+      stream.getTracks().forEach(element => {
+        element.stop()
+      });
+      document.querySelector("#cam").srcObject = null;
+    }
+  }
+
+  useEffect(() => {
+    startCam()
+    const video = document.querySelector("video");
+    video.addEventListener("loadeddata", function () {
+      setVidLoaded(true)
+      document.querySelector(".camOverlay").classList.remove("loading")
+      document.querySelector(".camOverlay").classList.add("fadeIn")
+    });
+  }, [])
+
+  useEffect(() => {
+    if (index === 1 && screen === "camera") {
+      stopCam()
+      startCam()
+    } else {
+      stopCam()
+    }
+  }, [flipCamCounter, index, screen])
+
   return (
     <>
       <video
@@ -210,8 +146,9 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
         <div>
         </div>
         <div>
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <button className="capture-button" onClick={vidLoaded ? capture : null}></button>
+          <div className="captureFooter" style={{ display: "flex", justifyContent: "center" }}>
+          <p>{arr}</p>
+            <button className="capture-button" onClick={vidLoaded && img === null ? capture : null}></button>
           </div>
           <Footer type="relative" />
         </div>
