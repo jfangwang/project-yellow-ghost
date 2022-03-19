@@ -7,7 +7,7 @@ import Footer from '../../components/footer/Footer'
 import './NewCam.css'
 import { AspectRatio } from '@mui/icons-material';
 
-export default function NewCam({ index, height, width, flipCamCounter, disableNavFootSlide, userDoc, setUserDoc, changeToIndex, toggleSnapShot, incFlipCam }) {
+export default function NewCam({ loggedIn, index, height, width, flipCamCounter, disableNavFootSlide, userDoc, setUserDoc, changeToIndex, toggleSnapShot, incFlipCam }) {
   const [img, setImg] = useState(null);
   const [screen, setScreen] = useState("camera");
   const [vidLoaded, setVidLoaded] = useState(false);
@@ -22,21 +22,24 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
     incFlipCam()
   });
 
-  function capture() {
+  const capture = e => {
+    e.preventDefault(true);
+    console.log(e)
     const canvas = document.querySelector('#canvasCam');
     const video = document.querySelector("#cam");
+    setArr([canvas.width, canvas.height, video.videoWidth, video.videoHeight])
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
+    const ctx = canvas.getContext("2d");
     if ((isMobile && flipCamCounter % 2 === 0) || !isMobile) {
-      canvas.getContext("2d").scale(-1, 1);
-      canvas.getContext("2d").drawImage(video, canvas.width * -1, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, canvas.width * -1, 0);
     } else {
-      canvas.getContext("2d").drawImage(video, 0, 0);
+      ctx.drawImage(video, 0, 0);
     }
     canvas.toBlob((blob) => {
       var url = URL.createObjectURL(blob)
       setImg(url)
-      console.log(url)
     });
     setScreen('captured');
     disableNavFootSlide(true);
@@ -46,13 +49,17 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
   function backToCapture() { setScreen('captured') }
   function save() { close() }
   function close() {
-    URL.revokeObjectURL(img);
+    // if (img.startsWith('blob:')) {
+    //   URL.revokeObjectURL(img);
+    // }
     setImg(null);
     setScreen('camera');
     disableNavFootSlide(false);
   }
   function sent() {
-    URL.revokeObjectURL(img);
+    // if (loggedIn && img.startsWith('blob:')) {
+    //   URL.revokeObjectURL(img);
+    // }
     setImg(null);
     setScreen('camera');
     disableNavFootSlide(false);
@@ -65,12 +72,8 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
       aspectRatio: {
         exact: isMobile ? height/width : 9.5/16
       },
-      height: {
-        ideal: 2160
-      },
-      width: {
-        ideal: 3840
-      },
+      width: isMobile ? 8000 : {ideal: width/height * 2160},
+      height: isMobile ? 8000 : {ideal: 2160},
     }
   }
 
@@ -82,6 +85,11 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
       setStream(mediaStream)
       document.querySelector("#cam").srcObject = mediaStream;
       console.log(mediaStream.getVideoTracks()[0].getSettings())
+      var a = []
+      a.push(`height ${mediaStream.getVideoTracks()[0].getSettings().height} : ` + `width ${mediaStream.getVideoTracks()[0].getSettings().width}`)
+      a.push(`Max height ${mediaStream.getVideoTracks()[0].getCapabilities().height.max} : ` + `Max width ${mediaStream.getVideoTracks()[0].getCapabilities().width.max}`)
+      a.push(`device height ${height} : ` + `device width ${width}`)
+      setArr(a)
       // var h, w;
       // if (mediaStream.getVideoTracks().length > 0) {
       //   if (!isMobile) {
@@ -162,8 +170,10 @@ export default function NewCam({ index, height, width, flipCamCounter, disableNa
         </div>
         <div>
           <div className="captureFooter" style={{ display: "flex", justifyContent: "center" }}>
-            <p>{arr}</p>
-            <button className="capture-button" onClick={vidLoaded && img === null ? capture : null}></button>
+            <p style={{backgroundColor:"white"}}>{arr.map((i) => {
+              return <div>{i}</div>
+            })}</p>
+            <button type="button" className="capture-button" onClick={(vidLoaded) && (img === null) ? capture : null }></button>
           </div>
           <Footer type="relative" />
         </div>

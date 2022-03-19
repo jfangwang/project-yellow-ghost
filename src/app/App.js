@@ -549,6 +549,7 @@ export default class App extends Component {
               toggleSnapShot={this.toggleSnapShot}
             /> */}
             <NewCam
+              loggedIn={loggedIn}
               index={index}
               height={height}
               width={width}

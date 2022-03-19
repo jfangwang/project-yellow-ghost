@@ -46,13 +46,6 @@ export default function Capture({ width, height, close, img, changedToSend, save
 		}
 	}, [height, width])
 
-	useEffect(() => {
-		if (img !== null) {
-			console.log(img)
-			document.querySelector("#capturedImg").src = `${img}`;
-			// URL.revokeObjectURL(img);
-		}
-	}, img)
 	return (
 		<>
 			<div className="captured-screen" style={{ height: height, width: width }}>
@@ -65,7 +58,7 @@ export default function Capture({ width, height, close, img, changedToSend, save
 					{/* <ul><li><button onClick={changedToSend}>Send</button></li></ul> */}
 					{img ? <button onClick={toggleSend}>Send To</button> : <button style={{backgroundColor: 'lightcoral'}}>Cannot Send</button>}
 				</div>
-				<img id="capturedImg" />
+				<img id="capturedImg" src={img}/>
 			</div>
 			<SlidingMenu open={toggle} close={toggleSend} title="Send" disabled={swipe} keyboard={false}>
 				<Send height={height} width={width} img={img} close={close} backToCapture={backToCapture} userDoc={userDoc} setUserDoc={setUserDoc} toggleSwipe={toggleSwipe} sent={sent} toggleSnapShot={toggleSnapShot}/>
