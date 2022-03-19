@@ -1,0 +1,19 @@
+{
+  "files": {
+    "main.css": "/static/css/main.9969d19c.css",
+    "main.js": "/static/js/main.9e026188.js",
+    "static/media/rick-profile-pic.jpg": "/static/media/rick-profile-pic.81f18d455882af73bf54.jpg",
+    "static/media/morty-profile-pic.jpg": "/static/media/morty-profile-pic.171367061bb0d3918598.jpg",
+    "static/media/snapchat-background.gif": "/static/media/snapchat-background.44a04fe5365be3c8e1d9.gif",
+    "static/media/opened-img-icon.png": "/static/media/opened-img-icon.f5c000ed27b0606b06b6.png",
+    "static/media/sent-img-icon.png": "/static/media/sent-img-icon.fee1337a269e019c8873.png",
+    "static/media/black-checkmark.png": "/static/media/black-checkmark.d8439ac6ad1af747a4d7.png",
+    "index.html": "/index.html",
+    "main.9969d19c.css.map": "/static/css/main.9969d19c.css.map",
+    "main.9e026188.js.map": "/static/js/main.9e026188.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.9969d19c.css",
+    "static/js/main.9e026188.js"
+  ]
+}
