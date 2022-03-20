@@ -1,9 +1,15 @@
 .camOverlay {
-    /* background-color: lightblue; */
+    /* background-color: rgba(202, 80, 71, 0.2); */
+    /* border: 10px red solid; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.container {
+    /* background-color: rgba(4, 255, 0, 0.4); */
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-
+    justify-content: flex-end;
 }
 .capture-button {
     width: 6em;
@@ -12,9 +18,18 @@
     border: 0.5rem solid lightgrey;
     border-radius: 50%;
 }
+.camFooter {
+    width: 100%;
+}
+.camFooter button {
+    z-index: 1;
+}
 .canvas {
     /* background-color: rgba(253, 171, 147, 0.3); */
     display: none;
+}
+.canvas2 {
+    position: absolute;
 }
 #id {
     background-color: red;

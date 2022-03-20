@@ -4,6 +4,7 @@ import { isMobile } from 'react-device-detect'
 import { useDoubleTap } from 'use-double-tap'
 import Capture from './Capture';
 import Footer from '../../components/footer/Footer'
+import CircleExplosion from '../../assets/animations/CircleExplosion';
 import './NewCam.css'
 import { AspectRatio } from '@mui/icons-material';
 
@@ -14,7 +15,7 @@ export default function NewCam({ loggedIn, index, height, width, flipCamCounter,
   const [arr, setArr] = useState([])
   const [camH, setcamH] = useState(null);
   const [camW, setcamW] = useState(null);
-  const [ar, setAr] = useState(16/9.5);
+  const [ar, setAr] = useState(16 / 9.5);
   const [stream, setStream] = useState(null);
   const [portrait, setPortrait] = useState(false)
   const mirrorStyle = { transform: "scaleX(-1)" }
@@ -69,10 +70,10 @@ export default function NewCam({ loggedIn, index, height, width, flipCamCounter,
     video: {
       facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
       aspectRatio: {
-        exact: isMobile ? (portrait ? height/width : width/height) : 9.5/16
+        exact: isMobile ? (portrait ? height / width : width / height) : 9.5 / 16
       },
-      height: {ideal: 1920},
-      width: {ideal: 1920}
+      height: { ideal: 1920 },
+      width: { ideal: 1920 }
     }
   }
 
@@ -102,6 +103,8 @@ export default function NewCam({ loggedIn, index, height, width, flipCamCounter,
   }
 
   useEffect(() => {
+    // CircleExplosion("drawingCanvas")
+    setAr(isMobile ? (portrait ? height / width : width / height) : 9.5 / 16)
     const video = document.querySelector("video");
     video.addEventListener("loadeddata", function () {
       setVidLoaded(true)
@@ -152,19 +155,25 @@ export default function NewCam({ loggedIn, index, height, width, flipCamCounter,
 
       <div
         className="camOverlay"
-        style={{ position: "absolute", height: height, width: width }}
+        style={{ position: "absolute", height: "100%", width: '100%' }}
         {...double_tap}
       >
-        <div>
-        </div>
-        <div>
-          <div className="captureFooter" style={{ display: "flex", justifyContent: "center" }}>
-            {/* <p style={{backgroundColor:"white"}}>{arr.map((i) => {
+        <div className="container" style={{ height: "100%", width: ar * height }}>
+          <canvas
+            id="drawingCanvas"
+            className='canvas2'
+            width={ar * height}
+            height={height}
+          />
+          <div className="camFooter" style={{display: screen === 'camera' ? 'block' : 'none'}}>
+            <div className="captureFooter" style={{ display: "flex", justifyContent: "center" }}>
+              {/* <p style={{backgroundColor:"white"}}>{arr.map((i) => {
               return <div>{i}</div>
             })}</p> */}
-            <button type="button" className="capture-button" onClick={(vidLoaded) && (img === null) ? capture : null }></button>
+              <button type="button" className="capture-button" onClick={(vidLoaded) && (img === null) ? capture : null}></button>
+            </div>
+            <Footer type="relative" />
           </div>
-          <Footer type="relative" />
         </div>
       </div>
 
