@@ -6,6 +6,7 @@ import sentImg from '../../assets/images/sent-img-icon.png';
 import GuestPic from '../../assets/images/guest-profile-pic.png';
 import firebase from 'firebase/compat/app';
 import { auth, db, provider, storage } from '../../utils/Firebase';
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { yellow, green } from '@mui/material/colors';
@@ -57,9 +58,33 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
     }
   }, [uploadComplete])
 
+  const sendBlob = (id) => {
+    fetch(img)
+      .then(res => res.blob()) // Gets the response and returns it as a blob
+      .then(blob => {
+        // Here's where you get access to the blob
+        // And you can use it for whatever you want
+        // Like calling ref().put(blob)
+
+        setuploadComplete(false);
+        const storage = getStorage();
+        const storageRef = ref(storage, `posts/${id}`);
+        const uploadTask = uploadBytes(storageRef, blob).then((ss) => {
+          getDownloadURL(ss.ref).then((downloadURL) => {
+            addPhotoToFireStore(id, downloadURL);
+          })
+        })
+      });
+  }
+
   const sendToFirebase = () => {
     setSendPressed(true);
-    send(imgId)
+    if (img.startsWith('data:')) {
+      send(imgId)
+    } else if (img.startsWith('blob:')) {
+      sendBlob(imgId)
+    }
+
   }
   const changeGuestDoc = () => {
     let newUserDoc = userDoc;

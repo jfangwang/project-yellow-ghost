@@ -83,7 +83,7 @@ export default function NewCam({ loggedIn, index, height, width, flipCamCounter,
     navigator.mediaDevices.getUserMedia(temp).then((mediaStream) => {
       setStream(mediaStream)
       document.querySelector("#cam").srcObject = mediaStream;
-      console.log(mediaStream.getVideoTracks()[0].getSettings())
+      // console.log(mediaStream.getVideoTracks()[0].getSettings())
       var a = []
       a.push(`Camera height ${mediaStream.getVideoTracks()[0].getSettings().height} : ` + `Camera width ${mediaStream.getVideoTracks()[0].getSettings().width}`)
       a.push(`Max height ${mediaStream.getVideoTracks()[0].getCapabilities().height.max} : ` + `Max width ${mediaStream.getVideoTracks()[0].getCapabilities().width.max}`)
