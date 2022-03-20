@@ -5,6 +5,7 @@ import { useDoubleTap } from 'use-double-tap'
 import Capture from './Capture';
 import Footer from '../../components/footer/Footer'
 import CircleExplosion from '../../assets/animations/CircleExplosion';
+import Fireworks from '../../assets/animations/Fireworks';
 import './NewCam.css'
 import { AspectRatio } from '@mui/icons-material';
 
@@ -104,6 +105,7 @@ export default function NewCam({ loggedIn, index, height, width, flipCamCounter,
 
   useEffect(() => {
     // CircleExplosion("drawingCanvas")
+    // Fireworks("drawingCanvas")
     setAr(isMobile ? (portrait ? height / width : width / height) : 9.5 / 16)
     const video = document.querySelector("video");
     video.addEventListener("loadeddata", function () {
