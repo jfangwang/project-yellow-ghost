@@ -158,7 +158,7 @@ export default function NewCam({ loggedIn, index, height, width, flipCamCounter,
         style={{ position: "absolute", height: "100%", width: '100%' }}
         {...double_tap}
       >
-        <div className="container" style={{ height: "100%", width: ar * height }}>
+        <div className="container" style={{ height: "100%", width: isMobile && !portrait ? "100%" : ar * height }}>
           <canvas
             id="drawingCanvas"
             className='canvas2'
