@@ -1,13 +1,17 @@
-export default function CircleExplosion(canvasId) {
-  addClickListeners()
+import { isMobile } from "react-device-detect";
+export default function CircleExplosion(canvasId, width, height) {
+  addClickListeners();
+  handleInactiveUser();
   var c = document.getElementById(`${canvasId}`);
   var ctx = c.getContext("2d");
-  var cH;
-  var cW;
+  var cH = c.height;
+  var cW = c.width;
   var bgColor = "#FF6138";
   var animations = [];
   var circles = [];
   const anime = window.anime;
+
+  console.log(cH, cW);
 
   var colorPicker = (function () {
     var colors = ["#FF6138", "#FFBE53", "#2980B9", "#282741"];
@@ -38,7 +42,9 @@ export default function CircleExplosion(canvasId) {
 
   function addClickListeners() {
     document.addEventListener("touchstart", handleEvent);
-    document.addEventListener("mousedown", handleEvent);
+    if (!isMobile) {
+      document.addEventListener("mousedown", handleEvent);
+    }
   };
 
   function handleEvent(e) {
@@ -49,6 +55,7 @@ export default function CircleExplosion(canvasId) {
     var currentColor = colorPicker.current();
     var nextColor = colorPicker.next();
     var targetR = calcPageFillRadius(e.pageX, e.pageY);
+    // var rippleSize = Math.min(200, (cW * .4));
     var rippleSize = Math.min(200, (cW * .4));
     var minCoverDuration = 750;
 
@@ -159,27 +166,11 @@ export default function CircleExplosion(canvasId) {
   });
 
   var resizeCanvas = function () {
-    cW = window.innerWidth;
-    cH = window.innerHeight;
-    c.width = cW * devicePixelRatio;
-    c.height = cH * devicePixelRatio;
-    ctx.scale(devicePixelRatio, devicePixelRatio);
+    // cW = window.innerWidth;
+    // cH = window.innerHeight;
+    // c.width = cW * devicePixelRatio;
+    // c.height = cH * devicePixelRatio;
   };
-
-  (function init() {
-    resizeCanvas();
-    if (window.CP) {
-      // CodePen's loop detection was causin' problems
-      // and I have no idea why, so...
-      window.CP.PenTimer.MAX_TIME_IN_LOOP_WO_EXIT = 6000;
-    }
-    window.addEventListener("resize", resizeCanvas);
-    addClickListeners();
-    if (!!window.location.pathname.match(/fullcpgrid/)) {
-      startFauxClicking();
-    }
-    handleInactiveUser();
-  })();
 
   function handleInactiveUser() {
     var inactive = setTimeout(function () {

@@ -104,9 +104,10 @@ export default function NewCam({ loggedIn, index, height, width, flipCamCounter,
   }
 
   useEffect(() => {
-    // CircleExplosion("drawingCanvas")
+    const tempar = isMobile ? (portrait ? height / width : width / height) : 9.5 / 16;
+    CircleExplosion("drawingCanvas", height, tempar * height)
     // Fireworks("drawingCanvas")
-    setAr(isMobile ? (portrait ? height / width : width / height) : 9.5 / 16)
+    setAr(tempar)
     const video = document.querySelector("video");
     video.addEventListener("loadeddata", function () {
       setVidLoaded(true)
