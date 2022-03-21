@@ -105,8 +105,8 @@ export default function NewCam({ loggedIn, index, height, width, flipCamCounter,
 
   useEffect(() => {
     const tempar = isMobile ? (portrait ? height / width : width / height) : 9.5 / 16;
-    CircleExplosion("drawingCanvas", height, tempar * height)
-    // Fireworks("drawingCanvas")
+    // CircleExplosion("drawingCanvas", height, tempar * height)
+    Fireworks("drawingCanvas")
     setAr(tempar)
     const video = document.querySelector("video");
     video.addEventListener("loadeddata", function () {
@@ -161,15 +161,24 @@ export default function NewCam({ loggedIn, index, height, width, flipCamCounter,
         style={{ position: "absolute", height: "100%", width: '100%' }}
         {...double_tap}
       >
-        <div className="container" style={{ height: "100%", width: isMobile && !portrait ? "100%" : ar * height }}>
+        <div
+          className="container"
+          style={{
+            height: isMobile ? height : Math.min(ar ** -1 * width, height),
+            width: isMobile ? width : Math.min(ar * height, width)
+          }}
+        >
           <canvas
             id="drawingCanvas"
             className='canvas2'
-            width={ar * height}
-            height={height}
+            height={isMobile ? height : Math.min(ar ** -1 * width, height)}
+            width={isMobile ? width : Math.min(ar * height, width)}
           />
           <div className="camFooter" style={{display: screen === 'camera' ? 'block' : 'none'}}>
             <div className="captureFooter" style={{ display: "flex", justifyContent: "center" }}>
+              {/* <p>Height: {height} ARHeight: {ar ** -1 * width}</p>
+              <p>Width: {width} ARWidth: {ar * height}</p> */}
+
               {/* <p style={{backgroundColor:"white"}}>{arr.map((i) => {
               return <div>{i}</div>
             })}</p> */}

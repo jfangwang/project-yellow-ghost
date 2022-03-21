@@ -6,7 +6,6 @@
     justify-content: center;
 }
 .container {
-    background-color: rgba(4, 255, 0, 0.4);
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -30,6 +29,7 @@
 }
 .canvas2 {
     position: absolute;
+    background-color: rgba(4, 255, 0, 0.4);
 }
 #id {
     background-color: red;

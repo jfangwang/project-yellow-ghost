@@ -10,14 +10,6 @@ export default function Fireworks(canvasId) {
   var tap = ('ontouchstart' in window || navigator.msMaxTouchPoints) ? 'touchstart' : 'mousedown';
   var colors = ['#FF1461', '#18FF92', '#5A87FF', '#FBF38C'];
 
-  function setCanvasSize() {
-    // canvasEl.width = window.innerWidth * 2;
-    // canvasEl.height = window.innerHeight * 2;
-    // canvasEl.style.width = window.innerWidth + 'px';
-    // canvasEl.style.height = window.innerHeight + 'px';
-    // canvasEl.getContext('2d').scale(2, 2);
-  }
-
   function updateCoords(e) {
     pointerX = e.clientX || e.touches[0].clientX;
     pointerY = e.clientY || e.touches[0].clientY;
@@ -86,24 +78,24 @@ export default function Fireworks(canvasId) {
       x: function (p) { return p.endPos.x; },
       y: function (p) { return p.endPos.y; },
       radius: 0.1,
-      duration: anime.random(1200, 1800),
+      duration: 1000,
       easing: 'easeOutExpo',
       update: renderParticule
     })
-      .add({
-        targets: circle,
-        radius: anime.random(80, 160),
-        lineWidth: 0,
-        alpha: {
-          value: 0,
-          easing: 'linear',
-          duration: anime.random(600, 800),
-        },
-        duration: anime.random(1200, 1800),
-        easing: 'easeOutExpo',
-        update: renderParticule,
-        offset: 0
-      });
+      // .add({
+      //   targets: circle,
+      //   radius: anime.random(80, 160),
+      //   lineWidth: 0,
+      //   alpha: {
+      //     value: 0,
+      //     easing: 'linear',
+      //     duration: anime.random(600, 800),
+      //   },
+      //   duration: anime.random(1200, 1800),
+      //   easing: 'easeOutExpo',
+      //   update: renderParticule,
+      //   offset: 0
+      // });
   }
 
   var render = anime({
@@ -119,20 +111,4 @@ export default function Fireworks(canvasId) {
     updateCoords(e);
     animateParticules(pointerX, pointerY);
   }, false);
-
-  var centerX = window.innerWidth / 2;
-  var centerY = window.innerHeight / 2;
-
-  function autoClick() {
-    if (window.human) return;
-    animateParticules(
-      anime.random(centerX - 50, centerX + 50),
-      anime.random(centerY - 50, centerY + 50)
-    );
-    anime({ duration: 200 }).finished.then(autoClick);
-  }
-
-  autoClick();
-  setCanvasSize();
-  window.addEventListener('resize', setCanvasSize, false);
 }
