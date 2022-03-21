@@ -1,3 +1,5 @@
+import { isMobile } from "react-device-detect";
+
 export default function Fireworks(canvasId) {
   window.human = false;
   var anime = window.anime;
@@ -9,6 +11,8 @@ export default function Fireworks(canvasId) {
   var pointerY = 0;
   var tap = ('ontouchstart' in window || navigator.msMaxTouchPoints) ? 'touchstart' : 'mousedown';
   var colors = ['#FF1461', '#18FF92', '#5A87FF', '#FBF38C'];
+  var offsetX = 0;
+  var offsetY = 0;
 
   function updateCoords(e) {
     pointerX = e.clientX || e.touches[0].clientX;
@@ -17,7 +21,8 @@ export default function Fireworks(canvasId) {
 
   function setParticuleDirection(p) {
     var angle = anime.random(0, 360) * Math.PI / 180;
-    var value = anime.random(50, 180);
+    // var value = anime.random(50, 180);
+    var value = 20;
     var radius = [-1, 1][anime.random(0, 1)] * value;
     return {
       x: p.x + radius * Math.cos(angle),
@@ -105,10 +110,19 @@ export default function Fireworks(canvasId) {
     }
   });
 
+  function updateOffset() {
+    const arH = Math.min(16/9.5 * window.innerWidth, window.innerHeight)
+    const arW = Math.min(9.5/16 * window.innerHeight, window.innerWidth)
+    offsetX = (window.innerWidth - arW) / 2
+    offsetY = (window.innerHeight - arH) / 2
+  }
+
+  window.addEventListener('resize', updateOffset);
+  updateOffset()
   document.addEventListener(tap, function (e) {
     window.human = true;
     render.play();
     updateCoords(e);
-    animateParticules(pointerX, pointerY);
+    animateParticules(pointerX - offsetX, pointerY - offsetY);
   }, false);
 }

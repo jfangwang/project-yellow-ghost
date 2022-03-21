@@ -176,8 +176,8 @@ export default function NewCam({ loggedIn, index, height, width, flipCamCounter,
           />
           <div className="camFooter" style={{display: screen === 'camera' ? 'block' : 'none'}}>
             <div className="captureFooter" style={{ display: "flex", justifyContent: "center" }}>
-              {/* <p>Height: {height} ARHeight: {ar ** -1 * width}</p>
-              <p>Width: {width} ARWidth: {ar * height}</p> */}
+              {/* <p>Height: {height} ARHeight: {isMobile && !portrait ? height : Math.min(ar ** -1 * width, height)}</p>
+              <p>Width: {width} ARWidth: {isMobile && !portrait ? width : Math.min(ar * height, width)}</p> */}
 
               {/* <p style={{backgroundColor:"white"}}>{arr.map((i) => {
               return <div>{i}</div>
