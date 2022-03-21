@@ -9,6 +9,7 @@ export default class Friends extends Component {
     return (
       <main className="main">
         <AddFriend
+          userDoc={userDoc}
           friends={userDoc.friends}
           pending={userDoc.pending}
           strangers={peopleList.strangers}
@@ -26,7 +27,6 @@ function AddFriend(props) {
   Object.keys(props.added_me).forEach(item => {
     delete filtered_strangers[item];
   })
-
   return (
     <div className="screen">
       {/* <input type="search" placeholder="Find Friends" className="friend-search" /> */}
@@ -60,7 +60,7 @@ function AddFriend(props) {
       }
       <h3 className="friend-head">Friends ({Object.keys(props.friends).length - 1})</h3>
       <ul className="friend-list-container">
-        {Object.keys(props.friends).sort().map((key) => (
+        {Object.keys(props.friends).filter((item) => item !== props.userDoc['id']).sort().map((key) => (
           <Friend
             friends={props.friends}
             k={key}

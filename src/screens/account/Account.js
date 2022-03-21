@@ -26,28 +26,28 @@ export default class Account extends Component {
     return (
       <main className="main">
         <div className="section info">
-          <div className="row ">
+          <div className="row">
             <div className="pic-container">
-              <img src={userDoc['profile_pic_url']} style={{borderRadius: '1rem'}} alt="" />
+              <img src={userDoc['profile_pic_url']} style={{ borderRadius: '1rem', marginRight: '1rem' }} alt="" />
             </div>
             <div className="col">
               <h1>{userDoc.name}</h1>
               <i><h5>{userDoc.username}</h5></i>
             </div>
           </div>
-          <div className="col">
+          <div className="row" style={{ justifyContent: "space-between" }}>
             <h5>Total: {userDoc.sent + userDoc.received}</h5>
             <h5>Sent: {userDoc.sent}</h5>
             <h5>Received: {userDoc.received}</h5>
           </div>
         </div>
-        {Object.keys(userDoc.friends).filter(item => item !== userDoc['email']).length === 0 ? null :
+        {Object.keys(userDoc.friends).filter(item => item !== userDoc['id']).length === 0 ? null :
           <div className="section">
             <h1>Friends</h1>
-            <div className="col">
-              {/* {Object.keys(userDoc.friends).filter(item => item !== userDoc['email']).sort().map((key) => (
+            <div className="col" style={{justifyContent:'center'}}>
+              {Object.keys(userDoc.friends).filter(item => item !== userDoc['id']).sort().map((key) => (
                 <h3>{userDoc.friends[key]['name']}</h3>
-              ))} */}
+              ))}
             </div>
           </div>
         }
@@ -55,18 +55,24 @@ export default class Account extends Component {
           <h1>Snap Map</h1>
           <img src="https://media.npr.org/assets/img/2017/06/30/snapchat-world_custom-7763b62a81588d5def16ef6335a573d94e0dc908.jpg" />
         </div>
-        <div className="section">
-          {userDoc.created !== 'N/A' && <h3>Joined Snapchat Clone on {userDoc['created']}</h3>}
+        <div className="section" style={{ justifyContent: "center" }}>
+          <div className="row" style={{ justifyContent: "center" }}>
+            {userDoc.created !== 'N/A' && <h3>Joined Snapchat Clone on {userDoc['created']}</h3>}
+          </div>
         </div>
         <div className="section">
-          {userDoc['name'] === 'Guest' ?
-            <button onClick={this.signIn} className="login"><h2>Login</h2></button>
-            :
-            <button onClick={this.signOut} className="logout"><h2>Logout</h2></button>
-          }
+          <div className="row" style={{ justifyContent: "center" }}>
+            {userDoc['name'] === 'Guest' ?
+              <button onClick={this.signIn} className="login"><h2>Login</h2></button>
+              :
+              <button onClick={this.signOut} className="logout"><h2>Logout</h2></button>
+            }
+          </div>
         </div>
         <div className="section">
-          <p>Project Yellow Ghost v{version}</p>
+          <div className='row' style={{ justifyContent: "center" }}>
+            <p>Project Yellow Ghost v{version}</p>
+          </div>
         </div>
       </main>
     )

@@ -29,7 +29,7 @@
 }
 .canvas2 {
     position: absolute;
-    background-color: rgba(4, 255, 0, 0.4);
+    /* background-color: rgba(4, 255, 0, 0.4); */
 }
 #id {
     background-color: red;

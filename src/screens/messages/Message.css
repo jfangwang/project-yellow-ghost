@@ -29,6 +29,7 @@
     flex-direction: row;
     /* padding-right: 0.5rem; */
     align-items: center;
+    flex-wrap: wrap;
 }
 .col {
     display: flex;
