@@ -7,6 +7,7 @@ import CircleExplosion from '../../assets/animations/CircleExplosion';
 import Fireworks from '../../assets/animations/Fireworks';
 import './NewCam.css';
 import FaceLandmarks from '../../utils/FaceLandmarks';
+import { truncatedNormal } from '@tensorflow/tfjs-core';
 
 
 export default function NewCam({
@@ -31,6 +32,7 @@ export default function NewCam({
   const [ar, setAr] = useState(16 / 9.5);
   const [stream, setStream] = useState(null);
   const [portrait, setPortrait] = useState(false)
+  const [showFace, setShowFace] = useState(false)
   const mirrorStyle = { transform: "scaleX(-1)" }
 
   const double_tap = useDoubleTap(() => {
@@ -115,13 +117,25 @@ export default function NewCam({
     }
   }
 
+  function startTFLD() {
+    if (document.getElementById("cam").readyState === 4) {
+      FaceLandmarks("cam", "webgl");
+      setShowFace(true)
+    } else {
+      alert("camera not loaded yet")
+    }
+  }
+
+  function endTFLD() {
+    setShowFace(false)
+  }
+
   useEffect(() => {
     const tempar = isMobile ? (portrait ? height / width : width / height) : 9.5 / 16;
     // Fireworks("drawingCanvas")
     setAr(tempar)
     const video = document.querySelector("video");
     video.onloadeddata = () => {
-      FaceLandmarks("cam");
       console.log("Video loaded")
       setVidLoaded(true)
       document.querySelector(".camOverlay").classList.remove("loading")
@@ -196,6 +210,11 @@ export default function NewCam({
               return <div>{i}</div>
             })}</p> */}
               <button type="button" className="capture-button" onClick={(vidLoaded) && (img === null) ? capture : null}></button>
+              { showFace ? 
+                <button type="button" id="stopFace" onClick={endTFLD}>End</button>
+                :
+                <button type="button" id="startFace" onClick={startTFLD}>Start</button>
+              }
             </div>
             <Footer type="relative" />
           </div>
