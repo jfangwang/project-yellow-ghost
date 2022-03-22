@@ -1,15 +1,27 @@
 import React, { useEffect, useState } from 'react'
-import Webcam from 'react-webcam'
 import { isMobile } from 'react-device-detect'
 import { useDoubleTap } from 'use-double-tap'
 import Capture from './Capture';
 import Footer from '../../components/footer/Footer'
 import CircleExplosion from '../../assets/animations/CircleExplosion';
 import Fireworks from '../../assets/animations/Fireworks';
-import './NewCam.css'
-import { AspectRatio } from '@mui/icons-material';
+import './NewCam.css';
+import FaceLandmarks from '../../utils/FaceLandmarks';
 
-export default function NewCam({ loggedIn, index, height, width, flipCamCounter, disableNavFootSlide, userDoc, setUserDoc, changeToIndex, toggleSnapShot, incFlipCam }) {
+
+export default function NewCam({
+  loggedIn,
+  index,
+  height,
+  width,
+  flipCamCounter,
+  disableNavFootSlide,
+  userDoc,
+  setUserDoc,
+  changeToIndex,
+  toggleSnapShot,
+  incFlipCam
+}) {
   const [img, setImg] = useState(null);
   const [screen, setScreen] = useState("camera");
   const [vidLoaded, setVidLoaded] = useState(false);
@@ -108,11 +120,13 @@ export default function NewCam({ loggedIn, index, height, width, flipCamCounter,
     // Fireworks("drawingCanvas")
     setAr(tempar)
     const video = document.querySelector("video");
-    video.addEventListener("loadeddata", function () {
+    video.onloadeddata = () => {
+      FaceLandmarks("cam");
+      console.log("Video loaded")
       setVidLoaded(true)
       document.querySelector(".camOverlay").classList.remove("loading")
       document.querySelector(".camOverlay").classList.add("fadeIn")
-    });
+    }
   }, [])
 
   useEffect(() => {
