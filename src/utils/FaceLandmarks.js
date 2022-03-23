@@ -33,24 +33,16 @@ export default function FaceLandmarks(videoId, backend) {
     const NUM_KEYPOINTS = 468;
     const NUM_IRIS_KEYPOINTS = 5;
 
-
-
     const a = await model.estimateFaces({ input: video, flipHorizontal: true });
     console.log(a[0])
     // ctx.translate(canvas.width, 0);
     async function renderPrediction() {
       const predictions = await model.estimateFaces({ input: video, flipHorizontal: true });
-
       if (predictions.length > 0) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawMesh(predictions, ctx)
       }
-      console.log("running")
-      if (document.getElementById("stopFace")) {
-        requestAnimationFrame(renderPrediction)
-      } else {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
+      console.log(predictions)
     }
     renderPrediction()
   }

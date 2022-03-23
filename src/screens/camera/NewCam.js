@@ -84,11 +84,9 @@ export default function NewCam({
     audio: false,
     video: {
       facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
-      aspectRatio: {
-        exact: isMobile ? (portrait ? height / width : width / height) : 9.5 / 16
-      },
-      height: { ideal: 1920 },
-      width: { ideal: 1920 }
+
+      height: height,
+      width: width
     }
   }
 
@@ -191,17 +189,17 @@ export default function NewCam({
         <div
           className="container"
           style={{
-            height: isMobile ? height : Math.min(ar ** -1 * width, height),
-            width: isMobile ? width : Math.min(ar * height, width)
+            height: height,
+            width: width
           }}
         >
           <canvas
             id="drawingCanvas"
             className='canvas2'
-            height={isMobile ? height : Math.min(ar ** -1 * width, height)}
-            width={isMobile ? width : Math.min(ar * height, width)}
+            height={height}
+            width={width}
           />
-          <div className="camFooter" style={{display: screen === 'camera' ? 'block' : 'none'}}>
+          <div className="camFooter" style={{ display: screen === 'camera' ? 'block' : 'none' }}>
             <div className="captureFooter" style={{ display: "flex", justifyContent: "center" }}>
               <p>Height: {height} ARHeight: {isMobile && !portrait ? height : Math.min(ar ** -1 * width, height)}</p>
               <p>Width: {width} ARWidth: {isMobile && !portrait ? width : Math.min(ar * height, width)}</p>
@@ -210,7 +208,7 @@ export default function NewCam({
               return <div>{i}</div>
             })}</p> */}
               <button type="button" className="capture-button" onClick={(vidLoaded) && (img === null) ? capture : null}></button>
-              { showFace ? 
+              {showFace ?
                 <button type="button" id="stopFace" onClick={endTFLD}>End</button>
                 :
                 <button type="button" id="startFace" onClick={startTFLD}>Start</button>
