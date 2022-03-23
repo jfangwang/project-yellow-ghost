@@ -48,8 +48,6 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
 
   const VIDEO_SIZE = 500;
   var video = document.querySelector("video");
-  // Don't render the point cloud on mobile in order to maximize performance and
-  // to avoid crowding limited screen space.
   const state = {
     backend: 'webgl',
     maxFaces: 1,
@@ -151,32 +149,6 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
           }
         }
       });
-
-      //  if (renderPointcloud && state.renderPointcloud && scatterGL != null) {
-      //    const pointsData = predictions.map(prediction => {
-      //      let scaledMesh = prediction.scaledMesh;
-      //      return scaledMesh.map(point => ([-point[0], -point[1], -point[2]]));
-      //    });
-
-      //    let flattenedPointsData = [];
-      //    for (let i = 0; i < pointsData.length; i++) {
-      //      flattenedPointsData = flattenedPointsData.concat(pointsData[i]);
-      //    }
-      //    const dataset = new ScatterGL.Dataset(flattenedPointsData);
-
-      //    if (!scatterGLHasInitialized) {
-      //      scatterGL.setPointColorer((i) => {
-      //        if(i >= NUM_KEYPOINTS) {
-      //          return RED;
-      //        }
-      //        return BLUE;
-      //      });
-      //      scatterGL.render(dataset);
-      //    } else {
-      //      scatterGL.updateDataset(dataset);
-      //    }
-      //    scatterGLHasInitialized = true;
-      //  }
     }
 
     rafID = requestAnimationFrame(renderPrediction);
@@ -184,8 +156,7 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
 
   async function main() {
     await tf.setBackend(state.backend);
-    // setupDatGui();
-
+    video.pause();
     await setupCamera();
     video.play();
     videoWidth = video.videoWidth;
@@ -199,8 +170,6 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
     canvas = document.getElementById('output');
     canvas.width = videoWidth;
     canvas.height = videoHeight;
-    // const canvasContainer = document.querySelector('.canvas-wrapper');
-    // canvasContainer.style = `width: ${videoWidth}px; height: ${videoHeight}px`;
 
     ctx = canvas.getContext('2d');
     ctx.translate(canvas.width, 0);
@@ -211,15 +180,6 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
 
     model = await facemesh.load(facemesh.SupportedPackages.mediapipeFacemesh);
     renderPrediction();
-
-    //  if (renderPointcloud) {
-    //    document.querySelector('#scatter-gl-container').style =
-    //        `width: ${VIDEO_SIZE}px; height: ${VIDEO_SIZE}px;`;
-
-    //    scatterGL = new ScatterGL(
-    //        document.querySelector('#scatter-gl-container'),
-    //        {'rotateOnStart': false, 'selectEnabled': false});
-    //  }
   };
 
   useEffect(() => {
@@ -234,9 +194,9 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
     }
   }, [height, width])
 
-  // useEffect(() => {
-  //   main();
-  // }, [portrait])
+  useEffect(() => {
+    main();
+  }, [portrait])
 
   return (
     <div
@@ -256,6 +216,7 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
           width: "100%",
           height: "100%",
           position: "absolute",
+          // display: "none"
         }}
       />
       <canvas
