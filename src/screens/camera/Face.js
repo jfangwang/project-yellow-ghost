@@ -4,9 +4,8 @@ import * as tf from '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-backend-webgl';
 import './Face.css'
 import { isMobile } from 'react-device-detect';
-
+import Stats from 'stats.js';
 import * as tfjsWasm from '@tensorflow/tfjs-backend-wasm';
-
 import { TRIANGULATION } from './triangulation';
 
 export default function Face({ height, width, flipCamCounter, incFlipCam }) {
@@ -43,11 +42,10 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
     ctx.stroke(region);
   }
 
-  let model, ctx, videoWidth, videoHeight, canvas,
-    scatterGLHasInitialized = false, scatterGL, rafID;
+  let model, ctx, videoWidth, videoHeight, video, canvas, rafID;
 
   const VIDEO_SIZE = 500;
-  var video = document.querySelector("video");
+  const stats = new Stats();
   const state = {
     backend: 'webgl',
     maxFaces: 1,
@@ -56,22 +54,14 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
   };
 
   async function setupCamera() {
-    // video = document.getElementById('video');
-    video = document.querySelector("video");
-    const newAR = isMobile ? (portrait ? height / width : width / height) : 9.5 / 16
+    video = document.getElementById('video');
+
     const stream = await navigator.mediaDevices.getUserMedia({
-      audio: false,
-      video: {
+      'audio': false,
+      'video': {
         facingMode: 'user',
-        facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
-        aspectRatio: {
-          exact: newAR,
-        },
-        width: { ideal: 1920 },
-        height: { ideal: 1920 },
       },
     });
-    setAr(newAR)
     video.srcObject = stream;
 
     return new Promise((resolve) => {
@@ -82,12 +72,13 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
   }
 
   async function renderPrediction() {
-    video = document.querySelector("video");
-    console.log("Running")
+    stats.begin();
 
-    const predictions = await model.estimateFaces({ input: video });
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    // ctx.drawImage(video, 0, 0, videoWidth, videoHeight, 0, 0, canvas.width, canvas.height);
+    const predictions = await model.estimateFaces({
+      input: video
+    });
+    ctx.drawImage(
+      video, 0, 0, videoWidth, videoHeight, 0, 0, canvas.width, canvas.height);
 
     if (predictions.length > 0) {
       predictions.forEach(prediction => {
@@ -151,21 +142,22 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
       });
     }
 
+    stats.end();
     rafID = requestAnimationFrame(renderPrediction);
   };
 
   async function main() {
     await tf.setBackend(state.backend);
-    video.pause();
+
+    stats.showPanel(0);  // 0: fps, 1: ms, 2: mb, 3+: custom
+    document.getElementById('main').appendChild(stats.dom);
+
     await setupCamera();
     video.play();
     videoWidth = video.videoWidth;
     videoHeight = video.videoHeight;
     video.width = videoWidth;
     video.height = videoHeight;
-
-    setVidw(videoWidth);
-    setVidh(videoHeight);
 
     canvas = document.getElementById('output');
     canvas.width = videoWidth;
@@ -178,7 +170,7 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
     ctx.strokeStyle = GREEN;
     ctx.lineWidth = 0.5;
 
-    model = await facemesh.load(facemesh.SupportedPackages.mediapipeFacemesh);
+    model = await facemesh.load();
     renderPrediction();
   };
 
@@ -195,7 +187,12 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
   }, [height, width])
 
   useEffect(() => {
-    main();
+    if (isMobile) {
+      if (video) {
+        video.pause()
+      }
+      main();
+    }
   }, [portrait])
 
   return (
@@ -216,7 +213,7 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
           width: "100%",
           height: "100%",
           position: "absolute",
-          // display: "none"
+          display: "none"
         }}
       />
       <canvas

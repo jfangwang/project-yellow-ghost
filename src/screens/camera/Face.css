@@ -12,7 +12,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: rgba(60, 138, 255);
+    /* background-color: rgba(60, 138, 255); */
   }
   
   @media (prefers-reduced-motion: no-preference) {
