@@ -1,13 +1,20 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import * as facemesh from '@tensorflow-models/face-landmarks-detection';
 import * as tf from '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-backend-webgl';
+import './Face.css'
+import { isMobile } from 'react-device-detect';
 
 import * as tfjsWasm from '@tensorflow/tfjs-backend-wasm';
 
 import { TRIANGULATION } from './triangulation';
 
-export default function Face() {
+export default function Face({ height, width, flipCamCounter, incFlipCam }) {
+
+  const [vidh, setVidh] = useState(null);
+  const [vidw, setVidw] = useState(null);
+  const [portrait, setPortrait] = useState(false);
+  const [ar, setAr] = useState(16 / 9.5);
 
   tfjsWasm.setWasmPaths(
     `https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm@${tfjsWasm.version_wasm}/dist/`);
@@ -17,12 +24,6 @@ export default function Face() {
   const GREEN = '#32EEDB';
   const RED = "#FF2C35";
   const BLUE = "#157AB3";
-
-  function isMobile() {
-    const isAndroid = /Android/i.test(navigator.userAgent);
-    const isiOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    return isAndroid || isiOS;
-  }
 
   function distance(a, b) {
     return Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2));
@@ -46,60 +47,33 @@ export default function Face() {
     scatterGLHasInitialized = false, scatterGL, rafID;
 
   const VIDEO_SIZE = 500;
-  const mobile = isMobile();
   var video = document.querySelector("video");
   // Don't render the point cloud on mobile in order to maximize performance and
   // to avoid crowding limited screen space.
-  const renderPointcloud = mobile === false;
   const state = {
-    backend: 'wasm',
+    backend: 'webgl',
     maxFaces: 1,
     triangulateMesh: true,
     predictIrises: true
   };
 
-  if (renderPointcloud) {
-    state.renderPointcloud = true;
-  }
-
-  // function setupDatGui() {
-  //   const gui = new dat.GUI();
-  //   gui.add(state, 'backend', ['webgl', 'wasm', 'cpu'])
-  //     .onChange(async backend => {
-  //       window.cancelAnimationFrame(rafID);
-  //       await tf.setBackend(backend);
-  //       requestAnimationFrame(renderPrediction);
-  //     });
-
-  //   gui.add(state, 'maxFaces', 1, 20, 1).onChange(async val => {
-  //     model = await facemesh.load({ maxFaces: val });
-  //   });
-
-  //   gui.add(state, 'triangulateMesh');
-  //   gui.add(state, 'predictIrises');
-
-  //   if (renderPointcloud) {
-  //     gui.add(state, 'renderPointcloud').onChange(render => {
-  //       document.querySelector('#scatter-gl-container').style.display =
-  //         render ? 'inline-block' : 'none';
-  //     });
-  //   }
-  // }
-
   async function setupCamera() {
     // video = document.getElementById('video');
     video = document.querySelector("video");
-
+    const newAR = isMobile ? (portrait ? height / width : width / height) : 9.5 / 16
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: false,
       video: {
         facingMode: 'user',
-        // Only setting the video to a specified size in order to accommodate a
-        // point cloud, so on mobile devices accept the default size.
-        width: 500,
-        height: 500,
+        facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
+        aspectRatio: {
+          exact: newAR,
+        },
+        width: { ideal: 1920 },
+        height: { ideal: 1920 },
       },
     });
+    setAr(newAR)
     video.srcObject = stream;
 
     return new Promise((resolve) => {
@@ -113,9 +87,9 @@ export default function Face() {
     video = document.querySelector("video");
     console.log("Running")
 
-    const predictions = await model.estimateFaces({input: video});
-    ctx.drawImage(
-      video, 0, 0, videoWidth, videoHeight, 0, 0, canvas.width, canvas.height);
+    const predictions = await model.estimateFaces({ input: video });
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // ctx.drawImage(video, 0, 0, videoWidth, videoHeight, 0, 0, canvas.width, canvas.height);
 
     if (predictions.length > 0) {
       predictions.forEach(prediction => {
@@ -219,11 +193,14 @@ export default function Face() {
     video.width = videoWidth;
     video.height = videoHeight;
 
+    setVidw(videoWidth);
+    setVidh(videoHeight);
+
     canvas = document.getElementById('output');
     canvas.width = videoWidth;
     canvas.height = videoHeight;
-    const canvasContainer = document.querySelector('.canvas-wrapper');
-    canvasContainer.style = `width: ${videoWidth}px; height: ${videoHeight}px`;
+    // const canvasContainer = document.querySelector('.canvas-wrapper');
+    // canvasContainer.style = `width: ${videoWidth}px; height: ${videoHeight}px`;
 
     ctx = canvas.getContext('2d');
     ctx.translate(canvas.width, 0);
@@ -249,27 +226,47 @@ export default function Face() {
     main();
   }, [])
 
+  useEffect(() => {
+    if (isMobile && height > width) {
+      setPortrait(true)
+    } else {
+      setPortrait(false)
+    }
+  }, [height, width])
+
+  // useEffect(() => {
+  //   main();
+  // }, [portrait])
 
   return (
-    <div id="main">
-      <div class="container">
-        <div class="canvas-wrapper">
-          <canvas id="output">
-          </canvas>
-          <video
-            autoPlay
-            playsInline
-            id="video"
-            style={{
-              transform: "scaleX(-1)",
-              visibility: "hidden",
-              width: "auto",
-              height: "auto"
-            }}
-          />
-        </div>
-        <div id="scatter-gl-container"></div>
-      </div>
+    <div
+      className="main2"
+      id="main"
+      style={{
+        width: width,
+        height: height
+      }}
+    >
+      <video
+        autoPlay
+        playsInline
+        id="video"
+        style={{
+          transform: "scaleX(-1)",
+          width: "100%",
+          height: "100%",
+          position: "absolute",
+        }}
+      />
+      <canvas
+        id="output"
+        style={{
+          width: isMobile ? '100%' : (width / height < ar ? "100%" : "auto"),
+          height: isMobile ? '100%' : (width / height > ar ? "100%" : "auto"),
+          position: "absolute",
+        }}
+      >
+      </canvas>
     </div>
   )
 }
