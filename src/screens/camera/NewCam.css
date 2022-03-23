@@ -1,47 +1,18 @@
-.camOverlay {
-    /* background-color: rgba(202, 80, 71, 0.2); */
-    /* border: 10px red solid; */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.container {
+.main2 {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* background-color: rgba(60, 138, 255); */
+  }
+  .cameraOverlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: flex-end;
-}
-.capture-button {
-    width: 6em;
-    height: 6em;
-    background: transparent;
-    border: 0.5rem solid lightgrey;
-    border-radius: 50%;
-}
-.captureFooter {
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-.camFooter {
-    width: 100%;
-}
-.camFooter button {
-    z-index: 1;
-}
-.canvas {
-    /* background-color: rgba(253, 171, 147, 0.3); */
-    display: none;
-}
-.canvas2 {
-    position: absolute;
-    /* background-color: rgba(4, 255, 0, 0.1); */
-}
-#id {
-    background-color: red;
-}
-.loading {
+  }
+
+  .loading {
     background-color: yellow;
     background-image: url('../../assets/images/snapchat-background.gif');
     background-size: contain;
@@ -49,14 +20,14 @@
     background-position: center;
 }
 .fadeIn {
-    animation: fadeIn;
-    animation-duration: 0.25s;
+  animation: fadeIn;
+  animation-duration: 0.25s;
 }
 @keyframes fadeIn {
-    0% {
-        background-color: rgb(255, 255, 0, 1);
-    }
-    100% {
-        background-color: rgba(4, 0, 255, 0)
-    }
+  0% {
+      background-color: rgb(255, 255, 0, 1);
+  }
+  100% {
+      background-color: rgba(4, 0, 255, 0)
+  }
 }

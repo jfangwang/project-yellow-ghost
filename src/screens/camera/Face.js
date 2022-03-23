@@ -6,14 +6,10 @@ import './Face.css'
 import { isMobile } from 'react-device-detect';
 import Stats from 'stats.js';
 import * as tfjsWasm from '@tensorflow/tfjs-backend-wasm';
-import { TRIANGULATION } from '../../utils/triangulation';
+import { TRIANGULATION } from './triangulation';
 
 export default function Face({ height, width, flipCamCounter, incFlipCam }) {
-
-  const [vidh, setVidh] = useState(null);
-  const [vidw, setVidw] = useState(null);
   const [portrait, setPortrait] = useState(false);
-  const [ar, setAr] = useState(16 / 9.5);
 
   tfjsWasm.setWasmPaths(
     `https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm@${tfjsWasm.version_wasm}/dist/`);
@@ -54,7 +50,7 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
   };
 
   async function setupCamera() {
-    video = document.getElementById('video');
+    video = document.getElementById('main-camera');
     const newAR = isMobile ? (portrait ? height / width : width / height) : 9.5 / 16
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: false,
@@ -68,7 +64,6 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
         height: { ideal: 1920 },
       },
     });
-    setAr(newAR)
     video.srcObject = stream;
 
     return new Promise((resolve) => {
@@ -150,7 +145,11 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
     }
 
     stats.end();
-    rafID = requestAnimationFrame(renderPrediction);
+    if (document.getElementById("endFace")) {
+      rafID = requestAnimationFrame(renderPrediction);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
   };
 
   async function main() {
@@ -166,7 +165,7 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
     video.width = videoWidth;
     video.height = videoHeight;
 
-    canvas = document.getElementById('output');
+    canvas = document.getElementById('main-canvas');
     canvas.width = videoWidth;
     canvas.height = videoHeight;
 
@@ -177,7 +176,10 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
     ctx.strokeStyle = GREEN;
     ctx.lineWidth = 0.5;
 
+    console.log("called camera")
+
     model = await facemesh.load();
+    console.log("model loaded")
     renderPrediction();
   };
 
@@ -203,35 +205,7 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
   }, [portrait, flipCamCounter])
 
   return (
-    <div
-      className="main2"
-      id="main"
-      style={{
-        width: width,
-        height: height
-      }}
-    >
-      <video
-        autoPlay
-        playsInline
-        id="video"
-        style={{
-          transform: "scaleX(-1)",
-          width: "100%",
-          height: "100%",
-          position: "absolute",
-          display: "none"
-        }}
-      />
-      <canvas
-        id="output"
-        style={{
-          width: isMobile ? '100%' : (width / height < ar ? "100%" : "auto"),
-          height: isMobile ? '100%' : (width / height > ar ? "100%" : "auto"),
-          position: "absolute",
-        }}
-      >
-      </canvas>
-    </div>
+    <>
+    </>
   )
 }

@@ -562,7 +562,8 @@ export default class App extends Component {
               toggleSnapShot={this.toggleSnapShot}
               incFlipCam={this.incFlipCam}
             /> */}
-            <Face
+            <NewCam
+            index={index}
               height={height}
               width={width}
               flipCamCounter={flipCamCounter}
