@@ -6,7 +6,7 @@ import './Face.css'
 import { isMobile } from 'react-device-detect';
 import Stats from 'stats.js';
 import * as tfjsWasm from '@tensorflow/tfjs-backend-wasm';
-import { TRIANGULATION } from './triangulation';
+import { TRIANGULATION } from '../../utils/triangulation';
 
 export default function Face({ height, width, flipCamCounter, incFlipCam }) {
 
@@ -55,13 +55,20 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
 
   async function setupCamera() {
     video = document.getElementById('video');
-
+    const newAR = isMobile ? (portrait ? height / width : width / height) : 9.5 / 16
     const stream = await navigator.mediaDevices.getUserMedia({
-      'audio': false,
-      'video': {
+      audio: false,
+      video: {
         facingMode: 'user',
+        facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
+        aspectRatio: {
+          exact: newAR,
+        },
+        width: { ideal: 1920 },
+        height: { ideal: 1920 },
       },
     });
+    setAr(newAR)
     video.srcObject = stream;
 
     return new Promise((resolve) => {
@@ -77,8 +84,8 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
     const predictions = await model.estimateFaces({
       input: video
     });
-    ctx.drawImage(
-      video, 0, 0, videoWidth, videoHeight, 0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(video, 0, 0, videoWidth, videoHeight, 0, 0, canvas.width, canvas.height);
 
     if (predictions.length > 0) {
       predictions.forEach(prediction => {
@@ -150,7 +157,7 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
     await tf.setBackend(state.backend);
 
     stats.showPanel(0);  // 0: fps, 1: ms, 2: mb, 3+: custom
-    document.getElementById('main').appendChild(stats.dom);
+    document.body.appendChild(stats.dom);
 
     await setupCamera();
     video.play();
@@ -193,7 +200,7 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
       }
       main();
     }
-  }, [portrait])
+  }, [portrait, flipCamCounter])
 
   return (
     <div
