@@ -66,13 +66,16 @@ export default function NewCam({
   function capture() {
     const canvas = document.getElementById('main-canvas');
     const video = document.getElementById("main-camera");
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    if ((isMobile && flipCamCounter % 2 === 0) || !isMobile) {
-      ctx.scale(-1, 1);
-      ctx.drawImage(video, canvas.width * -1, 0);
-    } else {
-      ctx.drawImage(video, 0, 0);
+    if (!canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height)
+      .data.some(channel => channel !== 0)) {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      if ((isMobile && flipCamCounter % 2 === 0) || !isMobile) {
+        ctx.scale(-1, 1);
+        ctx.drawImage(video, canvas.width * -1, 0);
+      } else {
+        ctx.drawImage(video, 0, 0);
+      }
     }
     canvas.toBlob((blob) => {
       var url = URL.createObjectURL(blob)
@@ -226,13 +229,9 @@ export default function NewCam({
           {...double_tap}
         >
           <div className="cameraFooter">
-            {!TFLD &&
-              <button style={{ visibility: 'hidden' }}>asdf</button>
-            }
-            {!TFLD &&
-              <button className="capture-button" type="button" onClick={screenMode === "camera" ? capture : close}>
-              </button>
-            }
+            <button style={{ visibility: 'hidden' }}>asdf</button>
+            <button className="capture-button" type="button" onClick={screenMode === "camera" ? capture : close}>
+            </button>
             {screenMode === "camera" &&
               <button type="button" id={TFLD ? "endFace" : "showFace"} onClick={TFLD ? () => toggleTFLD(false) : () => toggleTFLD(true)}>
                 {TFLD ? <CancelIcon /> : <InsertEmoticonIcon />}
