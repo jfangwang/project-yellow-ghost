@@ -51,14 +51,12 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
 
   async function setupCamera() {
     video = document.getElementById('main-camera');
-    const newAR = isMobile ? (portrait ? height / width : width / height) : 9.5 / 16
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: false,
       video: {
-        facingMode: 'user',
         facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
         aspectRatio: {
-          exact: newAR,
+          exact: isMobile ? (portrait ? height / width : width / height) : 9.5 / 16,
         },
         width: { ideal: 1920 },
         height: { ideal: 1920 },
@@ -156,7 +154,7 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
     await tf.setBackend(state.backend);
 
     stats.showPanel(0);  // 0: fps, 1: ms, 2: mb, 3+: custom
-    document.body.appendChild(stats.dom);
+    // document.body.appendChild(stats.dom);
 
     await setupCamera();
     video.play();
@@ -182,10 +180,6 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
     console.log("model loaded")
     renderPrediction();
   };
-
-  useEffect(() => {
-    main();
-  }, [])
 
   useEffect(() => {
     if (isMobile && height > width) {

@@ -7,8 +7,9 @@ import { isMobile } from 'react-device-detect';
 import Stats from 'stats.js';
 import * as tfjsWasm from '@tensorflow/tfjs-backend-wasm';
 import { TRIANGULATION } from './triangulation';
+import { useDoubleTap } from 'use-double-tap';
 import Face from './Face';
-import Footer from '../../components/footer/Footer'
+import Footer from '../../components/footer/Footer';
 
 export default function NewCam({ height, width, flipCamCounter, incFlipCam, index, }) {
   const [screenMode, setScreenMode] = useState("camera")
@@ -18,6 +19,9 @@ export default function NewCam({ height, width, flipCamCounter, incFlipCam, inde
   const [vidLoaded, setVidLoaded] = useState(false);
   const [stream, setStream] = useState(null);
 
+  const double_tap = useDoubleTap(() => {
+    incFlipCam()
+  });
   function capture() {
     setScreenMode("capture")
   }
@@ -26,8 +30,14 @@ export default function NewCam({ height, width, flipCamCounter, incFlipCam, inde
   }
   function toggleTFLD(e) {
     setTFLD(e)
+    if (e === false) {
+      startCam()
+    } else {
+      stopCam()
+    }
   }
   function startCam() {
+    setAr(isMobile ? (portrait ? height / width : width / height) : 9.5 / 16)
     setVidLoaded(false)
     console.log("starting cam")
     document.querySelector(".cameraOverlay").classList.remove("fadeIn")
@@ -35,7 +45,6 @@ export default function NewCam({ height, width, flipCamCounter, incFlipCam, inde
     const temp = {
       audio: false,
       video: {
-        facingMode: 'user',
         facingMode: flipCamCounter % 2 === 0 ? "user" : "environment",
         aspectRatio: {
           exact: isMobile ? (portrait ? height / width : width / height) : 9.5 / 16,
@@ -60,7 +69,6 @@ export default function NewCam({ height, width, flipCamCounter, incFlipCam, inde
   }
 
   useEffect(() => {
-    setAr(isMobile ? (portrait ? height / width : width / height) : 9.5 / 16)
     const video = document.querySelector("video");
     video.onloadeddata = () => {
       console.log("Video loaded")
@@ -80,7 +88,8 @@ export default function NewCam({ height, width, flipCamCounter, incFlipCam, inde
 
   useEffect(() => {
     if (isMobile) {
-      setAr(isMobile ? (portrait ? height / width : width / height) : 9.5 / 16)
+      console.log("portrait changed", portrait)
+      startCam()
     }
   }, [portrait, flipCamCounter])
 
@@ -107,7 +116,7 @@ export default function NewCam({ height, width, flipCamCounter, incFlipCam, inde
         playsInline
         id="main-camera"
         style={{
-          transform: "scaleX(-1)",
+          transform: flipCamCounter % 2 === 0 ? "scaleX(-1)" : "scaleX(1)",
           width: "100%",
           height: "100%",
           position: "absolute",
@@ -134,6 +143,7 @@ export default function NewCam({ height, width, flipCamCounter, incFlipCam, inde
       <div
         className="cameraOverlay"
         style={{ position: "absolute", height: "100%", width: '100%' }}
+        {...double_tap}
       >
         {!TFLD &&
           <button type="button" onClick={screenMode === "camera" ? capture : close}>
