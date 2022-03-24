@@ -198,6 +198,8 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
     }
   }, [portrait, flipCamCounter])
 
+  main()
+
   return (
     <>
     </>
