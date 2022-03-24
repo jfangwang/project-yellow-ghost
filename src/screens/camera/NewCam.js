@@ -4,6 +4,8 @@ import * as tf from '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-backend-webgl';
 import './NewCam.css'
 import { isMobile } from 'react-device-detect';
+import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
+import CancelIcon from '@mui/icons-material/Cancel';
 import Stats from 'stats.js';
 import * as tfjsWasm from '@tensorflow/tfjs-backend-wasm';
 import { TRIANGULATION } from './triangulation';
@@ -225,7 +227,7 @@ export default function NewCam({
         >
           <div className="cameraFooter">
             {!TFLD &&
-              <button style={{ visibility: 'hidden' }}> asdf </button>
+              <button style={{ visibility: 'hidden' }}>asdf</button>
             }
             {!TFLD &&
               <button className="capture-button" type="button" onClick={screenMode === "camera" ? capture : close}>
@@ -233,7 +235,7 @@ export default function NewCam({
             }
             {screenMode === "camera" &&
               <button type="button" id={TFLD ? "endFace" : "showFace"} onClick={TFLD ? () => toggleTFLD(false) : () => toggleTFLD(true)}>
-                {TFLD ? <p>End Face</p> : <p>Show Face</p>}
+                {TFLD ? <CancelIcon /> : <InsertEmoticonIcon />}
               </button>
             }
           </div>

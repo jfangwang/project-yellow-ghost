@@ -27,8 +27,9 @@
   /* background-color: blue; */
 }
 .cameraFooter button {
-  width: 6em;
-  height: 6em;
+  background-color: transparent;
+  margin-left: 1rem;
+  margin-right: 1rem;
 }
 .capture-button {
   width: 6em;
