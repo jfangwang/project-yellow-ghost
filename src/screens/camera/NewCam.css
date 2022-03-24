@@ -19,6 +19,18 @@
     background-repeat: no-repeat;
     background-position: center;
 }
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.capture-button {
+  width: 6em;
+  height: 6em;
+  background: transparent;
+  border: 0.5rem solid lightgrey;
+  border-radius: 50%;
+}
 .fadeIn {
   animation: fadeIn;
   animation-duration: 0.25s;

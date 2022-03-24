@@ -568,6 +568,7 @@ export default class App extends Component {
               width={width}
               flipCamCounter={flipCamCounter}
               incFlipCam={this.incFlipCam}
+              disableNavFootSlide={this.disableNavFootSlide}
             />
           </div>
           <div className="slide slide3">

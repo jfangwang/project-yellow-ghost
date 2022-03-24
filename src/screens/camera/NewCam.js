@@ -11,30 +11,55 @@ import { useDoubleTap } from 'use-double-tap';
 import Face from './Face';
 import Footer from '../../components/footer/Footer';
 
-export default function NewCam({ height, width, flipCamCounter, incFlipCam, index, }) {
+export default function NewCam({ height, width, flipCamCounter, incFlipCam, index, disableNavFootSlide }) {
   const [screenMode, setScreenMode] = useState("camera")
   const [portrait, setPortrait] = useState(false);
   const [ar, setAr] = useState(16 / 9.5);
   const [TFLD, setTFLD] = useState(false);
   const [vidLoaded, setVidLoaded] = useState(false);
   const [stream, setStream] = useState(null);
+  const [img, setImg] = useState(null);
 
   const double_tap = useDoubleTap(() => {
     incFlipCam()
   });
-  function capture() {
-    setScreenMode("capture")
-  }
   function close() {
     setScreenMode("camera")
+    const canvas = document.getElementById('main-canvas');
+    const video = document.getElementById("main-camera");
+    const ctx = canvas.getContext("2d");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    disableNavFootSlide(false);
   }
   function toggleTFLD(e) {
     setTFLD(e)
-    if (e === false) {
-      startCam()
+    // if (e === false) {
+    //   startCam()
+    // } else {
+    //   stopCam()
+    // }
+  }
+  function capture() {
+    const canvas = document.getElementById('main-canvas');
+    const video = document.getElementById("main-camera");
+    const ctx = canvas.getContext("2d");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    if ((isMobile && flipCamCounter % 2 === 0) || !isMobile) {
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, canvas.width * -1, 0);
     } else {
-      stopCam()
+      ctx.drawImage(video, 0, 0);
     }
+    canvas.toBlob((blob) => {
+      var url = URL.createObjectURL(blob)
+      setImg(url)
+    });
+    setScreenMode('captured');
+    disableNavFootSlide(true);
+    // URL.revokeObjectURL(url);
   }
   function startCam() {
     setAr(isMobile ? (portrait ? height / width : width / height) : 9.5 / 16)
@@ -120,7 +145,7 @@ export default function NewCam({ height, width, flipCamCounter, incFlipCam, inde
           width: "100%",
           height: "100%",
           position: "absolute",
-          display: TFLD ? "none" : "flex"
+          display: "flex"
         }}
       />
       <canvas
@@ -145,14 +170,18 @@ export default function NewCam({ height, width, flipCamCounter, incFlipCam, inde
         style={{ position: "absolute", height: "100%", width: '100%' }}
         {...double_tap}
       >
-        {!TFLD &&
-          <button type="button" onClick={screenMode === "camera" ? capture : close}>
-            {screenMode === "camera" ? <p>Capture</p> : <p>Close</p>}
-          </button>
-        }
-        <button type="button" id={TFLD ? "endFace" : "showFace"} onClick={TFLD ? () => toggleTFLD(false) : () => toggleTFLD(true)}>
-          {TFLD ? <p>End Face</p> : <p>Show Face</p>}
-        </button>
+        <div className="container">
+          {!TFLD &&
+            <button className="capture-button" type="button" onClick={screenMode === "camera" ? capture : close}>
+              {screenMode === "camera" ? <p>Capture</p> : <p>Close</p>}
+            </button>
+          }
+          {screenMode === "camera" &&
+            <button type="button" id={TFLD ? "endFace" : "showFace"} onClick={TFLD ? () => toggleTFLD(false) : () => toggleTFLD(true)}>
+              {TFLD ? <p>End Face</p> : <p>Show Face</p>}
+            </button>
+          }
+        </div>
         <Footer type="relative" />
       </div>
     </div>
