@@ -43,7 +43,7 @@ export default function NewCam({
   function backToCapture() { setScreenMode('captured') }
   function save() { close() }
   function close() {
-    if (img.startsWith('blob:')) {
+    if (img && img.startsWith('blob:')) {
       URL.revokeObjectURL(img);
     }
     setImg(null);
@@ -66,8 +66,7 @@ export default function NewCam({
   function capture() {
     const canvas = document.getElementById('main-canvas');
     const video = document.getElementById("main-camera");
-    if (!canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height)
-      .data.some(channel => channel !== 0)) {
+    if (!TFLD && canvas.width === 0) {
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       if ((isMobile && flipCamCounter % 2 === 0) || !isMobile) {
