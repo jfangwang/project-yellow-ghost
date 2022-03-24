@@ -75,10 +75,11 @@ export default function Face({ height, width, flipCamCounter, incFlipCam }) {
     stats.begin();
 
     const predictions = await model.estimateFaces({
-      input: video
+      input: video,
+      flipHorizontal: (flipCamCounter % 2 === 0 && isMobile) || (!isMobile) ? false : true,
     });
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(video, 0, 0, videoWidth, videoHeight, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(video, 0, 0, videoWidth * ((flipCamCounter % 2 === 0 && isMobile) || (!isMobile) ? 1: -1), videoHeight, 0, 0, canvas.width, canvas.height);
 
     if (predictions.length > 0) {
       predictions.forEach(prediction => {

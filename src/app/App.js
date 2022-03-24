@@ -563,12 +563,17 @@ export default class App extends Component {
               incFlipCam={this.incFlipCam}
             /> */}
             <NewCam
-            index={index}
+              loggedIn={loggedIn}
+              index={index}
               height={height}
               width={width}
               flipCamCounter={flipCamCounter}
-              incFlipCam={this.incFlipCam}
+              userDoc={userDoc}
               disableNavFootSlide={this.disableNavFootSlide}
+              setUserDoc={this.setUserDoc}
+              changeToIndex={this.changeToIndex}
+              toggleSnapShot={this.toggleSnapShot}
+              incFlipCam={this.incFlipCam}
             />
           </div>
           <div className="slide slide3">

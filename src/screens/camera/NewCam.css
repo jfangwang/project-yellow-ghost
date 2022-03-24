@@ -10,6 +10,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
+    /* background-color: lightcoral; */
   }
 
   .loading {
@@ -19,10 +20,15 @@
     background-repeat: no-repeat;
     background-position: center;
 }
-.container {
+.cameraFooter {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
+  flex-direction: row;
+  justify-content: center;
+  /* background-color: blue; */
+}
+.cameraFooter button {
+  width: 6em;
+  height: 6em;
 }
 .capture-button {
   width: 6em;

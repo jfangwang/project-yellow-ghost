@@ -53,6 +53,7 @@ export default function Send({ height, width, img, close, backToCapture, userDoc
       toggleSwipe(false);
       if (userDoc['created'] !== 'N/A' && userDoc['email'] !== 'Guest@Guest.com') {
         toggleSnapShot(true);
+        close()
       }
       setTimeout(() => sent(), 100);
     }
