@@ -14,8 +14,6 @@ import Camera from '../screens/camera/Camera';
 import NewCam from '../screens/camera/NewCam';
 import Discover from '../screens/discover/Discover';
 import { Guest, Strangers, Everyone } from './GuestInfo';
-import { objectMethod } from '@babel/types';
-import Face from '../screens/camera/Face';
 
 
 const list = [];

@@ -8,9 +8,7 @@ import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import CancelIcon from '@mui/icons-material/Cancel';
 import Stats from 'stats.js';
 import * as tfjsWasm from '@tensorflow/tfjs-backend-wasm';
-import { TRIANGULATION } from './triangulation';
 import { useDoubleTap } from 'use-double-tap';
-import Face from './Face';
 import Footer from '../../components/footer/Footer';
 import Capture from './Capture';
 
@@ -30,11 +28,11 @@ export default function NewCam({
   const [screenMode, setScreenMode] = useState("camera")
   const [portrait, setPortrait] = useState(false);
   const [ar, setAr] = useState(16 / 9.5);
-  const [TFLD, setTFLD] = useState(false);
   const [vidLoaded, setVidLoaded] = useState(false);
   const [stream, setStream] = useState(null);
   const [img, setImg] = useState(null);
   const [ctx, setCtx] = useState(null);
+  const [jeeliz, setJeeliz] = useState(false);
 
   const double_tap = useDoubleTap(() => {
     incFlipCam()
@@ -55,19 +53,10 @@ export default function NewCam({
     canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
     disableNavFootSlide(false);
   }
-  function toggleTFLD(e) {
-    setTFLD(e)
-    // if (e === false) {
-    //   startCam()
-    // } else {
-    //   stopCam()
-    // }
-  }
   function capture() {
     const canvas = document.getElementById('main-canvas');
     const video = document.getElementById("main-camera");
-    if (!TFLD && canvas.width === 0) {
-      canvas.width = video.videoWidth;
+    canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       if ((isMobile && flipCamCounter % 2 === 0) || !isMobile) {
         ctx.scale(-1, 1);
@@ -75,7 +64,6 @@ export default function NewCam({
       } else {
         ctx.drawImage(video, 0, 0);
       }
-    }
     canvas.toBlob((blob) => {
       var url = URL.createObjectURL(blob)
       setImg(url)
@@ -162,7 +150,6 @@ export default function NewCam({
       stopCam()
       startCam()
     } else {
-      toggleTFLD(false)
       stopCam()
     }
   }, [flipCamCounter, index, screenMode])
@@ -213,13 +200,8 @@ export default function NewCam({
           ctx={ctx}
         />
       }
-      {screenMode === "camera" && TFLD &&
-        <Face
-          height={height}
-          width={width}
-          flipCamCounter={flipCamCounter}
-          incFlipCam={incFlipCam}
-        />
+      {screenMode === "camera" && jeeliz &&
+        <div>Face Detection </div>
       }
       {screenMode === "camera" &&
         <div
@@ -232,8 +214,8 @@ export default function NewCam({
             <button className="capture-button" type="button" onClick={screenMode === "camera" ? capture : close}>
             </button>
             {screenMode === "camera" &&
-              <button type="button" id={TFLD ? "endFace" : "showFace"} onClick={TFLD ? () => toggleTFLD(false) : () => toggleTFLD(true)}>
-                {TFLD ? <CancelIcon /> : <InsertEmoticonIcon />}
+              <button type="button" onClick={() => setJeeliz(!jeeliz)} style={{backgroundColor:"white"}}>
+                {jeeliz ? <CancelIcon /> : <InsertEmoticonIcon />}
               </button>
             }
           </div>
