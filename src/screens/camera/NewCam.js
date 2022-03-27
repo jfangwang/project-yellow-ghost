@@ -11,6 +11,7 @@ import * as tfjsWasm from '@tensorflow/tfjs-backend-wasm';
 import { useDoubleTap } from 'use-double-tap';
 import Footer from '../../components/footer/Footer';
 import Capture from './Capture';
+import VTOGlasses from '../../js/demos/VTOGlasses';
 
 export default function NewCam({
   loggedIn,
