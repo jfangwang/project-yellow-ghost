@@ -45,7 +45,8 @@ function Memory(props) {
       <div className={styles.background}>
         <img
           src={imgObj['url']}
-          className={styles.memory}
+          className={imgObj['orientation'] === 'landscape' ?
+            styles.landscape : styles.portrait}
         />
         {edit &&
           <button

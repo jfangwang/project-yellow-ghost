@@ -86,16 +86,19 @@ export const Guest = {
   memories: {
     ['4/7/2022, 3:08:22 PM']: {
       date: '4/7/2022, 3:08:22 PM',
+      orientation: 'portrait',
       type: 'image',
       url: mem1,
     },
     ['4/7/2022, 3:10:44 PM']: {
       date: '4/7/2022, 3:10:44 PM',
+      orientation: 'portrait',
       type: 'image',
       url: mem2,
     },
     ['4/7/2022, 3:11:17 PM']: {
       date: '4/7/2022, 3:11:17 PM',
+      orientation: 'portrait',
       type: 'image',
       url: mem3,
     },
@@ -106,11 +109,13 @@ export const Guest = {
     },
     ['4/7/2022, 3:13:20 PM']: {
       date: '4/7/2022, 3:13:20 PM',
+      orientation: 'portrait',
       type: 'image',
       url: mem5,
     },
     ['4/7/2022, 3:13:50 PM']: {
       date: '4/7/2022, 3:13:50 PM',
+      orientation: 'portrait',
       type: 'image',
       url: mem6,
     },
@@ -121,41 +126,49 @@ export const Guest = {
     },
     ['4/7/2022, 3:14:57 PM']: {
       date: '4/7/2022, 3:14:57 PM',
+      orientation: 'portrait',
       type: 'image',
       url: mem8,
     },
     ['4/7/2022, 3:15:11 PM']: {
       date: '4/7/2022, 3:15:11 PM',
+      orientation: 'portrait',
       type: 'image',
       url: mem9,
     },
     ['4/7/2022, 3:15:37 PM']: {
       date: '4/7/2022, 3:15:37 PM',
+      orientation: 'portrait',
       type: 'image',
       url: mem10,
     },
     ['4/7/2022, 3:15:37 PM']: {
       date: '4/7/2022, 3:15:37 PM',
+      orientation: 'portrait',
       type: 'image',
       url: mem11,
     },
     ['4/7/2022, 3:15:38 PM']: {
       date: '4/7/2022, 3:15:38 PM',
+      orientation: 'portrait',
       type: 'image',
       url: mem12,
     },
     ['4/7/2022, 3:15:40 PM']: {
       date: '4/7/2022, 3:15:40 PM',
+      orientation: 'portrait',
       type: 'image',
       url: mem13,
     },
     ['4/7/2022, 3:16:37 PM']: {
       date: '4/7/2022, 3:16:37 PM',
+      orientation: 'portrait',
       type: 'image',
       url: mem14,
     },
     ['4/7/2022, 3:17:37 PM']: {
       date: '4/7/2022, 3:17:37 PM',
+      orientation: 'portrait',
       type: 'image',
       url: mem15,
     },

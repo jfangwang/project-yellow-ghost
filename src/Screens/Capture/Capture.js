@@ -80,6 +80,7 @@ function Capture(props) {
     newMem.date = new Date().toLocaleString();
     newMem.type = 'image';
     newMem.id = uuid();
+    newMem.orientation = orientation;
     const dataURL = document.getElementById('finalImage').toDataURL();
     const updated = {...user};
     updated.memories[newMem.date] = newMem;
@@ -96,6 +97,7 @@ function Capture(props) {
         });
       });
     } else {
+      updated.memories[newMem.date]['url'] = dataURL;
       editUser(updated);
       setSavedMem(true);
       setIsLoading(false);

@@ -340,8 +340,8 @@ function Camera(props) {
         if (ol) {
           ol.classList.add(styles.loading);
         }
-        stopCamera();
-        startCamera();
+        // stopCamera();
+        // startCamera();
         updateSendList([]);
         updateVECanvas();
         setTFOn(false);
@@ -354,6 +354,9 @@ function Camera(props) {
         }
         canvas.width = 0;
         canvas.height = 0;
+      } if (index == 1) {
+        stopCamera();
+        startCamera();
       } else {
         stopCamera();
       }
