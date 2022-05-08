@@ -22,13 +22,38 @@ import {
 import Send from '../Send/Send';
 import Memories from '../Memories/Memories';
 import main from './Fireworks';
-import {drawMesh} from './utilities';
+import {
+  drawDots,
+  drawBox,
+  drawTriangles,
+  drawRandomColorMask,
+} from './utilities';
 // import * as tf from '@tensorflow/tfjs';
 import '@tensorflow/tfjs-backend-webgl';
 import * as facemesh from '@tensorflow-models/face-landmarks-detection';
+import Slider from 'react-slick';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 let fdcount = 0;
 let net;
+let interval;
+let filter = null;
+const filterList = ['nothing', 'box', 'dots', 'mask', 'coloredMask'];
+const settings = {
+  className: styles.slider,
+  dots: false,
+  infinite: true,
+  slidesToScroll: 1,
+  centerMode: true,
+  focusOnSelect: true,
+  variableWidth: true,
+  centerPadding: '0px',
+  touchThreshold: 5,
+  speed: 300,
+  swipe: true,
+  afterChange: (e) => filter = filterList[e],
+};
 
 /**
  *
@@ -52,6 +77,7 @@ function Camera(props) {
     setScreen,
     captureImage,
     updateSendList,
+    hideNavFoot,
   } = props;
   const [currentStream, setCurrentStream] = useState(null);
   const [TFOn, setTFOn] = useState(false);
@@ -61,8 +87,14 @@ function Camera(props) {
   const [h, seth] = useState(null);
   const [vidLoaded, setVidLoaded] = useState(false);
   const doubleTap = useDoubleTap(() => {
-    if (screen === 'camera') {
-      toggleFacingMode();
+    if (TFOn) {
+      if (screen === 'camera' && vidLoaded && filter !== null) {
+        toggleFacingMode();
+      }
+    } else {
+      if (screen === 'camera' && vidLoaded) {
+        toggleFacingMode();
+      }
     }
   });
   const memoriesMenu = useRef();
@@ -157,7 +189,7 @@ function Camera(props) {
   /**
    * Capture
    */
-  function capture() {
+  async function capture() {
     const fec = document.getElementById('faceEffectsCanvas');
     const video = document.getElementById('mainCamera');
     const canvas = document.getElementById('imageCanvas');
@@ -165,19 +197,20 @@ function Camera(props) {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     if (facingMode === 'user') {
-      ctx.scale(-1, 1);
-      ctx.drawImage(video, canvas.width * -1, 0, canvas.width, canvas.height);
+      await ctx.scale(-1, 1);
+      await ctx
+          .drawImage(video, canvas.width * -1, 0, canvas.width, canvas.height);
       captureImage('Image Taken Place Holder');
     } else {
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      await ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       captureImage('Image Taken Place Holder');
     }
     if (TFOn) {
-      ctx.drawImage(fec, 0, 0, canvas.width, canvas.height);
+      await ctx.drawImage(fec, 0, 0, canvas.width, canvas.height);
     }
-    ctx.scale(1, 1);
-    ctx.drawImage(fec, 0, 0, canvas.width, canvas.height);
-    toggleNavFoot(false);
+    await ctx.scale(1, 1);
+    await ctx.drawImage(fec, 0, 0, canvas.width, canvas.height);
+    toggleNavFoot(true);
     toggleSlide(true);
     setScreen('capture');
   }
@@ -189,10 +222,18 @@ function Camera(props) {
     fdcount = 0;
     updateVECanvas();
     console.log('Starting Facemesh');
+    const model = facemesh.SupportedModels.MediaPipeFaceMesh;
+    const detectorConfig = {
+      runtime: 'mediapipe', // or 'tfjs'
+      solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh',
+    };
     net =
-    await facemesh.load(facemesh.SupportedPackages.mediapipeFacemesh);
+    await facemesh.createDetector(model, detectorConfig);
     console.log('model loaded');
-    detect(net);
+    // detect(net);
+    interval = setInterval(async () => {
+      await detect(net);
+    }, 10);
   };
 
   /**
@@ -204,34 +245,33 @@ function Camera(props) {
     const fec = document.getElementById('faceEffectsCanvas');
     const ctx = document.getElementById('faceEffectsCanvas').getContext('2d');
     const video = document.getElementById('mainCamera');
-    const face = await net.estimateFaces({
-      input: video,
-      flipHorizontal: facingMode === 'user' ? true : false,
-    });
-
-    fdcount += 1;
-    if (fdcount === 1) {
-      {facingMode === 'user' && ctx.translate(fec.width, 0);}
-      ol.classList.remove(styles.loading);
-      ol.classList.add(styles.fadeOut);
-      toggleSlide(false);
-    }
-
-    requestAnimationFrame(()=>{
-      if (document.getElementById('closeFace')) {
-        console.log('running');
-        {facingMode === 'user' && ctx.translate(fec.width * -1, 0);}
-        ctx.clearRect(0, 0, fec.width, fec.height);
-        {facingMode === 'user' && ctx.translate(fec.width, 0);}
-        drawMesh(face, ctx);
-        detect(net);
-      } else {
-        {facingMode === 'user' && ctx.translate(fec.width * -1, 0);}
-        if (!TFOn) {
-          ctx.clearRect(0, 0, fec.width, fec.height);
-        }
+    if (document.getElementById('closeFace')) {
+      const estimationConfig = {
+        flipHorizontal: facingMode === 'user' ? true : false,
+      };
+      const face = await net.estimateFaces(video, estimationConfig);
+      fdcount += 1;
+      if (fdcount === 1) {
+        ol.classList.remove(styles.loading);
+        ol.classList.add(styles.fadeOut);
+        filter = 'nothing';
       }
-    });
+
+      ctx.clearRect(0, 0, fec.width, fec.height);
+      console.log('filter: ', filter);
+      if (filter === 'box') {
+        drawBox(face, ctx);
+      } else if (filter === 'dots') {
+        drawDots(face, ctx);
+      } else if (filter === 'mask') {
+        drawTriangles(face, ctx);
+      } else if (filter === 'coloredMask') {
+        drawRandomColorMask(face, ctx);
+      }
+    } else {
+      clearInterval(interval);
+      filter = null;
+    }
   }
 
   /**
@@ -278,8 +318,11 @@ function Camera(props) {
     startCamera();
     if (TFOn) {
       toggleSlide(true);
+      toggleNavFoot(true);
     } else {
       toggleSlide(false);
+      toggleNavFoot(false);
+      filter = null;
     }
   }, [TFOn]);
 
@@ -390,7 +433,7 @@ function Camera(props) {
           { (screen === 'camera') &&
             <div id='cameraOverlay' className={styles.cameraOverlay}>
               <div className={styles.cameraHeader}>
-                <Navbar opacity={0} position="relative" />
+                { !hideNavFoot && <Navbar opacity={0} position="relative" /> }
                 {/* <div className={styles.cameraStats}>
                   <p>Device AR: {width/height}</p>
                   <p>Height: {height} Width: {width}</p>
@@ -400,11 +443,29 @@ function Camera(props) {
                 </div> */}
               </div>
               <div className={styles.cameraFooter}>
-                <div className={styles.cameraButtons}>
-                  <button onClick={() => memoriesMenu.current.toggle()}>
-                    <Image />
-                  </button>
+                {TFOn &&
+                  <Slider {...settings}>
+                    {filterList.map((item) => (
+                      <div
+                        key={item}
+                        className={styles.sliderItem}
+                      >
+                        <h3>{item}</h3>
+                      </div>
+                    ))}
+                  </Slider>
+                }
+                <div
+                  style={{flexDirection: TFOn ? 'column' : 'row'}}
+                  className={styles.cameraButtons}
+                >
+                  { !TFOn &&
+                    <button onClick={() => memoriesMenu.current.toggle()}>
+                      <Image />
+                    </button>
+                  }
                   <button
+                    style={{zIndex: TFOn ? 1 : 0}}
                     className={styles.captureButton}
                     onClick={
                       (screen === 'camera' && vidLoaded && cameraPermissions) ?
@@ -422,7 +483,7 @@ function Camera(props) {
                     </button>
                   }
                 </div>
-                <Footer position="relative" opacity={0} />
+                { !hideNavFoot && <Footer position="relative" opacity={0} /> }
               </div>
             </div>
           }
@@ -481,6 +542,7 @@ Camera.propTypes = {
   setScreen: PropTypes.func,
   captureImage: PropTypes.func,
   updateSendList: PropTypes.func,
+  hideNavFoot: PropTypes.bool,
 };
 
 Camera.defaultProps = {
@@ -515,6 +577,7 @@ function mapStateToProps(state) {
     cameraPermissions: state.camera.cameraPermissions,
     orientation: state.global.orientation,
     screen: state.camera.screen,
+    hideNavFoot: state.global.hideNavFoot,
   };
 }
 

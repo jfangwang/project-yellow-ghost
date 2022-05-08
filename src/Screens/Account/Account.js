@@ -32,6 +32,16 @@ function Account(props) {
     auth.signOut();
   }
 
+  /**
+   * @param {*} field
+   * @param {*} value
+   */
+  // async function edit(field, value) {
+  //   const updated = {...user};
+  //   updated[field] = value;
+  //   await db.collection('Users').doc(user.id).update(update);
+  // }
+
   return (
     <div id='background' className={styles.background} onScroll={handleScroll}>
       <div className={styles.account}>
@@ -53,27 +63,27 @@ function Account(props) {
           <li>
             <h3>Full Name</h3>
             <p>{user.firstName} {user.lastName}</p>
-            <button>Update</button>
+            {/* <button onClick={() => edit('firstName', )}>Change</button> */}
           </li>
           <li>
             <h3>Username</h3>
             <p>{user.username === null ? 'NULL' : user.username}</p>
-            <button>Update</button>
+            {/* <button>Change</button> */}
           </li>
           <li>
             <h3>Streak Emoji</h3>
             <p>{user.streakEmoji}</p>
-            <button>Update</button>
+            {/* <button>Change</button> */}
           </li>
           <li>
             <h3>Phone Number</h3>
             <p>{user.phoneNumber === null ? 'NULL' : user.phoneNumber}</p>
-            <button>Update</button>
+            {/* <button>Change</button> */}
           </li>
           <li>
             <h3>Face ID</h3>
             <p>{user.faceID === null ? 'NULL' : user.faceID}</p>
-            <button>Update</button>
+            {/* <button>Change</button> */}
           </li>
         </ul>
       </div>
@@ -94,7 +104,7 @@ function Account(props) {
           <li>
             <h3>Default Time Limit</h3>
             <p>{snapTime === - 1 ? 'No Limit' : snapTime}</p>
-            <button>Update</button>
+            {/* <button>Change</button> */}
           </li>
         </ul>
       </div>

@@ -2642,50 +2642,95 @@ export const TRIANGULATION = [
   255,
 ];
 
-// Triangle drawing method
-const drawPath = (ctx, points, closePath) => {
-  const region = new Path2D();
-  region.moveTo(points[0][0], points[0][1]);
-  for (let i = 1; i < points.length; i++) {
-    const point = points[i];
-    region.lineTo(point[0], point[1]);
-  }
 
-  if (closePath) {
-    region.closePath();
-  }
-  ctx.strokeStyle = 'grey';
-  ctx.stroke(region);
-};
-
-// Drawing Mesh
-export const drawMesh = (predictions, ctx) => {
+/**
+ *
+ *
+ * @export
+ * @param {*} predictions
+ * @param {*} ctx
+ */
+export function drawRandomColorMask(
+    predictions, ctx,
+) {
   if (predictions.length > 0) {
     predictions.forEach((prediction) => {
-      const keypoints = prediction.scaledMesh;
-
-      //  Draw Triangles
-      for (let i = 0; i < TRIANGULATION.length / 3; i++) {
-        // Get sets of three keypoints for the triangle
-        const points = [
-          TRIANGULATION[i * 3],
-          TRIANGULATION[i * 3 + 1],
-          TRIANGULATION[i * 3 + 2],
-        ].map((index) => keypoints[index]);
-        //  Draw triangle
-        drawPath(ctx, points, true);
-      }
-
-      // Draw Dots
-      for (let i = 0; i < keypoints.length; i++) {
-        const x = keypoints[i][0];
-        const y = keypoints[i][1];
-
+      const keypoints = prediction.keypoints;
+      for (let i = 0; i < TRIANGULATION.length; i+=3) {
+        const i1 = TRIANGULATION[i];
+        const i2 = TRIANGULATION[i + 1];
+        const i3 = TRIANGULATION[i + 2];
         ctx.beginPath();
-        ctx.arc(x, y, 1 /* radius */, 0, 3 * Math.PI);
-        ctx.fillStyle = 'aqua';
+        ctx.moveTo(keypoints[i1]['x'], keypoints[i1]['y']);
+        ctx.lineTo(keypoints[i2]['x'], keypoints[i2]['y']);
+        ctx.lineTo(keypoints[i3]['x'], keypoints[i3]['y']);
+        ctx.closePath();
+        ctx.fillStyle = '#' + Math.floor(Math.random()*82456975).toString(16);
         ctx.fill();
       }
+    });
+  }
+}
+
+/**
+ * @export
+ * @param {*} predictions
+ * @param {*} ctx
+ * @param {string} [color='grey']
+ */
+export function drawTriangles(
+    predictions, ctx, color = 'grey',
+) {
+  ctx.strokeStyle = color;
+  if (predictions.length > 0) {
+    predictions.forEach((prediction) => {
+      const keypoints = prediction.keypoints;
+      for (let i = 0; i < TRIANGULATION.length; i+=3) {
+        const i1 = TRIANGULATION[i];
+        const i2 = TRIANGULATION[i + 1];
+        const i3 = TRIANGULATION[i + 2];
+        ctx.beginPath();
+        ctx.moveTo(keypoints[i1]['x'], keypoints[i1]['y']);
+        ctx.lineTo(keypoints[i2]['x'], keypoints[i2]['y']);
+        ctx.lineTo(keypoints[i3]['x'], keypoints[i3]['y']);
+        ctx.closePath();
+        ctx.stroke();
+      }
+    });
+  }
+}
+// Drawing Mesh
+export const drawDots = (predictions, ctx, color = 'aqua') => {
+  if (predictions.length > 0) {
+    predictions.forEach((prediction) => {
+      const keypoints = prediction.keypoints;
+      for (let i = 0; i < keypoints.length; i++) {
+        // const x = keypoints[i][0];
+        // const y = keypoints[i][1];
+        const x = keypoints[i]['x'];
+        const y = keypoints[i]['y'];
+
+        ctx.beginPath();
+        ctx.arc(x, y, 1, 0, 3 * Math.PI);
+        ctx.fillStyle = color;
+        ctx.fill();
+      };
+    });
+  }
+};
+
+export const drawBox = (predictions, ctx, color = 'red') => {
+  if (predictions.length > 0) {
+    predictions.forEach((prediction) => {
+      // Draw Box
+      ctx.beginPath();
+      ctx.moveTo(prediction.box.xMin, prediction.box.yMin);
+      ctx.lineTo(prediction.box.xMax, prediction.box.yMin);
+      ctx.lineTo(prediction.box.xMax, prediction.box.yMax);
+      ctx.lineTo(prediction.box.xMin, prediction.box.yMax);
+      ctx.lineTo(prediction.box.xMin, prediction.box.yMin);
+      ctx.strokeStyle = color;
+      ctx.stroke();
     });
   }
 };

@@ -18,6 +18,44 @@ import {
   PaperPlaneRight,
 } from 'phosphor-react';
 
+/**
+   * Combines all canvas' into one image
+   */
+export function drawFinalImage(localIndex) {
+  const img = document.getElementById('imageCanvas');
+  const fec = document.getElementById('faceEffectsCanvas');
+  const drawing = document.getElementById('drawingCanvas');
+  const filterImg = document.getElementById(`imgFilter${localIndex}`);
+  let final = document.getElementById('finalImage');
+  final.width = img.width;
+  final.height = img.height;
+  final = document.getElementById('finalImage').getContext('2d');
+  final.clearRect(0, 0, final.width, final.height);
+  final.drawImage(img, 0, 0, img.width, img.height);
+  final.drawImage(fec, 0, 0, img.width, img.height);
+  if (localIndex == 1) {
+    final.drawImage(filterImg,
+      (img.width - (img.width * 0.7)) / 2, img.height - (img.height * 0.17),
+      img.width * 0.7, img.height * 0.17
+      );
+  } else if (localIndex == 2) {
+    final.drawImage(filterImg,
+      (img.width - (img.width * 0.7)) / 2, img.height - (img.height * 0.15),
+      img.width * 0.7, img.height * 0.15
+      );
+  } else if (localIndex == 3) {
+    final.drawImage(filterImg,
+      (img.width - (img.width * 0.7)) / 2, img.height - (img.height * 0.23),
+      img.width * 0.7, img.height * 0.23
+      );
+  } else if (localIndex == 4) {
+    final.drawImage(filterImg,
+      (img.width - (img.width)) / 2, img.height - (img.height * 0.99),
+      img.width, img.height * 0.99
+      );
+  }
+  final.drawImage(drawing, 0, 0, drawing.width, drawing.height, 0, 0, img.width, img.height);
+}
 
 const SendSlidingMenu = forwardRef((props, ref) => {
   const {
@@ -89,51 +127,12 @@ const SendSlidingMenu = forwardRef((props, ref) => {
       setDisabled(false);
     }
   };
-
-  /**
-   * Combines all canvas' into one image
-   */
-  function drawFinalImage() {
-    const img = document.getElementById('imageCanvas');
-    const fec = document.getElementById('faceEffectsCanvas');
-    const drawing = document.getElementById('drawingCanvas');
-    const filterImg = document.getElementById(`imgFilter${localIndex}`);
-    let final = document.getElementById('finalImage');
-    final.width = img.width;
-    final.height = img.height;
-    final = document.getElementById('finalImage').getContext('2d');
-    final.clearRect(0, 0, final.width, final.height);
-    final.drawImage(img, 0, 0, img.width, img.height);
-    final.drawImage(fec, 0, 0, img.width, img.height);
-    if (localIndex == 1) {
-      final.drawImage(filterImg,
-        (img.width - (img.width * 0.7)) / 2, img.height - (img.height * 0.17),
-        img.width * 0.7, img.height * 0.17
-        );
-    } else if (localIndex == 2) {
-      final.drawImage(filterImg,
-        (img.width - (img.width * 0.7)) / 2, img.height - (img.height * 0.15),
-        img.width * 0.7, img.height * 0.15
-        );
-    } else if (localIndex == 3) {
-      final.drawImage(filterImg,
-        (img.width - (img.width * 0.7)) / 2, img.height - (img.height * 0.23),
-        img.width * 0.7, img.height * 0.23
-        );
-    } else if (localIndex == 4) {
-      final.drawImage(filterImg,
-        (img.width - (img.width)) / 2, img.height - (img.height * 0.99),
-        img.width, img.height * 0.99
-        );
-    }
-    final.drawImage(drawing, 0, 0, drawing.width, drawing.height, 0, 0, img.width, img.height);
-  }
   /**
    * Send
    */
   async function send() {
     setIsLoading(true);
-    drawFinalImage();
+    drawFinalImage(localIndex);
     const dataURL = document.getElementById('finalImage').toDataURL();
     const imgID = uuid()
     const date = new Date();
@@ -244,14 +243,14 @@ const SendSlidingMenu = forwardRef((props, ref) => {
               containerStyle={{height: height, width: width}}
             >
               <div style={{height: height, width: width}}>
-                <canvas
+                {/* <canvas
                   id='finalImage'
                   style={{
                     width: (width/height) <= (aspectRatio) ? '100%' : 'auto',
                     height: (width/height) <= (aspectRatio) ? 'auto' : '100%',
                     display: 'none',
                   }}
-                />
+                /> */}
               </div>
               <div
                 className={styles.background}

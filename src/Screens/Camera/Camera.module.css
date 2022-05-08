@@ -64,8 +64,8 @@
 }
 
 .captureButton {
-    width: 7.2em;
-    height: 7.2em;
+    width: 5.2rem;
+    height: 5.2rem;
     background: transparent;
     border: 0.5rem solid rgb(255, 255, 255);
     border-radius: 50%;
@@ -139,4 +139,36 @@ animation-duration: 0.3s;
 .fadeIn {
 animation: fadeIn;
 animation-duration: 1s;
+}
+
+.slider {
+    background-color: transparent;
+    width: 85%;
+    border: 1px white solid;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    position: fixed !important;
+    margin-bottom: 2.2rem;
+}
+
+.sliderItem {
+    border: 0.25rem white solid;
+    display: flex !important;
+    background-color: red;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: 4rem;
+    width: 4rem !important;
+    overflow: hidden;
+    border-radius: 100%;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.slick-slide {
+  margin: 0 10px;
+}
+.slick-list {
+  margin: 0 -10px;
 }

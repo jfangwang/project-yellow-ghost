@@ -1,0 +1,30 @@
+.background {
+    width: 100%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.background button {
+    background-color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.memoriesSection {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+.background > img {
+    height: 9rem;
+    width: 6rem;
+    margin: 0.3rem;
+    box-shadow: 0px 0px 4px rgb(145, 145, 145);
+}

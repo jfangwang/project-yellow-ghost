@@ -22,6 +22,7 @@ import {
   CaretLeft,
   ArrowCounterClockwise,
   ArrowClockwise,
+  Check,
 } from 'phosphor-react';
 import {MetaTags} from 'react-meta-tags';
 import Timer from '../Timer/Timer';
@@ -31,6 +32,10 @@ import filter1 from '../../Assets/images/filters/patagonia_logo.png';
 import filter2 from '../../Assets/images/filters/Wendys-Logo.png';
 import filter3 from '../../Assets/images/filters/Rick-And-Morty-Logo.png';
 import filter4 from '../../Assets/images/filters/color-paint-border.png';
+import {drawFinalImage} from '../Send/SendSlidingMenu';
+import {editUser} from '../../Actions/userActions';
+import {db, storage} from '../../Firebase/Firebase';
+import {v4 as uuid} from 'uuid';
 
 let sdb = null;
 
@@ -52,6 +57,8 @@ function Capture(props) {
     sendList,
     orientation,
     screen,
+    editUser,
+    isUserLoggedIn,
   } = props;
   const sendMenu = useRef();
   const toolTime = useRef();
@@ -60,6 +67,40 @@ function Capture(props) {
   const [color, setColor] = useState({h: 56, s: 100, l: 50, a: 1});
   const [localIndex, setLocalIndex] = useState(0);
   const [showFilters, setShowFilters] = useState(true);
+  const [savedMem, setSavedMem] = useState(false);
+  const [isloading, setIsLoading] = useState(false);
+
+  /**
+   *
+   */
+  async function saveToMemories() {
+    setIsLoading(true);
+    drawFinalImage(localIndex);
+    const newMem = {};
+    newMem.date = new Date().toLocaleString();
+    newMem.type = 'image';
+    newMem.id = uuid();
+    const dataURL = document.getElementById('finalImage').toDataURL();
+    const updated = {...user};
+    updated.memories[newMem.date] = newMem;
+    if (isUserLoggedIn) {
+      const ref = storage.ref(`posts/${newMem.id}`);
+      await ref.putString(dataURL, 'data_url').then((snapshot) => {
+        snapshot.ref.getDownloadURL().then((imgURL) => {
+          return (imgURL);
+        }).then(async function(imgURL) {
+          updated.memories[newMem.date]['url'] = imgURL;
+          await db.collection('Users').doc(user.id).update(updated);
+          setIsLoading(false);
+          setSavedMem(true);
+        });
+      });
+    } else {
+      editUser(updated);
+      setSavedMem(true);
+      setIsLoading(false);
+    }
+  }
 
   /**
    * Close
@@ -247,6 +288,14 @@ function Capture(props) {
       <div
         className={styles.background}
       >
+        <canvas
+          id='finalImage'
+          style={{
+            width: (width/height) <= (aspectRatio) ? '100%' : 'auto',
+            height: (width/height) <= (aspectRatio) ? 'auto' : '100%',
+            display: 'none',
+          }}
+        />
         <SwipeableViews
           enableMouseEvents
           index={localIndex}
@@ -441,7 +490,15 @@ function Capture(props) {
                 }}
               >
                 <div>
-                  <button disabled><DownloadSimple /></button>
+                  <button
+                    disabled={savedMem}
+                    onClick={savedMem ? () => {} : saveToMemories}
+                  >
+                    {isloading ?
+                      <p>Loading</p> :
+                      (savedMem ? <Check color='green'/> : <DownloadSimple />)
+                    }
+                  </button>
                   <button disabled><Export /></button>
                 </div>
                 <div>
@@ -487,6 +544,7 @@ Capture.propTypes = {
   toggleSlide: PropTypes.func,
   toggleNavFoot: PropTypes.func,
   setScreen: PropTypes.func,
+  editUser: PropTypes.func,
   screen: PropTypes.string,
   aspectRatio: PropTypes.number,
   camH: PropTypes.number,
@@ -495,6 +553,7 @@ Capture.propTypes = {
   sendList: PropTypes.array,
   orientation: PropTypes.string,
   screen: PropTypes.string,
+  isUserLoggedIn: PropTypes.bool,
 };
 
 Capture.defaultProps = {
@@ -503,6 +562,7 @@ Capture.defaultProps = {
   toggleSlide: () => { },
   toggleNavFoot: () => { },
   setScreen: () => { },
+  editUser: () => { },
   screen: 'camera',
   aspectRatio: 9.5/16,
   camH: null,
@@ -510,6 +570,7 @@ Capture.defaultProps = {
   user: {},
   sendList: [],
   screen: 'camera',
+  isUserLoggedIn: false,
   orientation: window.innerHeight > window.innerWidth ?
   'portrait':'landscape',
 };
@@ -527,6 +588,7 @@ function mapStateToProps(state) {
     sendList: state.camera.sendList,
     orientation: state.global.orientation,
     screen: state.camera.screen,
+    isUserLoggedIn: state.user.isUserLoggedIn,
   };
 }
 
@@ -534,6 +596,7 @@ const mapDispatchToProps = {
   toggleSlide,
   toggleNavFoot,
   setScreen,
+  editUser,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Capture);

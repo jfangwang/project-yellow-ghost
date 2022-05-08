@@ -104,7 +104,7 @@ button.background {
 .snapContainer {
     position: absolute;
     top: 0;
-    background-color: lightgreen;
+    background-color: grey;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -112,5 +112,4 @@ button.background {
 }
 
 .currentSnap {
-    height: 100%;
 }

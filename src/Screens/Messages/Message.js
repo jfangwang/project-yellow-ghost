@@ -12,6 +12,7 @@ import {toggleSlide} from '../../Actions/globalActions';
 import {toggleNavFoot} from '../../Actions/globalActions';
 import {db} from '../../Firebase/Firebase';
 import firebase from 'firebase/compat/app';
+import {isMobile} from 'react-device-detect';
 
 const formatter = buildFormatter(enShort);
 export const statusDict = {
@@ -39,9 +40,10 @@ const emojiDict = {
  */
 export function Message(props) {
   const {friend, user, isUserLoggedIn, height, width, editUser,
-    toggleNavFoot, fakeDB, editFakeDB, toggleSlide,
+    toggleNavFoot, fakeDB, editFakeDB, toggleSlide, orientation,
   } = props;
   const [showSnaps, setShowSnaps] = useState(false);
+  const [aspectRatio, setAspectRatio] = useState(16/9.5);
   const messageNewFriend = <div className={styles.messageNewFriend}></div>;
   const messageNew = <div className={styles.messageNew}></div>;
   const messageReceived = <div className={styles.messageReceived}></div>;
@@ -95,6 +97,10 @@ export function Message(props) {
    * Open Snap
    */
   async function openSnap() {
+    const ratio = isMobile ?
+      (orientation !== 'portrait' ? width / height : height / width) :
+      (orientation !== 'portrait' ? 16/9.5 : 9.5/16);
+    setAspectRatio(ratio);
     toggleSlide(true);
     setShowSnaps(true);
     const snapID = await getSnap();
@@ -281,6 +287,12 @@ export function Message(props) {
             onClick={openSnap}
             id='currentSnap'
             className={styles.currentSnap}
+            style={{
+              maxWidth: (width/height) <= (aspectRatio) ? '100%' : 'auto',
+              maxHeight: (width/height) <= (aspectRatio) ? 'auto' : '100%',
+              width: (width/height) <= (aspectRatio) ? '100%' : 'auto',
+              height: (width/height) <= (aspectRatio) ? 'auto' : '100%',
+            }}
           />
         </div>
       }
@@ -299,12 +311,14 @@ Message.propTypes = {
   toggleNavFoot: PropTypes.func,
   fakeDB: PropTypes.object,
   toggleSlide: PropTypes.func,
+  orientation: PropTypes.string,
 };
 
 Message.defaultProps = {
   height: window.innerHeight,
   width: window.innerWidth,
   isUserLoggedIn: false,
+  orientation: 'portrait',
   toggleNavFoot: () => {},
   editUser: () => {},
   editFakeDB: () => {},
@@ -335,6 +349,7 @@ function mapStateToProps(state) {
     width: state.global.width,
     isUserLoggedIn: state.user.isUserLoggedIn,
     fakeDB: state.user.fakeDB,
+    orientation: state.global.orientation,
   };
 }
 
