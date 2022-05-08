@@ -197,19 +197,18 @@ function Camera(props) {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     if (facingMode === 'user') {
-      await ctx.scale(-1, 1);
-      await ctx
-          .drawImage(video, canvas.width * -1, 0, canvas.width, canvas.height);
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, canvas.width * -1, 0, canvas.width, canvas.height);
       captureImage('Image Taken Place Holder');
     } else {
-      await ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.scale(1, 1);
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       captureImage('Image Taken Place Holder');
     }
-    if (TFOn) {
-      await ctx.drawImage(fec, 0, 0, canvas.width, canvas.height);
-    }
-    await ctx.scale(1, 1);
-    await ctx.drawImage(fec, 0, 0, canvas.width, canvas.height);
+    // if (TFOn) {
+    //   await ctx.drawImage(fec, 0, 0, canvas.width, canvas.height);
+    // }
+    ctx.drawImage(fec, 0, 0, canvas.width, canvas.height);
     toggleNavFoot(true);
     toggleSlide(true);
     setScreen('capture');
@@ -340,8 +339,8 @@ function Camera(props) {
         if (ol) {
           ol.classList.add(styles.loading);
         }
-        stopCamera();
-        startCamera();
+        // stopCamera();
+        // startCamera();
         updateSendList([]);
         updateVECanvas();
         setTFOn(false);
@@ -354,6 +353,9 @@ function Camera(props) {
         }
         canvas.width = 0;
         canvas.height = 0;
+      } if (index === 1) {
+        stopCamera();
+        startCamera();
       } else {
         stopCamera();
       }
