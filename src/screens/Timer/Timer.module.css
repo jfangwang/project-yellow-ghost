@@ -1,0 +1,21 @@
+.background {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    color: white;
+}
+
+.timerSelect {
+    margin: 1rem 0 1rem 0;
+    width: 80%;
+    height: 4rem;
+    text-align: center;
+    text-justify: center;
+    font-size: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

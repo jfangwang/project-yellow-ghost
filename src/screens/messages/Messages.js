@@ -1,48 +1,96 @@
-import React from 'react'
-import './Messages.css'
-import './Message.css'
-import Message from './Message'
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
+import Navbar from '../../Components/Navbar/Navbar';
+import Footer from '../../Components/Footer/Footer';
+import Message from './Message';
+import styles from './Messages.module.css';
+import {connect} from 'react-redux';
+import {MetaTags} from 'react-meta-tags';
+import LoginBannerItem from '../../Components/LoginBannerItem/LoginBannerItem';
 
 const list = [];
-
-for (let i = 0; i < 30; i += 1) {
-  list.push(<Message />);
+for (let i = 0; i < 200; i++) {
+  list.push('User ' + i.toString());
 }
 
-function Messages({ userDoc, disableNavFootSlide, height, width, loggedIn, toggleSnapShot }) {
-  return (
-    <>
-      <ul className="messages-container">
-        {!loggedIn &&
-          <li>
-            <div className="guest_message">
-              {/* <button><CloseRoundedIcon/></button> */}
-              <h4>
-                Welcome to Project Yellow Ghost, a web app version of SnapChat.
-                Right now, you are on a local guest account for you to try out.
-                Feel free to sign in at the top if you want to start using this product.
-                Happy Snapping!
-              </h4>
-            </div>
-          </li>
-        }
-        {Object.keys(userDoc.friends).sort().map((key) => (
-          <Message
-            disableNavFootSlide={disableNavFootSlide}
-            friend={userDoc.friends[key]}
-            userDoc={userDoc}
-            height={height}
-            width={width}
-            loggedIn={loggedIn}
-            toggleSnapShot={toggleSnapShot}
+/**
+ * @export
+ * @class Messages
+ * @extends {Component}
+ */
+class Messages extends Component {
+  /**
+   * Creates an instance of Messages.
+   * @param {*} props
+   * @memberof Messages
+   */
+  constructor(props) {
+    super(props);
+  }
+  /**
+   * @return {*}
+   * @memberof Messages
+   */
+  render() {
+    const {friends, user, isUserLoggedIn} = this.props;
+    return (
+      <>
+        <MetaTags>
+          <meta
+            name = "viewport"
+            content = "width=device-width, \
+            minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
           />
-        ))}
-        {/* {list} */}
-      </ul>
-    </>
-  )
+        </MetaTags>
+        <div className={styles.backgrounds}>
+          <Navbar opacity={0} position="relative" />
+          {!isUserLoggedIn && <LoginBannerItem />}
+          {Object.keys(friends).map((id) => (
+            <Message key={id} friend={friends[id]} user={user}/>
+          ))}
+          {Object.keys(user.pending).map((id) => (
+            <Message key={id} friend={user.pending[id]} user={user}/>
+          ))}
+          <Footer position="relative" opacity={0} />
+        </div>
+      </>
+    );
+  }
 }
 
-Messages.propTypes = {}
+Messages.propTypes = {
+  height: PropTypes.number,
+  width: PropTypes.number,
+  friends: PropTypes.object,
+  user: PropTypes.object,
+  isUserLoggedIn: PropTypes.bool,
+};
 
-export default Messages
+Messages.defaultProps = {
+  height: window.innerHeight,
+  width: window.innerWidth,
+  friends: {},
+  user: {},
+};
+
+
+/**
+ *
+ *
+ * @param {*} state
+ * @return {*}
+ */
+function mapStateToProps(state) {
+  return {
+    height: state.global.height,
+    width: state.global.width,
+    friends: state.user.user.friends,
+    user: state.user.user,
+    isUserLoggedIn: state.user.isUserLoggedIn,
+  };
+}
+
+const mapDispatchToProps = {
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Messages);

@@ -1,0 +1,97 @@
+.background {
+    height: 100%;
+    width: 100%;
+    background-color: rgb(233, 233, 233);
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    overflow: hidden;
+}
+
+.background header {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.background header button {
+    margin: 0.5rem;
+    border-radius: 100%;
+    padding: 0.5rem;
+}
+
+.background header input {
+    border-radius: 4rem;
+    border: none;
+    width: 100%;
+    margin-right: 0.5rem;
+}
+
+.background header > * {
+    padding: 1rem;
+}
+
+.body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.background footer {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    background-color: rgb(38, 131, 189);
+}
+
+.footerNames {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 0.5rem;
+    width: 100%;
+    overflow: hidden;
+}
+
+.background footer button {
+    padding: 0.5rem 1.5rem 0.5rem 1.5rem;
+    border-radius: 5rem;
+    margin: 0.5rem;
+}
+
+.background button {
+    border: none;
+    margin: 0rem;
+    color: black;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.sendButton {
+    background-color: yellow;
+}
+
+.friendsList {
+    width: 90%;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.friendsList li:first-child {
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+}
+
+.friendsList li:last-child {
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+}

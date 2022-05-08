@@ -1,0 +1,38 @@
+.mainNavbar {
+    position: absolute;
+    background-color: rgb(255, 255, 255, 1);
+    top: 0;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.3rem;
+    padding-bottom: 0.3rem;
+}
+h1 {
+    margin: 0;
+}
+.mainNavbar > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-right: 0rem;
+    padding-left: 0rem;
+}
+.mainNavbar > div > button {
+    background-color: rgba(0, 0, 0, 0.2);
+    outline: none;
+    border: none;
+    height: 2.7rem;
+    width: 2.7rem;
+    padding: 0.7rem;
+    margin-left: 0.3rem;
+    margin-right: 0.3rem;
+    border-radius: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

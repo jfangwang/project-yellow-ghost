@@ -1,80 +1,174 @@
-import React, { Component } from 'react';
-import './Account.css';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import '../messages/Message.css'
+import React from 'react';
+import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
+import styles from './Account.module.css';
+import {editFakeDB} from '../../Actions/userActions';
+import {auth} from '../../Firebase/Firebase';
 
-const { version } = require('../../../package.json');
+const {version} = require('../../../package.json');
 
-export default class Account extends Component {
-  constructor(props) {
-    super(props);
-    this.signOut = this.signOut.bind(this);
-    this.signIn = this.signIn.bind(this);
-  }
-  signOut() {
-    this.props.GsignOut();
-    this.props.close();
-  }
-  signIn() {
-    this.props.GsignIn();
-    this.props.close();
+/**
+ *
+ *
+ * @param {*} props
+ * @return {*}
+ */
+function Account(props) {
+  const {
+    user,
+    camRes,
+    // camVideo,
+    // camMic,
+    handleScroll,
+    isUserLoggedIn,
+    snapTime,
+  } = props;
+
+
+  /**
+   *
+   */
+  function logout() {
+    auth.signOut();
   }
 
-  render() {
-    const { userDoc } = this.props
+  return (
+    <div id='background' className={styles.background} onScroll={handleScroll}>
+      <div className={styles.account}>
+        <img src={user.profilePicUrl} alt='img' className={styles.profilePic} />
+        <div className={styles.info}>
+          <h2><b>{user.firstName} {user.lastName}</b></h2>
+          <h4><i>{user.username}</i></h4>
+        </div>
+        <div className={styles.info}>
+          <h4>Received: {user.received}</h4>
+          <h4>Sent: {user.sent}</h4>
+          <h4>Total: {user.sent + user.received}</h4>
+        </div>
+      </div>
 
-    return (
-      <main className="main">
-        <div className="section info">
-          <div className="row">
-            <div className="pic-container">
-              <img src={userDoc['profile_pic_url']} style={{ borderRadius: '1rem', marginRight: '1rem' }} alt="" />
-            </div>
-            <div className="col">
-              <h1>{userDoc.name}</h1>
-              <i><h5>{userDoc.username}</h5></i>
-            </div>
-          </div>
-          <div className="row" style={{ justifyContent: "space-between" }}>
-            <h5>Total: {userDoc.sent + userDoc.received}</h5>
-            <h5>Sent: {userDoc.sent}</h5>
-            <h5>Received: {userDoc.received}</h5>
-          </div>
+      <div className={styles.acountSettings}>
+        <h1>Account Settings</h1>
+        <ul>
+          <li>
+            <h3>Full Name</h3>
+            <p>{user.firstName} {user.lastName}</p>
+            <button>Update</button>
+          </li>
+          <li>
+            <h3>Username</h3>
+            <p>{user.username === null ? 'NULL' : user.username}</p>
+            <button>Update</button>
+          </li>
+          <li>
+            <h3>Streak Emoji</h3>
+            <p>{user.streakEmoji}</p>
+            <button>Update</button>
+          </li>
+          <li>
+            <h3>Phone Number</h3>
+            <p>{user.phoneNumber === null ? 'NULL' : user.phoneNumber}</p>
+            <button>Update</button>
+          </li>
+          <li>
+            <h3>Face ID</h3>
+            <p>{user.faceID === null ? 'NULL' : user.faceID}</p>
+            <button>Update</button>
+          </li>
+        </ul>
+      </div>
+
+      <div className={styles.uiSettings}>
+        <h1>UI Settings</h1>
+        <ul>
+          <li>
+            <h3>Themes</h3>
+            <p>Light Mode</p>
+          </li>
+        </ul>
+      </div>
+
+      <div className={styles.messagesSettings}>
+        <h1>Messages Settings</h1>
+        <ul>
+          <li>
+            <h3>Default Time Limit</h3>
+            <p>{snapTime === - 1 ? 'No Limit' : snapTime}</p>
+            <button>Update</button>
+          </li>
+        </ul>
+      </div>
+
+      <div className={styles.cameraSettings}>
+        <h1>Camera Settings</h1>
+        <ul>
+          <li>
+            <h3>Resolution</h3>
+            <p>{camRes}</p>
+          </li>
+        </ul>
+      </div>
+      {isUserLoggedIn &&
+        <div className={styles.logout}>
+          <button onClick={logout}><h1>Log Out</h1></button>
         </div>
-        {Object.keys(userDoc.friends).filter(item => item !== userDoc['id']).length === 0 ? null :
-          <div className="section">
-            <h1>Friends</h1>
-            <div className="col" style={{justifyContent:'center'}}>
-              {Object.keys(userDoc.friends).filter(item => item !== userDoc['id']).sort().map((key) => (
-                <h3>{userDoc.friends[key]['name']}</h3>
-              ))}
-            </div>
-          </div>
-        }
-        <div className="section snapMap">
-          <h1>Snap Map</h1>
-          <img src="https://media.npr.org/assets/img/2017/06/30/snapchat-world_custom-7763b62a81588d5def16ef6335a573d94e0dc908.jpg" />
-        </div>
-        <div className="section" style={{ justifyContent: "center" }}>
-          <div className="row" style={{ justifyContent: "center" }}>
-            {userDoc.created !== 'N/A' && <h3>Joined Snapchat Clone on {userDoc['created']}</h3>}
-          </div>
-        </div>
-        <div className="section">
-          <div className="row" style={{ justifyContent: "center" }}>
-            {userDoc['name'] === 'Guest' ?
-              <button onClick={this.signIn} className="login"><h2>Login</h2></button>
-              :
-              <button onClick={this.signOut} className="logout"><h2>Logout</h2></button>
-            }
-          </div>
-        </div>
-        <div className="section">
-          <div className='row' style={{ justifyContent: "center" }}>
-            <p>Project Yellow Ghost v{version}</p>
-          </div>
-        </div>
-      </main>
-    )
-  }
+      }
+      <div>
+        <p>Project Yellow Ghost {version}</p>
+      </div>
+    </div>
+  );
 }
+
+Account.propTypes = {
+  height: PropTypes.number,
+  width: PropTypes.number,
+  user: PropTypes.object,
+  camRes: PropTypes.number,
+  camVideo: PropTypes.string,
+  camMic: PropTypes.string,
+  showStats: PropTypes.bool,
+  cameraButton: PropTypes.string,
+  handleScroll: PropTypes.func,
+  isUserLoggedIn: PropTypes.bool,
+  snapTime: PropTypes.number,
+};
+
+Account.defaultProps = {
+  height: window.innerHeight,
+  width: window.innerWidth,
+  user: {},
+  camRes: null,
+  camVideo: null,
+  camMic: null,
+  showStats: false,
+  cameraButton: 'bottom',
+  handleScroll: () => {},
+};
+
+/**
+ *
+ *
+ * @param {*} state
+ * @return {*}
+ */
+function mapStateToProps(state) {
+  return {
+    height: state.global.height,
+    width: state.global.width,
+    user: state.user.user,
+    camRes: state.camera.cameraResolution,
+    camVideo: state.camera.cameraVideoOutput,
+    camMic: state.camera.cameraAudioInput,
+    showStats: state.camera.showStats,
+    cameraButton: state.camera.cameraButton,
+    isUserLoggedIn: state.user.isUserLoggedIn,
+    snapTime: state.camera.snapTime,
+  };
+}
+
+const mapDispatchToProps = {
+  editFakeDB,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Account);

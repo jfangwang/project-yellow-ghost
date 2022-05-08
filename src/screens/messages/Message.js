@@ -1,234 +1,348 @@
-import React, { useEffect, useState } from 'react';
-import './Message.css';
-import { db, storage } from '../../utils/Firebase';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
-import Guest from '../../assets/images/guest-profile-pic.png';
-import ReactTimeago from 'react-timeago';
-import { isMobile } from 'react-device-detect';
+import styles from './Message.module.css';
+import {connect} from 'react-redux';
+import {XSquare} from 'phosphor-react';
+import TimeAgo from 'react-timeago';
+import GuestPic from '../../Assets/images/guest-profile-pic.png';
+import enShort from 'react-timeago/lib/language-strings/en-short';
+import buildFormatter from 'react-timeago/lib/formatters/buildFormatter';
+import {editUser, editFakeDB} from '../../Actions/userActions';
+import {toggleSlide} from '../../Actions/globalActions';
+import {toggleNavFoot} from '../../Actions/globalActions';
+import {db} from '../../Firebase/Firebase';
 import firebase from 'firebase/compat/app';
 
-export default function Message({ friend, streak_emoji, disableNavFootSlide, userDoc, height, width, loggedIn, toggleSnapShot }) {
-	const [ar, setar] = useState(9 / 16);
-	const [opened, setOpened] = useState([]);
-	const [img, setImg] = useState(null);
-	const [snapId, setsnapId] = useState(null);
-	const [lastUser, setLU] = useState(false);
-	var icon_class = "message-" + friend["status"]
-	var emoji = null;
-	var status_dict = {
-		"new-friend": "New Friend!",
-		new: "New Snap",
-		received: "Received",
-		sent: "Sent",
-		opened: "Opened",
-		pending: "Pending",
-		"not-friends": "Unfriended You",
-		blocked: "Blocked",
-	}
-	var emoji_dict = {
-		"not-friends": "\u{1F494}",
-		blocked: "\u{26D4}",
-		pending: "\u{23F3}"
-	}
-	var status = status_dict[friend["status"]]
-	emoji = emoji_dict[friend["status"]]
+const formatter = buildFormatter(enShort);
+export const statusDict = {
+  'new-friend': 'New Friend!',
+  'new': 'New Snap',
+  'received': 'Received',
+  'sent': 'Sent',
+  'opened': 'Opened',
+  'pending': 'Pending',
+  'not-friends': 'Unfriended You',
+  'blocked': 'Blocked',
+  'unknown': 'Unknown',
+};
+const emojiDict = {
+  'pending': '\u{23F3}',
+  'not-friends': '\u{1F494}',
+  'blocked': '\u{26D4}',
+  'unknown': '\u{26A0}',
+};
+/**
+ *
+ *
+ * @param {*} props
+ * @return {*}
+ */
+export function Message(props) {
+  const {friend, user, isUserLoggedIn, height, width, editUser,
+    toggleNavFoot, fakeDB, editFakeDB, toggleSlide,
+  } = props;
+  const [showSnaps, setShowSnaps] = useState(false);
+  const messageNewFriend = <div className={styles.messageNewFriend}></div>;
+  const messageNew = <div className={styles.messageNew}></div>;
+  const messageReceived = <div className={styles.messageReceived}></div>;
+  const messageSent = <div className={styles.messageSent}></div>;
+  const messageOpened = <div className={styles.messageOpened}></div>;
+  const messagePending = <p className={styles.emojiIcon}>
+    {emojiDict['pending']}
+  </p>;
+  const messageNotFriends = <p className={styles.emojiIcon}>
+    {emojiDict['not-friends']}
+  </p>;
+  const messageBlocked = <p className={styles.emojiIcon}>
+    {emojiDict['blocked']}
+  </p>;
+  const messageUnknown = <p className={styles.emojiIcon}>
+    {emojiDict['unknown']}
+  </p>;
+  let icon;
 
-	const open = () => {
-		if (loggedIn) {
-			toggleSnapShot(false);
-			if (Object.keys(friend.snaps).length > 0) {
-				let firstSnapId = friend.snaps[Object.keys(friend.snaps)[0]].id;
-				setsnapId(firstSnapId);
-				// Get Image
-				db.collection("Photos").doc(firstSnapId).get().then((doc) => {
-					setImg(doc.data()['image_url'])
-					disableNavFootSlide(true);
-				})
-				// Delete snap from userdoc
-				let temp = userDoc;
-				let key = Object.keys(friend.snaps)[0];
-				delete temp['friends'][friend['id']]['snaps'][key]
-				db.collection("Users").doc(userDoc['id']).update({
-					[`friends.${friend['id']}.snaps`]: temp['friends'][friend['id']]['snaps'],
-					received: firebase.firestore.FieldValue.increment(1),
-				}).then(() => {
-					if (Object.keys(temp['friends'][friend['id']]['snaps']).length <= 0) {
-						const ts = new Date().toLocaleString();
-						// Update Friend and User Doc if user is on last snap
-						db.collection("Users").doc(friend['id']).update({
-							[`friends.${userDoc['id']}.status`]: 'opened',
-							[`friends.${userDoc['id']}.last_time_stamp`]: ts,
-							[`friends.${userDoc['id']}.streakRef`]: ts,
-						})
+  switch (friend['status']) {
+    case 'new-friend':
+      icon = messageNewFriend;
+      break;
+    case 'new':
+      icon = messageNew;
+      break;
+    case 'received':
+      icon = messageReceived;
+      break;
+    case 'sent':
+      icon = messageSent;
+      break;
+    case 'opened':
+      icon = messageOpened;
+      break;
+    case 'pending':
+      icon = messagePending;
+      break;
+    case 'not-friends':
+      icon = messageNotFriends;
+      break;
+    case 'blocked':
+      icon = messageBlocked;
+      break;
+    default:
+      icon = messageUnknown;
+      break;
+  }
 
-						// Update User Doc
-						db.collection("Users").doc(userDoc['id']).update({
-							[`friends.${friend['id']}.status`]: 'received',
-							[`friends.${friend['id']}.last_time_stamp`]: ts,
-							[`friends.${friend['id']}.snaps`]: [],
-							[`friends.${friend['id']}.streakRef`]: ts,
-						})
-					}
-				})
-				// Update Photo Doc
-				db.collection("Photos").doc(firstSnapId).get().then((doc) => {
-					if (doc.data()['sent'].length <= 1) {
-						setLU(true)
-						// Move Photo id to deleteSnaps for pending delete
-						db.collection("Users").doc(userDoc['id']).update({
-							deleteSnaps: firebase.firestore.FieldValue.arrayUnion(firstSnapId),
-						})
-					} else {
-						setLU(false)
-						// Update Photo Doc
-						db.collection("Photos").doc(firstSnapId).update({
-							sent: firebase.firestore.FieldValue.arrayRemove(userDoc['id']),
-						})
-					}
-				})
-			} else {
-				const ts = new Date().toLocaleString();
-				db.collection("Users").doc(userDoc['id']).update({
-					[`friends.${friend['id']}.status`]: 'received',
-					[`friends.${friend['id']}.snaps`]: [],
-				})
-			}
-		} else {
-			// Guest Account
-			let k = Object.keys(friend['snaps']).sort()[0];
-			setImg(friend['snaps'][k]['src'])
-			disableNavFootSlide(true);
-			userDoc["received"] += 1;
-		}
-	}
-	const close = () => {
-		if (loggedIn) {
-			if (snapId && lastUser) {
-				deletePhoto(snapId)
-				db.collection("Users").doc(userDoc['id']).update({
-					deleteSnaps: firebase.firestore.FieldValue.arrayRemove(snapId),
-				})
-			}
-			if (Object.keys(friend.snaps).length <= 0) {
-				toggleSnapShot(true);
-				setImg(null);
-				disableNavFootSlide(false);
-			} else {
-				open()
-			}
-		} else {
-			// Guest Account
-			let k = Object.keys(friend['snaps']).sort()[0];
-			delete friend['snaps'][k]
-			if (Object.keys(friend['snaps']).length > 0) {
-				open();
-			} else {
-				friend['status'] = 'received'
-				setImg(null);
-				disableNavFootSlide(false);
-			}
-		}
-	}
-	const deletePhoto = (id) => {
-		db.collection("Photos").doc(id).delete();
-		storage.ref(`posts/${id}`).delete();
-	}
+  /**
+   * Open Snap
+   */
+  async function openSnap() {
+    toggleSlide(true);
+    setShowSnaps(true);
+    const snapID = await getSnap();
+    const currSnap = document.getElementById('currentSnap');
+    if (snapID === null) {
+      updateDB(snapID);
+      currSnap.src = '';
+      closeSnap();
+    } else {
+      toggleNavFoot(true);
+      if (friend['newSnaps'][snapID]['type'] === 'image') {
+        currSnap.src = friend['newSnaps'][snapID]['imgURL'].slice();
+        updateDB(snapID);
+      }
+    }
+  }
 
-	useEffect(() => {
-		setar(9 / 16);
-		if (img) {
-			if (isMobile === false) {
-				// setbh(null);
-				// setbw(null);
-				// console.log(window.innerHeight/window.innerWidth, 16/9)
-				if (window.innerHeight / window.innerWidth > 16 / 9) {
-					document.getElementById('receivedImg').style.height = 'auto';
-					document.getElementById('receivedImg').style.width = '100%';
-				} else {
-					document.getElementById('receivedImg').style.height = '100%';
-					document.getElementById('receivedImg').style.width = 'auto';
-				}
-			} else if (document.getElementById('receivedImg') !== null) {
-				if (height > width) {
-					setar(height / width);
-					document.getElementById('receivedImg').style.height = '100%';
-					document.getElementById('receivedImg').style.width = 'auto';
-				} else {
-					setar(height / width * 1.7);
-					document.getElementById('receivedImg').style.height = '100%';
-					document.getElementById('receivedImg').style.width = 'auto';
-				}
-			}
-		}
-	}, [height, width, img])
+  /**
+   * Get Snap
+   * @return {*}
+   */
+  function getSnap() {
+    const snaps = Object
+        .keys(friend['newSnaps']).sort((date1, date2) => date1 - date2);
+    if (snaps.length > 0) {
+      return (snaps[0]);
+    } else {
+      return (null);
+    }
+  }
 
-	return (
-		<>
-			{img ?
-				<div className="img-overlay" style={{ height: height, width: width }} onClick={close}>
-					<img id="receivedImg" src={img} />
-				</div>
-				:
-				<li className="message-main row" onClick={friend["status"] === "new" ? open : null}>
-					<div className="row">
-						<img className="friend-profile-pic" src={friend["profile_pic_url"] === null ? Guest : friend["profile_pic_url"]} alt=""></img>
-					</div>
-					<div className="col">
-						<h3>{friend["name"]}</h3>
-						<div className="message-info">
-							<div className="message-info-container">
-								{emoji ? <p>{emoji}</p> : <div className={icon_class}></div>}
-								<h5>{status}</h5>
-							</div>
-							<h5 className="time-stamp">{friend["last_time_stamp"] && friend['status'] !== 'not-friends' ? <> <div className="separator"></div> <ReactTimeago date={friend["last_time_stamp"]} /> </> : null}</h5>
-							<div className="row">
-								{friend["streak"] === null ? null : <>
-									<div className="separator" style={{ marginRight: "0.3rem" }}></div>
-									<h5>{friend["streak"]}</h5>
-									<h5>{userDoc.streak_emoji ? userDoc.streak_emoji : streak_emoji}</h5>
-								</>
-								}
-							</div>
-						</div>
-					</div>
-				</li>
-			}
-		</>
-	)
+  /**
+   * Update DB
+   * @param {*} id
+   */
+  function updateDB(id) {
+    const date = new Date();
+    if (isUserLoggedIn) {
+      // const userDoc = {...user};
+      const fi = friend['id'];
+      const ui = user.id;
+      if (id === null) {
+        if (fi !== ui) {
+          db.collection('Users').doc(fi).update({
+            [`friends.${ui}.status`]: 'opened',
+          });
+        }
+        db.collection('Users').doc(ui).update({
+          [`friends.${fi}.status`]: 'received',
+        });
+      } else {
+        // User Doc
+        db.collection('Users').doc(ui).update({
+          [`friends.${fi}.newSnaps.${id}`]: firebase.firestore
+              .FieldValue.delete(),
+          [`friends.${fi}.openedByMe.lastTimeStamp`]: date.toUTCString(),
+          [`friends.${fi}.openedByMe.opened`]: firebase.firestore
+              .FieldValue.increment(1),
+        });
+        // Friend Doc
+        db.collection('Users').doc(fi).update({
+          [`friends.${ui}.openedByFriend.lastTimeStamp`]: date.toUTCString(),
+          [`friends.${ui}.openedByFriend.opened`]: firebase.firestore
+              .FieldValue.increment(1),
+          [`allSnapsSent.${id}.sentTo`]: firebase.firestore
+              .FieldValue.arrayRemove(ui),
+        });
+      }
+    } else {
+      const update = {...user};
+      const updateFake = {...fakeDB};
+      if (id === null) {
+        // Viewed all snaps
+        updateFake[friend.id]['friends'][user.id]['status'] = 'opened';
+        update['friends'][friend.id]['status'] = 'received';
+      } else {
+        delete update['friends'][friend['id']]['newSnaps'][id];
+        const fi = friend['id'];
+        const ui = user.id;
+        // User
+        update['friends'][fi]['openedByMe'] = {
+          lastTimeStamp: date.toUTCString(),
+          opened: update['friends'][fi]['openedByMe']['opened'] + 1,
+        };
+        // Friend
+        updateFake[ui]['friends'][ui]['openedByFriend'] = {
+          lastTimeStamp: date.toUTCString(),
+          opened: updateFake[ui]['friends'][ui]['openedByFriend']['opened'] + 1,
+        };
+      }
+      editUser(update);
+      editFakeDB(updateFake);
+    }
+  }
+
+  /**
+   * Close Snap
+   */
+  function closeSnap() {
+    toggleSlide(false);
+    setShowSnaps(false);
+    toggleNavFoot(false);
+  }
+
+  return (
+    <>
+      <button
+        className={styles.background}
+        onClick={() => openSnap()}
+        disabled={friend['status'] !== 'new'}
+      >
+        <div className={styles.row}>
+          <div
+            className={styles.row}
+            style={{marginRight: '0.5rem'}}
+          >
+            {friend['profilePicUrl'] ?
+              <img
+                id='friendProfilePic'
+                src={friend['profilePicUrl']}
+                className={styles.friendProfilePic}
+              /> :
+              <XSquare
+                className={styles.friendProfilePic}
+                size={32}
+              />
+            }
+          </div>
+          <div
+            id="messageInfo"
+            className={styles.col}
+          >
+            <div
+              id="messageFriendName"
+              className={styles.row}
+              style={{justifyContent: 'start', marginBottom: '0.2rem'}}
+            >
+              <h1>
+                {friend['username'] !== null ?
+                  friend.username :
+                  friend.firstName
+                }
+              </h1>
+            </div>
+            <div
+              className={styles.row}
+              style={{justifyContent: 'start', marginTop: '0.2rem'}}
+            >
+              {icon}
+              <h3 id='messageStatus'>
+                {statusDict[friend['status']]}
+              </h3>
+              { (friend['lastTimeStamp'] !== null &&
+                friend['lastTimeStamp'] !== undefined) &&
+                <>
+                  <div className={styles.separator}/>
+                  <h3>
+                    <TimeAgo
+                      date={friend['lastTimeStamp']}
+                      formatter={formatter}
+                    />
+                  </h3>
+                </>
+              }
+              <div className={styles.separator}/>
+              <h3>{friend['streak'] === undefined ? 0 : friend['streak']}</h3>
+              <h5>{user.streakEmoji}</h5>
+            </div>
+          </div>
+        </div>
+        {/* <div className={styles.row}>
+          <p>Friend Status Emoji</p>
+        </div> */}
+      </button>
+      { showSnaps &&
+        <div
+          className={styles.snapContainer}
+          style={{
+            height: height,
+            width: width,
+          }}
+        >
+          <img
+            onClick={openSnap}
+            id='currentSnap'
+            className={styles.currentSnap}
+          />
+        </div>
+      }
+    </>
+  );
 }
+
+Message.propTypes = {
+  height: PropTypes.number,
+  width: PropTypes.number,
+  friend: PropTypes.object,
+  user: PropTypes.object,
+  isUserLoggedIn: PropTypes.bool,
+  editUser: PropTypes.func,
+  editFakeDB: PropTypes.func,
+  toggleNavFoot: PropTypes.func,
+  fakeDB: PropTypes.object,
+  toggleSlide: PropTypes.func,
+};
+
 Message.defaultProps = {
-	friend: {
-		created: "today",
-		profile_pic_url: Guest,
-		name: "Guest",
-		status: "new-friend",
-		streak: 0,
-		sent: 0,
-		received: 0,
-		last_time_stamp: null,
-		snaps: [],
-	},
-	streak_emoji: "\u{1F525}",
-	pic: "Guest",
-	email: "Guest@Guest.com,",
-	key: "Guest@Guest.com,"
+  height: window.innerHeight,
+  width: window.innerWidth,
+  isUserLoggedIn: false,
+  toggleNavFoot: () => {},
+  editUser: () => {},
+  editFakeDB: () => {},
+  toggleSlide: () => {},
+  friend: {
+    username: 'User',
+    profilePicUrl: GuestPic,
+    status: 'unknown',
+    streak: 0,
+    lastTimeStamp: null,
+  },
+  user: {
+    streakEmoji: '\u{1F525}',
+  },
+  fakeDB: {},
+};
 
 
+/**
+ *
+ *
+ * @param {*} state
+ * @return {*}
+ */
+function mapStateToProps(state) {
+  return {
+    height: state.global.height,
+    width: state.global.width,
+    isUserLoggedIn: state.user.isUserLoggedIn,
+    fakeDB: state.user.fakeDB,
+  };
 }
-Message.requiredProps = {
-	friend: PropTypes.shape({
-		created: PropTypes.string,
-		profile_pic_url: PropTypes.string,
-		name: PropTypes.string,
-		status: PropTypes.string,
-		streak: PropTypes.number,
-		sent: PropTypes.number,
-		received: PropTypes.number,
-		last_time_stamp: PropTypes.string,
-		snaps: PropTypes.arrayOf(PropTypes.string)
-	}),
-	streak_emoji: PropTypes.string,
-	pic: PropTypes.string,
-	email: PropTypes.string,
-	key: PropTypes.string
-}
+
+const mapDispatchToProps = {
+  editUser,
+  editFakeDB,
+  toggleNavFoot,
+  toggleSlide,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Message);

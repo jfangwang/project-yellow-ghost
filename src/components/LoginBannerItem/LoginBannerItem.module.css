@@ -1,0 +1,49 @@
+.background {
+    background-color: lightgray;
+    padding: 0.6rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.background button {
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: none;
+    color: black;
+    margin: 1rem;
+}
+.modal {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    border: 2px red solid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.modalBackground {
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    flex-direction: column;
+    z-index: 2;
+}
+
+.modalBackground > * {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.modalBackground button {
+    background-color: yellow;
+    padding: 0.5rem 1rem 0.5rem 1rem;
+    border-radius: 10rem;
+    border: none;
+    margin: 0.5rem;
+}

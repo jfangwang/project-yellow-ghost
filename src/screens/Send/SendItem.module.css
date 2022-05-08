@@ -1,0 +1,39 @@
+.sendItem {
+    list-style: none;
+    width: 100%;
+    border-bottom: 1px rgb(97, 97, 97) solid;
+    background-color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.sendItem button {
+    background-color: white;
+}
+
+.sendItem button:hover {
+    background-color: rgb(184, 184, 184);
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: flex-start;
+}
+
+.profilePic {
+    height: 3rem;
+    border-radius: 1rem;
+    padding: 0.5rem;
+}

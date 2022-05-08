@@ -1,0 +1,99 @@
+.background {
+    height: 100%;
+    width: 92%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.background>* {
+    height: auto;
+    display: flex;
+    margin-bottom: 2rem;
+}
+
+.profilePic {
+    height: 5rem;
+    width: 5rem;
+    border-radius: 0.5rem;
+}
+
+.account {
+    width: 100%;
+    flex-direction: row;
+    padding: 1rem 0rem 1rem 0rem;
+    align-items: center;
+}
+
+.info {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-around;
+    margin: 0 0.3rem 0 0.3rem;
+}
+
+.logout button {
+    background-color: lightcoral;
+    padding: 1rem;
+    border-radius: 1rem;
+}
+
+.messagesSettings, .cameraSettings, .uiSettings, .acountSettings {
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+}
+
+.background ul {
+    width: 98%;
+    justify-content: center;
+    box-shadow: 0px 0px 5px rgb(145, 145, 145);
+    background-color: transparent;
+    border: none;
+    border-radius: 1rem;
+}
+
+.background ul li {
+    list-style: none;
+    background-color: white;
+}
+
+.background ul li:first-child {
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+}
+
+.background ul li:last-child {
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+}
+
+.acountSettings ul li,
+.uiSettings ul li,
+.messagesSettings ul li,
+.cameraSettings ul li {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.acountSettings ul li > *,
+.uiSettings ul li > *,
+.messagesSettings ul li > *,
+.cameraSettings ul li > * {
+    margin: 1rem;
+}
+
+.acountSettings li button,
+.uiSettings li button,
+.messagesSettings li button,
+.cameraSettings li button {
+    padding: 1rem;
+    border-radius: 1rem;
+    color: darkblue;
+}

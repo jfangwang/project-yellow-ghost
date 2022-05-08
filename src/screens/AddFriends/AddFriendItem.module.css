@@ -1,0 +1,37 @@
+.row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+.row > * {
+    width: auto;
+    padding: 0 0.2rem 0 0.2rem;
+    display: flex;
+    flex-wrap: wrap;
+}
+.row > button {
+    height: 50%;
+    margin: 0 0.2rem 0 0.2rem;
+    padding: 0.3rem;
+    background-color: transparent;
+    border: none;
+    border-radius: 10rem;
+    background-color: lightgray;
+}
+li {
+    width: 100%;
+    border-bottom: 1px lightgray solid;
+}
+.profilePic {
+    height: 3rem;
+    border-radius: 1rem;
+    padding: 0.3rem;
+}
+.info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}

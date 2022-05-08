@@ -1,163 +1,151 @@
-import React, { Component } from 'react';
-import SwipeableViews from 'react-swipeable-views'
-import { bindKeyboard } from 'react-swipeable-views-utils'
-import Navbar from '../navbar/Navbar';
+/* eslint-disable */
+import React, {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
-import './SlidingMenu.css'
+import {forwardRef, useImperativeHandle} from 'react';
+import SwipeableViews from 'react-swipeable-views';
+import styles from './SlidingMenu.module.css';
+import {IconContext, CaretLeft, CaretDown} from 'phosphor-react';
+import {connect} from 'react-redux';
 
-const BindKeyboardSwipeableViews = bindKeyboard(SwipeableViews);
-let list = [];
-for (var i = 0; i < 200; i++) {
-	list.push(<h1>filler</h1>)
+const list =[];
+for (let i=0; i<50; i += 1) {
+  list.push(<h1>User {i}</h1>)
 }
 
-class SlidingMenu extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			height: window.innerHeight,
-			width: window.innerWidth,
-			index: 0,
-			top: true,
-			bgColor: 'transparent',
-			hide: true
-		}
-		this.updateDimensions = this.updateDimensions.bind(this);
-		this.changeToIndex = this.changeToIndex.bind(this);
-		this.handleScroll = this.handleScroll.bind(this);
-		this.changeOnSwitch = this.changeOnSwitch.bind(this);
-		this.checkIndex = this.checkIndex.bind(this);
-		this.closeMenu = this.closeMenu.bind(this);
-	}
-	updateDimensions = () => {
-		this.setState({ width: window.innerWidth, height: window.innerHeight });
-	};
-	componentDidMount() {
-		window.addEventListener('resize', this.updateDimensions);
-		window.addEventListener('scroll', this.handleScroll, true);
-	}
-	componentDidUpdate(prevProps) {
-		if (prevProps.open !== this.props.open) {
-			if (this.props.open === true) {
-				this.setState({ hide: false }, () => setTimeout(() => this.changeToIndex(1), 0));
-				this.setState({ top: true })
-			}
-			if (this.props.open === false) {
-				this.changeToIndex(0);
-			}
-		}
-	}
-	changeToIndex(e) {
-		this.setState({
-			index: e,
-		})
-		this.setState({ bgColor: 'transparent' });
-	}
-	handleScroll(e) {
-		const target = e.target;
-		if (this.props.axis === 'y') {
-			if (target.scrollTop <= 0) {
-				this.setState({ top: true })
-			} else {
-				this.setState({ top: false })
-			}
-		}
-	}
-	changeOnSwitch() {
-		this.setState({ bgColor: 'transparent' });
-	}
-	closeMenu() {
-		this.changeToIndex(0);
-	}
-	checkIndex() {
-		if (this.state.index === 0) {
-			this.setState({ hide: true });
-			if (this.props.open === true) {
-				this.props.close();
-			}
-		}
-		if (this.state.index >= 1) {
-			this.setState({ bgColor: 'white' });
-		}
-	}
-	render() {
-		const { height, width, index, top, hide, bgColor } = this.state;
-		const { children, title, axis, disabled } = this.props;
+const SlidingMenu = forwardRef((props, ref) => {
+  const {height, width, axis, children, toggleSlide, title, backgroundColor} = props;
+  const [show, setShow] = useState(false);
+  const [index, setIndex] = useState(0);
+  const [disabled, setDisabled] = useState(false);
+  useImperativeHandle(ref, () => ({
+    toggle(e = !show) {
+      setShow(e);
+      toggleSlide();
+    },
+  }));
 
-		let view = <>
-			{!hide &&
-				(
-					<div className="sliding-menu" style={{ height: height, width: width, backgroundColor: bgColor }}>
-						<BindKeyboardSwipeableViews
-							containerStyle={{ height: height, width: width }}
-							axis={axis}
-							disabled={!top || disabled}
-							onSwitching={this.changeOnSwitch}
-							onChangeIndex={this.changeToIndex}
-							onTransitionEnd={this.checkIndex}
-							index={index}
-							enableMouseEvents
-						>
-							<div style={{ height: height, width: width }}></div>
-							<div onScroll={this.handleScroll} style={{ backgroundColor: 'white', height: height, width: width }}>
-								<div style={{ backgroundColor: 'white' }}>
-									<Navbar position="fixed" hidden={false} Parenttitle={title} close={this.closeMenu} axis={axis} />
-									{children}
-									{/* {list} */}
-								</div>
-							</div>
-						</BindKeyboardSwipeableViews>
-					</div>
-				)
-			}
-		</>
-		let view2 = <>
-		{!hide &&
-			(
-				<div className="sliding-menu" style={{ height: height, width: width, backgroundColor: bgColor }}>
-					<SwipeableViews
-						containerStyle={{ height: height, width: width }}
-						axis={axis}
-						disabled={!top || disabled}
-						onSwitching={this.changeOnSwitch}
-						onChangeIndex={this.changeToIndex}
-						onTransitionEnd={this.checkIndex}
-						index={index}
-						enableMouseEvents
-					>
-						<div style={{ height: height, width: width }}></div>
-						<div onScroll={this.handleScroll} style={{ backgroundColor: 'white', height: height, width: width }}>
-							<div style={{ backgroundColor: 'white' }}>
-								<Navbar position="fixed" hidden={false} Parenttitle={title} close={this.closeMenu} axis={axis} />
-								{children}
-								{/* {list} */}
-							</div>
-						</div>
-					</SwipeableViews>
-				</div>
-			)
-		}
-	</>
-		return (
-			<>
-				{view2}
-			</>
-		);
-	}
-}
+  useEffect(() => {
+    if (show) {
+      changeToIndex(1);
+    }
+  }, [show]);
+
+  function changeToIndex(e) {
+    setIndex(e);
+  }
+
+  function checkIndex(e) {
+    if (index === 0) {
+      setShow(false);
+      toggleSlide();
+    }
+  }
+  const close = () => {
+    console.log('close');
+    changeToIndex(0);
+  };
+  const handleScroll = (e) => {
+    console.log('shadow');
+    if (e.currentTarget.scrollTop > 0 && axis === 'y') {
+      setDisabled(true);
+    } else {
+      setDisabled(false);
+    }
+  };
+
+  return (
+    <>
+      {show &&
+        <SwipeableViews
+          disabled={disabled}
+          index={index}
+          onChangeIndex={changeToIndex}
+          onTransitionEnd={checkIndex}
+          enableMouseEvents
+          axis={axis}
+          containerStyle={{height: height, width: width}}
+          style={{zIndex: 5,}}
+        >
+          <div style={{height: height, width: width}}></div>
+          <div
+            className={styles.background}
+            style={{height: height, width: width, backgroundColor: backgroundColor}}
+          >
+            <header className={styles.slidingMenuNavbar}>
+              <IconContext.Provider
+                value={{
+                  color: 'black',
+                  size: '1.5rem',
+                  weight: 'bold',
+                }}
+              >
+                <div>
+                  <button onClick={close}>{axis === 'y' ? <CaretDown/> : <CaretLeft/>}</button>
+                </div>
+                <div>
+                  <h1>{title}</h1>
+                </div>
+                <div>
+                  <button style={{opacity: 0}}><CaretLeft/></button>
+                </div>
+              </IconContext.Provider>
+            </header>
+            <div
+              onScroll={handleScroll}
+              style={{
+                height: height,
+                width: width,
+                overflowY: 'auto',
+              }}
+            >
+              {children}
+            </div>
+          </div>
+        </SwipeableViews>
+      }
+    </>
+  );
+});
 
 SlidingMenu.propTypes = {
-	title: PropTypes.string,
-	open: PropTypes.bool,
-	axis: PropTypes.string,
-	disabled: PropTypes.bool,
-	keyboard: PropTypes.bool,
-}
+  height: PropTypes.number,
+  width: PropTypes.number,
+  backgroundColor: PropTypes.string,
+  axis: PropTypes.string,
+  title: PropTypes.string,
+  toggleSlide: PropTypes.func,
+  children: PropTypes.any,
+};
 SlidingMenu.defaultProps = {
-	title: "",
-	axis: 'y',
-	disabled: false,
-	keyboard: true
+  height: window.innerHeight,
+  width: window.innerWidth,
+  backgroundColor: 'white',
+  axis: 'y',
+  title: '',
+  toggleSlide: () => { },
+};
+
+/**
+ *
+ *
+ * @param {*} state
+ * @return {*}
+ */
+ function mapStateToProps(state) {
+  return {
+    height: state.global.height,
+    width: state.global.width,
+  };
 }
 
-export default SlidingMenu;
+const mapDispatchToProps = {
+  // setCameraPermissions,
+  // toggleFacingMode,
+  // toggleSlide,
+  // toggleNavFoot,
+  // setScreen,
+  // captureImage,
+  // updateSendList,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps, null, {forwardRef: true})(SlidingMenu);

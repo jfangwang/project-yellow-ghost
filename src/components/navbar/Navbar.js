@@ -1,132 +1,206 @@
-import React, { useState, useEffect } from 'react'
-import PropTypes from 'prop-types'
-import './Navbar.css'
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import SearchIcon from '@mui/icons-material/Search';
-import FlipCameraIosIcon from '@mui/icons-material/FlipCameraIos';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import SlidingMenu from '../slidingMenu/SlidingMenu';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import Account from '../../screens/account/Account';
-import Friends from '../../screens/friends/Friends';
-import '../../app/App.css';
+import React, {useRef} from 'react';
+import PropTypes from 'prop-types';
+import SlidingMenuRouting from '../SlidingMenu/SlidingMenuRouting';
+import styles from './Navbar.module.css';
+import {connect} from 'react-redux';
+import {toggleSlide} from '../../Actions/globalActions';
+import {toggleFacingMode} from '../../Actions/cameraActions';
+import Account from '../../Screens/Account/Account';
+import Search from '../../Screens/Search/Search';
+import AddFriends from '../../Screens/AddFriends/AddFriends';
+import Extra from '../../Screens/Extra/Extra';
+import {setScreen} from '../../Actions/cameraActions';
+import {
+  IconContext,
+  User,
+  MagnifyingGlass,
+  UserPlus,
+  DotsThree,
+  ArrowsClockwise,
+} from 'phosphor-react';
 
-function Navbar({ position, index, incFlipCam, close, Parenttitle, axis, hidden, GsignIn, GsignOut, userDoc, peopleList, edit_friends }) {
-	let title = "";
-	let buttonDir = <KeyboardArrowDownIcon />
-	if (axis === "x") {
-		buttonDir = <ChevronRightIcon />
-	} else if (axis === "y") {
-		buttonDir = <KeyboardArrowDownIcon />
-	}
-	const [showAccount, setAccount] = useState(false)
-	const [showFriends, setFriends] = useState(false)
-	const [showSearch, setSearch] = useState(false)
-	const [showExtra, setExtra] = useState(false)
-	const toggleExtra = () => {
-		setExtra(!showExtra);
-	}
-	let dynamic = <button onClick={toggleExtra}><MoreHorizIcon /></button>;
-	const styles = {
-		shawdow: {
-			backgroundColor: 'white',
-			boxShadow: "0 0.1rem 1rem black"
-		},
-		transparent: {
-			backgroundColor: 'transparent',
-			boxShadow: "0 0rem 0rem black"
-		}
-	}
-	if (index === 0) {
-		title = "Chat";
-	}
-	if (index === 1) {
-		dynamic = <button onClick={incFlipCam}><FlipCameraIosIcon /></button>;
-	}
-	if (index === 2) {
-		title = "Discover";
-	}
-	const toggleAccount = () => {
-		setAccount(!showAccount);
-	}
-	const toggleFriends = () => {
-		setFriends(!showFriends);
-	}
-	const toggleSearch = () => {
-		setSearch(!showSearch);
-	}
-	if (position === "fixed") {
-		return (
-			<>
-				<ul className={"main-navbar " + (hidden ? "ghost" : "navbar-fixed")} >
-					<li>
-						<ul>
-							<li><button onClick={close}>{buttonDir}</button></li>
-						</ul>
-					</li>
-					<li><h1>{Parenttitle}</h1></li>
-					<li>
-						<ul>
-							<li style={{ opacity: 0 }}><button><PersonAddIcon /></button></li>
-						</ul>
-					</li>
-				</ul>
-			</>
-		)
-	} else {
-		return (
-			<>
-				<ul 
-					className={"main-navbar " + (hidden ? "ghost" : "floating-navbar")}
-					style={index === 1 ? styles.transparent : styles.shawdow}
-				>
-					<li>
-						<ul>
-							<li><button onClick={toggleAccount}><AccountCircleIcon /></button></li>
-							<li><button onClick={toggleSearch}><SearchIcon /></button></li>
-						</ul>
-					</li>
-					<li><h1>{title}</h1></li>
-					<li>
-						<ul>
-							<li><button onClick={toggleFriends}><PersonAddIcon /></button></li>
-							<li>{dynamic}</li>
-						</ul>
-					</li>
-				</ul>
-				{!hidden && (
-					<>
-						<SlidingMenu open={showAccount} close={toggleAccount} title="Account" axis="x">
-							<Navbar position="fixed"/>
-							<Account close={toggleAccount} GsignIn={GsignIn} GsignOut={GsignOut} userDoc={userDoc}/>
-						</SlidingMenu>
-						<SlidingMenu open={showSearch} close={toggleSearch} title="Search">
-							<Navbar position="fixed"/>
-							<h1>Searchs</h1>
-						</SlidingMenu>
-						<SlidingMenu open={showFriends} close={toggleFriends} title="Add Friends">
-							<Navbar position="fixed"/>
-							<Friends userDoc={userDoc} peopleList={peopleList} edit_friends={edit_friends}/>
-						</SlidingMenu>
-						<SlidingMenu open={showExtra} close={toggleExtra} title="Extra">
-							<Navbar position="fixed"/>
-							<h1>Extra</h1>
-						</SlidingMenu>
-					</>
-				)}
-			</>
-		)
-	}
+/**
+ *
+ *
+ * @export
+ * @param {*} props
+ * @return {*}
+ */
+export function Navbar(props) {
+  const {
+    index,
+    decIndex,
+    toggleSlide,
+    position,
+    opacity,
+    placeHolder,
+    toggleFacingMode,
+    hideNavFoot,
+  } = props;
+  const accountMenu = useRef();
+  const searchMenu = useRef();
+  const addFriendMenu = useRef();
+  const extraMenu = useRef();
+
+  return (
+    <>
+      <div
+        className={styles.mainNavbar}
+        // style={{
+        //   backgroundColor: `rgba(255, 255, 255, ${Math.abs(1 - decIndex)})`
+        // }}
+        style={{
+          backgroundColor: `rgba(255, 255, 255, 0)`,
+          position: position,
+          zIndex: hideNavFoot ? -1 : 1,
+        }}
+      >
+        <IconContext.Provider
+          value={{
+            color: `rgb(
+            ${255 - (Math.abs(1 - decIndex) * 255)},
+            ${255 - (Math.abs(1 - decIndex) * 255)},
+            ${255 - (Math.abs(1 - decIndex) * 255)}
+          )`,
+            size: 32,
+            weight: 'bold',
+            mirrored: true,
+          }}
+        >
+          <div style={{opacity: opacity}}>
+            <button onClick={
+            !placeHolder ? () => accountMenu.current.toggle() : () => { }
+            }>
+              <User />
+            </button>
+            <button onClick={
+            !placeHolder ? () => searchMenu.current.toggle() : () => { }
+            }>
+              <MagnifyingGlass />
+            </button>
+          </div>
+          <div style={{opacity: opacity}}>
+            <h1
+              style={{
+                color: `rgba(${255 - (Math.abs(1 - decIndex) * 255)},` +
+                `${255 - (Math.abs(1 - decIndex) * 255)},` +
+                `${255 - (Math.abs(1 - decIndex) * 255)},` +
+                `${(Math.abs(1 - decIndex))})`,
+              }}>
+              {decIndex < 1 && 'Chat'}
+              {decIndex === 1 && 'Chat'}
+              {decIndex > 1 && 'Discover'}
+            </h1>
+          </div>
+          <div style={{opacity: opacity}}>
+            <button onClick={
+            !placeHolder ? () => addFriendMenu.current.toggle() : () => { }
+            }>
+              <UserPlus />
+            </button>
+            {index === 1 ?
+            <button onClick={() => toggleFacingMode()}>
+              <ArrowsClockwise />
+            </button> :
+            <button
+              onClick={
+                !placeHolder ? () => extraMenu.current.toggle() : () => { }
+              }>
+              <DotsThree />
+            </button>
+            }
+          </div>
+          {!placeHolder &&
+          <>
+            <SlidingMenuRouting
+              axis='x'
+              ref={accountMenu}
+              toggleSlide={toggleSlide}
+              title="Account"
+              path="/account"
+            >
+              <Account />
+            </SlidingMenuRouting>
+            <SlidingMenuRouting
+              ref={searchMenu}
+              toggleSlide={toggleSlide}
+              title="Search"
+              path="/search"
+            >
+              <Search />
+            </SlidingMenuRouting>
+            <SlidingMenuRouting
+              ref={addFriendMenu}
+              toggleSlide={toggleSlide}
+              title="Add Friends"
+              path="/add_friends"
+            >
+              <AddFriends />
+            </SlidingMenuRouting>
+            <SlidingMenuRouting
+              ref={extraMenu}
+              toggleSlide={toggleSlide}
+              title="Extra"
+              path="/extra"
+            >
+              <Extra />
+            </SlidingMenuRouting>
+          </>
+          }
+        </IconContext.Provider>
+      </div>
+    </>
+  );
 }
 
 Navbar.propTypes = {
-	position: PropTypes.string,
-	hidden: PropTypes.bool,
-}
+  index: PropTypes.number,
+  decIndex: PropTypes.number,
+  height: PropTypes.number,
+  width: PropTypes.number,
+  position: PropTypes.string,
+  opacity: PropTypes.number,
+  toggleSlide: PropTypes.func,
+  placeHolder: PropTypes.bool,
+  toggleFacingMode: PropTypes.func,
+  hideNavFoot: PropTypes.bool,
+  setScreen: PropTypes.func,
+};
+
 Navbar.defaultProps = {
-	hidden: true
+  index: 1,
+  decIndex: 1,
+  height: window.innerHeight,
+  width: window.innerWidth,
+  position: 'absolute',
+  opacity: 1,
+  toggleSlide: () => { },
+  toggleFacingMode: () => { },
+  setScreen: () => {},
+  placeHolder: true,
+  hideNavFoot: false,
+};
+
+/**
+ *
+ *
+ * @param {*} state
+ * @return {*}
+ */
+function mapStateToProps(state) {
+  return {
+    index: state.global.index,
+    height: state.global.height,
+    width: state.global.width,
+    decIndex: state.global.decIndex,
+    hideNavFoot: state.global.hideNavFoot,
+  };
 }
 
-export default Navbar;
+const mapDispatchToProps = {
+  toggleSlide,
+  toggleFacingMode,
+  setScreen,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Navbar);

@@ -1,0 +1,13 @@
+.mainFooter {
+    position: absolute;
+    background-color: rgb(255, 255, 255, 0);
+    bottom: 0;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    width: 100%;
+}
+.mainFooter > * {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
